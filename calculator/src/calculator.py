@@ -1,4 +1,4 @@
-from src import operations
+from calculator.src import operations
 
 
 def calculate(operation, a, b):#realiza la operacion segun su operador
