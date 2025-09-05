@@ -1,4 +1,4 @@
-from calculator.src.calculator import calculate
+from calculator.src import calculate
 
 if __name__ == "__main__":
     num = float(input("Enter a number: "))
