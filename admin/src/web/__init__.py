@@ -1,10 +1,15 @@
-from flask import Flask
+from flask import Flask, render_template
+import os
 
-def create_app(env, static_folder):
-    app = Flask(__name__)
+def create_app(env="development", staticfolder=""):
+    app = Flask(
+        __name__,
+        template_folder=os.path.join(os.path.dirname(__file__), "templates"),
+        static_folder=staticfolder
+    )
 
     @app.route('/')
     def home():
-        return 'Hello, World!'
+        return render_template("home.html")
     
     return app
