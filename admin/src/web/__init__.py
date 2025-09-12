@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, abort ,render_template
 import os
 from src.web.handlers import error
 
@@ -16,9 +16,9 @@ def create_app(env="development", static_folder=None):
     @app.route('/')
     def home():
         return render_template("home.html")
-    
+
     app.register_error_handler(404, error.not_found)
-    app.register_error_handler(403, error.not_authorized)
+    app.register_error_handler(401, error.not_authorized)
     app.register_error_handler(500, error.internal_server_error)
     
     return app
