@@ -1,11 +1,15 @@
 from flask import Flask, render_template
 import os
 
-def create_app(env="development", staticfolder=""):
+def create_app(env="development", static_folder=None):
+    if not static_folder:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        static_folder = os.path.abspath(os.path.join(base_dir, "..", "..", "static"))
+
     app = Flask(
         __name__,
         template_folder=os.path.join(os.path.dirname(__file__), "templates"),
-        static_folder=staticfolder
+        static_folder=static_folder
     )
 
     @app.route('/')
