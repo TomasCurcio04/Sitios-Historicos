@@ -6,10 +6,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a mi aplicación Flask?</h1>
+    <header> {% block header %}
+        <div class="topbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height:32px;vertical-align:middle;margin-right:8px;">
+            Mi App
+        </div>
+        <div class="user-dropdown">
+            <span>Usuario &#x25BC;</span>
+            <div class="user-dropdown-content">
+                <a href="{{ url_for('perfil') }}">Ver perfil</a>
+                <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>       
+        <h1> Administracion sitios historicos</h1>
         <hr>
+        {% endblock %}
     </header>
+    <div class="container">
+        <nav class="sidenav">
+            <a href="{{ url_for('sitios') }}">Gestión de sitios históricos</a>
+            <a href="{{ url_for('propuestas') }}">Validación de propuestas</a>
+            <a href="{{ url_for('resenas') }}">Moderación de reseñas</a>
+            <a href="{{ url_for('usuarios') }}">Gestión de usuarios</a>
+        </nav>
 
     <main>
         {% block content %}{% endblock %}
