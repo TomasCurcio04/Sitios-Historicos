@@ -1,46 +1,252 @@
+/* Reset y tipografía */
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 0;
-    color: #222;
+     font-family: 'Montserrat', Arial, sans-serif;
+     background: #f4f6f8;
+     margin: 0; 
+     padding: 0; 
+     color: #222;  
+     box-sizing: border-box;
+     }
+
+/* Wrapper */     
+.wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; /* altura completa de la pantalla */ 
+    box-shadow: none;
 }
 
-header, footer {
-    background: #b71cc8;
+/* Header / Topbar */
+header, .topbar {
+    background-color: #1a237e; /* azul oscuro */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px; /* MÁS espacio lateral */
+    height: 60px;
     color: #fff;
-    padding: 20px 0;
-    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: none;
+    box-shadow: none;
+}
+ 
+/* Header y menú */
+header {
+    border-bottom: none;   /* quita cualquier línea inferior */
+    box-shadow: none;      /* elimina sombras */
+    padding: 10px 20px;    /* espacio interno */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* logo a la izquierda, usuario a la derecha */
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2.2em;
-    letter-spacing: 1px;
+/* Logo */
+header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* separación entre logo y nombre */
 }
 
-main {
-    max-width: 800px;
-    margin: 40px auto;
+/* Contenedor del logo + texto */
+.logo-container {
+    display: flex;             /* logo y texto en línea */
+    align-items: center;       /* centrado vertical */
+    gap: 12px;                 /* espacio entre logo y texto */
+}
+
+/* Imagen del logo */
+.logo-img {
+    max-height: clamp(40px, 8vw, 80px);         /* tamaño máximo del logo */
+    width: auto;
+    transition: all 0.3s ease;              
+}
+
+/* Texto del título */
+.logo-text {
+    font-size: clamp(1.2rem, 2.5vw, 2.5rem);
+    font-weight: 700;
+    color: #fff;
+    transition: all 0.3s ease
+}
+
+/* Dropdown usuario */
+.user-dropdown { 
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px; 
+    padding: 6px 10px; 
+    transition: background 0.3s ease; 
+    position: relative;
+    margin-right: 40px; /* separa del borde derecho */
+}
+.user-dropdown:hover { 
+    background: rgba(255,255,255,0.3); 
+} 
+.user-dropdown span { 
+    color: #fff; 
+    cursor: pointer;
+}
+.user-dropdown-content { 
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-    padding: 32px;
+    color: #333;
+    min-width: 140px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+    border-radius: 6px;
+} 
+.user-dropdown:hover .user-dropdown-content { 
+    display: block; 
+} 
+.user-dropdown-content a { 
+    color: #333; 
+    padding: 8px 12px; 
+    text-decoration: none; 
+    display: block; 
+} 
+.user-dropdown-content a:hover { 
+    background: hsl(273, 85%, 32%); 
+    color: #fff;
 }
 
-h2 {
-    color:  #b71cc8;
-    margin-top: 0;
+/* Contenedor principal */
+.container { 
+    display: flex; 
+    flex: 1; 
+    margin-top: 60px; 
+    width: 100%; 
+    min-height: calc(100vh - 60px);
+} 
+
+/* Menú lateral */
+nav.sidenav { 
+    width: 220px; 
+    background: #2c3e50; 
+    color: #fff; 
+    padding: 24px 16px; /* MÁS padding interior */ 
+    box-sizing: border-box; 
+} 
+nav.sidenav a { 
+    display: block; 
+    color: #fff; 
+    padding: 10px 14px; 
+    text-decoration: none; 
+    border-radius: 6px; 
+    transition: background 0.3s ease, color 0.3s ease; 
+} 
+nav.sidenav a:hover { 
+    background: #1e90ff; /* azul eléctrico, mismo que header */ 
+    color: #fff; 
+    font-weight: bold; 
 }
 
-hr {
-    border: none;
-    border-top: 2px solid #e0e0e0;
-    margin: 16px 0;
+/* Contenido principal */
+main { 
+    flex: 1; 
+    background: #fff; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 12px rgba(44, 62, 80, 0.12); 
+    padding: 2rem; 
+    margin: 1.5rem; /* más separación del sidebar */
+    max-width: 900px; /* ancho más equilibrado */
+    min-height: 400px; /* altura más compacta */ 
+    overflow: auto; /* permite scroll interno si es necesario */
+} 
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
 }
 
-footer p {
+::-webkit-scrollbar-track {
+    background: #f4f6f8;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f4f6f8;
+}
+
+/* Footer */
+footer { 
+    background: #1e90ff; 
+    color: #fff; 
+    padding: 20px 0; 
+    text-align: center; 
+} 
+footer hr { 
+    border: none; 
+    border-top: 2px solid #e0e0e0; 
+    margin: 16px 0; 
+} 
+footer p { 
     margin: 0;
     font-size: 1em;
     letter-spacing: 1px;
+}
+
+/* Encabezados */
+h1, h2, h3 { 
+    font-weight: 600; /* usa el peso 600 que pediste en Google Fonts */ 
+} 
+h2 { 
+    color: #b71cc8; 
+    margin-top: 0; 
+} 
+hr {
+    display: none;
+}
+
+/* Media query: responsivo */
+@media (max-width: 768px) {
+    .topbar {
+        padding: 0.5rem 1rem; /* ajusta para móviles */
+    }
+    .logo-container {
+        gap: 8px;
+    }
+
+    .logo-img {
+        max-height: 40px;      /* logo más pequeño en móvil */
+    }
+
+    .logo-text {
+        font-size: 1.2rem;     /* título más pequeño en móvil */
+    }
+    .container { 
+        flex-direction: column; 
+    } 
+    nav.sidenav { 
+        width: 100%; 
+        display: flex; 
+        flex-direction: row; 
+        overflow-x: auto; 
+        margin-top: 0; 
+    } 
+    nav.sidenav a { 
+        flex: 1; 
+        text-align: center; 
+        padding: 10px 0; 
+    } 
+    main { 
+        padding: 1rem; 
+        margin-top: 50px; 
+    } 
 }
