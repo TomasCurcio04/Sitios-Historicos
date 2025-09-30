@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Tareas | Mi aplicacion{% endblock %}
+
+{% block content %}
+ <table>    
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario asignado</th>
+            <th>Titulo</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for issue in issues %}
+        <tr>
+            <td>{{ issue.id }}</td>
+            <td>{{ issue.email }}</td>
+            <td>{{ issue.title }}</td>
+            <td>{{ issue.description }}</td>
+            <td>{{ issue.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+ </table>
+ <a href="{{ url_for('home') }}">Volver al inicio</a>
+{% endblock %}
