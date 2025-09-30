@@ -3,21 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Mi App{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a mi aplicación Flask?</h1>
-        <hr>
-    </header>
+    <div class="wrapper">
+    <!-- Topbar -->
+    <header> 
+        <div class="topbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
+            <span class="logo-text">Administración de Sitios Históricos</span>
+        </div>
+        <div class="user-dropdown">
+            <span>Usuario &#x25BC;</span>
+            <div class="user-dropdown-content">
+                <a href="{{ url_for('home') }}">Ver perfil</a>
+                <a href="{{ url_for('home') }}">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>       
 
+    </header>
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Menú lateral -->
+        <nav class="sidenav">
+            <a href="{{ url_for('home') }}">Gestión de sitios históricos</a>
+            <a href="{{ url_for('home') }}">Validación de propuestas</a>
+            <a href="{{ url_for('home') }}">Moderación de reseñas</a>
+            <a href="{{ url_for('home') }}">Gestión de usuarios</a>
+        </nav>
+    <!-- Contenido dinámico -->    
     <main>
         {% block content %}{% endblock %}
     </main>
-
+    </div>
+    <!-- Footer -->
     <footer>
         <hr>
         <p>Proyecto de software</p>
     </footer>
+    </div>
 </body>
 </html>
