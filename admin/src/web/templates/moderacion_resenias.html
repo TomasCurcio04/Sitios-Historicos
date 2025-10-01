@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block title %}Moderación de Reseñas{% endblock %}
+
+{% block content %}
+<h1>Moderación de Reseñas</h1>
+<p>Bienvenido a la sección de moderación de reseñas. Aquí puedes revisar, aprobar o rechazar las reseñas enviadas por los usuarios sobre los sitios históricos.</p>
+
+<a href="{{ url_for('web.home') }}" class="btn btn-primary">Volver al Inicio</a>
+{% endblock %}
