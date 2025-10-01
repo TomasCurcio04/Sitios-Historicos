@@ -145,6 +145,11 @@ nav.sidenav a:hover {
     color: #fff; 
     font-weight: bold; 
 }
+/* Estado activo */
+nav.sidenav a.active {
+    background: #0d47a1; /* azul más oscuro para diferenciar */
+    font-weight: bold;
+}
 
 /* Contenido principal */
 main { 
