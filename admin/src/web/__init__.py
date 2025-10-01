@@ -1,9 +1,10 @@
 # src/web/__init__.py
-from flask import Flask, render_template, Blueprint
+from flask import Flask, render_template, Blueprint 
 import os
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
 from src.web.config import config
+from src.core.database import database
 
 # Creamos el blueprint principal
 web = Blueprint('web', __name__, template_folder='templates', static_folder='static')
@@ -43,6 +44,9 @@ def create_app(env="development"):
     # Configuración
     app.config.from_object(config[env])
     print(app.config)
+
+    # Inicialización de la base de datos
+    database.init_db(app)
 
     # Registrar blueprints
     app.register_blueprint(web)
