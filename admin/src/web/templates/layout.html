@@ -8,42 +8,52 @@
 </head>
 <body>
     <div class="wrapper">
-    <!-- Topbar -->
-    <header> 
-        <div class="topbar">
-        <div class="logo-container">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
-            <span class="logo-text">Administración de Sitios Históricos</span>
-        </div>
-        <div class="user-dropdown">
-            <span>Usuario &#x25BC;</span>
-            <div class="user-dropdown-content">
-                <a href="{{ url_for('home') }}">Ver perfil</a>
-                <a href="{{ url_for('home') }}">Cerrar sesión</a>
-            </div>
-        </div>
-    </div>       
+        <!-- Topbar -->
+        <header> 
+            <div class="topbar">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
+                    <span class="logo-text">Administración de Sitios Históricos</span>
+                </div>
+                <div class="user-dropdown">
+                    <span>Usuario &#x25BC;</span>
+                    <div class="user-dropdown-content">
+                        <a href="javascript:void(0)">Ver perfil</a>
+                        <a href="javascript:void(0)">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>       
+        </header>
 
-    </header>
-    <!-- Contenedor principal -->
-    <div class="container">
-        <!-- Menú lateral -->
-        <nav class="sidenav">
-            <a href="{{ url_for('home') }}">Gestión de sitios históricos</a>
-            <a href="{{ url_for('home') }}">Validación de propuestas</a>
-            <a href="{{ url_for('home') }}">Moderación de reseñas</a>
-            <a href="{{ url_for('home') }}">Gestión de usuarios</a>
-        </nav>
-    <!-- Contenido dinámico -->    
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    </div>
-    <!-- Footer -->
-    <footer>
-        <hr>
-        <p>Proyecto de software</p>
-    </footer>
+        <!-- Contenedor principal -->
+        <div class="container">
+            <!-- Menú lateral -->
+            <nav class="sidenav">
+                <a href="{{ url_for('web.gestionsitioshistoricos') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
+                    Gestión de sitios históricos
+                </a>
+                <a href="{{ url_for('web.validacion_propuesta') }}" class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
+                    Validación de propuestas
+                </a>
+                <a href="{{ url_for('web.moderacion_resenias') }}" class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
+                    Moderación de reseñas
+                </a>
+                <a href="{{ url_for('web.gestion_usuarios') }}" class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
+                    Gestión de usuarios
+                </a>
+            </nav>
+
+            <!-- Contenido dinámico -->    
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <hr>
+            <p>Proyecto de software</p>
+        </footer>
     </div>
 </body>
 </html>
