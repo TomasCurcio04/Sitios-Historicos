@@ -34,6 +34,13 @@ header, .topbar {
     box-shadow: none;
     flex-wrap: wrap; /* permite que los elementos se muevan a otra línea si hace falta */
 }
+
+/* Logo + título */
+.topbar-left {
+    display: flex;
+    align-items: center;       /* Centrado vertical */
+    gap: 12px;
+}
  
 /* Header y menú */
 header {
@@ -309,7 +316,12 @@ hr {
 /* Media query: responsivo */
 @media (max-width: 768px) {
     .topbar {
-        padding: 0.5rem 1rem; /* ajusta para móviles */
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.5rem 1rem;
+    }
+    .topbar-left {
+        gap: 8px;
     }
     .logo-container {
         gap: 8px;
@@ -326,8 +338,7 @@ hr {
         flex-direction: column; 
     } 
     #menu-toggle {
-        display: block;
-        color: #fff;
+        display: inline-block;
     }
     nav.sidenav { 
         position: fixed;
@@ -351,4 +362,11 @@ hr {
         padding: 1rem; 
         margin-top: 50px; 
     } 
+    /* Dropdown usuario con click */
+    .user-dropdown-content {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        display: none; /* se mostrará con JS */
+    }
 }
