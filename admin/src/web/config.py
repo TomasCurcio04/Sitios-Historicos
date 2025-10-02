@@ -23,6 +23,12 @@ class DevelopmentConfig(Config):
     DB_HOST = "nozomi.proxy.rlwy.net"
     DB_PORT = "55215"
     DB_SCHEME = "postgresql+psycopg2"
+    DEBUG = True
     SQLALCHEMY_ENGINES = {
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     }
+config = {
+    "development": DevelopmentConfig,           
+    "production": ProductionConfig,
+    "default": DevelopmentConfig    
+}
