@@ -4,7 +4,7 @@ from os import environ
 class Config:
     """Base configuration class."""
     TESTING = False
-    DEBUG = False
+    DEBUG = True
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "filesystem"
 
@@ -26,3 +26,8 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_ENGINES = {
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     }
+Config = {
+    "development": DevelopmentConfig,           
+    "production": ProductionConfig,
+    "default": DevelopmentConfig    
+}
