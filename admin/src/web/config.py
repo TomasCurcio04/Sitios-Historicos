@@ -1,20 +1,21 @@
 """Configuration classes for different environments."""
 from os import environ
 
-class Config:
+class BaseConfig:
     """Base configuration class."""
     TESTING = False
     DEBUG = False
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "filesystem"
 
-class ProductionConfig(Config):
+
+class ProductionConfig(BaseConfig):
     """Production configuration class."""
     SQLALCHEMY_ENGINES = {
         "default": environ.get("DATABASE_URL") 
     }
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig(BaseConfig):
     """Development configuration class."""
     SECRET_KEY = "your_dev_secret_key"
     DB_USER = "postgres"
@@ -27,8 +28,16 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_ENGINES = {
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     }
+<<<<<<< HEAD
 config = {
     "development": DevelopmentConfig,           
     "production": ProductionConfig,
     "default": DevelopmentConfig    
 }
+=======
+    
+config = {
+    "development": DevelopmentConfig,
+    "production": ProductionConfig
+}    
+>>>>>>> feature/top_bar
