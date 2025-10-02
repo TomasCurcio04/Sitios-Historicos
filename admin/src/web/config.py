@@ -4,7 +4,7 @@ from os import environ
 class Config:
     """Base configuration class."""
     TESTING = False
-    DEBUG = True
+    DEBUG = False
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "filesystem"
 
@@ -23,10 +23,11 @@ class DevelopmentConfig(Config):
     DB_HOST = "nozomi.proxy.rlwy.net"
     DB_PORT = "55215"
     DB_SCHEME = "postgresql+psycopg2"
+    DEBUG = True
     SQLALCHEMY_ENGINES = {
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     }
-Config = {
+config = {
     "development": DevelopmentConfig,           
     "production": ProductionConfig,
     "default": DevelopmentConfig    
