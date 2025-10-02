@@ -28,16 +28,8 @@ class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_ENGINES = {
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     }
-<<<<<<< HEAD
-config = {
-    "development": DevelopmentConfig,           
-    "production": ProductionConfig,
-    "default": DevelopmentConfig    
-}
-=======
     
 config = {
     "development": DevelopmentConfig,
     "production": ProductionConfig
 }    
->>>>>>> feature/top_bar
