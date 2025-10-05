@@ -3,7 +3,7 @@
 
 from src.core.database import db
 from src.core.board.site import Site
-from src.core.auth.category import Category
+from src.core.board.category import Category
 from src.core.board.state import State
 
 
@@ -49,6 +49,14 @@ def list_states():
     """Función para listar todas las provincias."""
     states = db.session.query(State).all()
     return states
+
+
+def create_state(**kwargs):
+    """Función para crear una nueva provincia."""
+    new_state = State(**kwargs)
+    db.session.add(new_state)
+    db.session.commit()
+    return new_state
 
 
 ###Fin de funciones de provincias###
