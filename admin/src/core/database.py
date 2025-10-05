@@ -1,3 +1,6 @@
+# pylint: disable=import-error
+from sqlalchemy import text
+
 """Módulo para la configuración y manejo de la base de datos SQLAlchemy en una aplicación Flask."""
 
 from flask_sqlalchemy_lite import SQLAlchemy
@@ -16,9 +19,16 @@ def init_db(app):
 def reset_db():
     """Reinicia la base de datos eliminando todas las tablas y volviéndolas a crear."""
     from src.core.auth.users import Users  # noqa: F401
+    from src.core.board.site import Site  # noqa: F401
+    from src.core.board.category import Category  # noqa: F401
+    from src.core.board.state import State  # noqa: F401
 
     print("Reiniciando la base de datos...")
     Base.metadata.drop_all(bind=db.engine)
+    # with db.engine.begin() as conn:
+    #   conn.execute(text("DROP SCHEMA public CASCADE"))
+    #    conn.execute(text("CREATE SCHEMA public"))
+
     Base.metadata.create_all(bind=db.engine)
     print("✔️Base de datos reiniciada.")
 

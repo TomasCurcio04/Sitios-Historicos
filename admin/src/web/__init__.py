@@ -1,4 +1,4 @@
-# src/web/__init__.py
+# pylint: disable=import-error
 from flask import Flask, render_template, Blueprint
 import os
 from src.web.handlers import error
