@@ -4,7 +4,7 @@
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, DateTime
+from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from src.core.database import Base
 
 if TYPE_CHECKING:
@@ -18,12 +18,11 @@ class Users(Base):
     id_user: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_name: Mapped[str] = mapped_column(String(50), nullable=False)
     email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-    pass_: Mapped[str] = mapped_column(String(100), nullable=False)
-    # role: Mapped[int] = mapped_column(
-    #     Integer, ForeignKey("role.id_role"), nullable=False
-    # )
+    password: Mapped[str] = mapped_column(String(100), nullable=False)
+    role: Mapped[int] = mapped_column(ForeignKey("role.id_role"), nullable=False)
+    rol_rel: Mapped["Role"] = relationship(back_populates="role")
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    super: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    s_user: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     site: Mapped[list["Site"]] = relationship(back_populates="users")
     date_create: Mapped[datetime] = mapped_column(
         DateTime,

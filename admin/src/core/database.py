@@ -1,10 +1,12 @@
-# pylint: disable=import-error
-from sqlalchemy import text
-
 """Módulo para la configuración y manejo de la base de datos SQLAlchemy en una aplicación Flask."""
 
-from flask_sqlalchemy_lite import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
+# pylint: disable=import-error
+# pylint: disable=import-outside-toplevel
+# pylint: disable=unused-import
+
+from flask_sqlalchemy_lite import SQLAlchemy  # pyright: ignore[reportMissingImports]
+from sqlalchemy.orm import DeclarativeBase  # pyright: ignore[reportMissingImports]
+
 
 db = SQLAlchemy()
 """Inicializa la base de datos SQLAlchemy."""
@@ -18,6 +20,7 @@ def init_db(app):
 
 def reset_db():
     """Reinicia la base de datos eliminando todas las tablas y volviéndolas a crear."""
+
     from src.core.auth.users import Users  # noqa: F401
     from src.core.board.site import Site  # noqa: F401
     from src.core.board.category import Category  # noqa: F401
