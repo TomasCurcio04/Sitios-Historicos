@@ -1,18 +1,18 @@
 """Modulo para gestionar usuarios"""
 
 from src.core.database import db
-from src.core.auth.users import Users
+from src.core.board import Site
 
 
-def list_users():
+def list_sites():
     """Función para listar todos los usuarios."""
-    users = db.session.query(Users).all()
-    return users
+    sites = db.session.query(Site).all()
+    return sites
 
 
-def create_user(**kwargs):
+def create_site(**kwargs):
     """Función para crear un nuevo usuario."""
-    new_user = Users(**kwargs)
-    db.session.add(new_user)
+    new_site = Site(**kwargs)
+    db.session.add(new_site)
     db.session.commit()
-    return new_user
+    return new_site
