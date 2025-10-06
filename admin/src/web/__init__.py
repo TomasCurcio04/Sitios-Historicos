@@ -1,4 +1,4 @@
-# src/web/__init__.py
+# pylint: disable=import-error
 from flask import Flask, render_template, Blueprint
 import os
 from src.web.handlers import error
@@ -37,6 +37,11 @@ def gestion_usuarios():
 
 
 def create_app(env="development"):
+    """Crea y devuelve la aplicación Flask según el entorno."""
+
+    # Determinar entorno por variable de entorno FLASK_ENV (por defecto 'development')
+    env = os.environ.get("FLASK_ENV", "development")
+
     base_dir = os.path.dirname(os.path.abspath(__file__))
     static_folder = os.path.abspath(os.path.join(base_dir, "..", "..", "static"))
 
