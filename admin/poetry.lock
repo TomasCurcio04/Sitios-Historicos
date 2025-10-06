@@ -650,6 +650,6 @@ MarkupSafe = ">=2.1.1"
 watchdog = ["watchdog (>=2.3)"]
 
 [metadata]
-lock-version = "2.0"
-python-versions = "^3.13"
-content-hash = "e0874f642aec8b26fba2c4787d391bbd6521eea3984157c8c8acdd792534ea56"
+lock-version = "2.1"
+python-versions = ">=3.12"
+content-hash = "db192847e60bc09585ff7bf45643e27fe98fd73724481ef6019c936f0adfccf9"
