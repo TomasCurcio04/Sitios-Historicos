@@ -7,7 +7,6 @@
 from flask_sqlalchemy_lite import SQLAlchemy  # pyright: ignore[reportMissingImports]
 from sqlalchemy.orm import DeclarativeBase  # pyright: ignore[reportMissingImports]
 
-
 db = SQLAlchemy()
 """Inicializa la base de datos SQLAlchemy."""
 
