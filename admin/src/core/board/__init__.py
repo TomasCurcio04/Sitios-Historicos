@@ -5,6 +5,7 @@ from src.core.database import db
 from src.core.board.site import Site
 from src.core.board.category import Category
 from src.core.board.state import State
+from src.core.board.site_history import SiteHistory
 
 
 ###Funciones de sitios###
@@ -60,3 +61,37 @@ def create_state(**kwargs):
 
 
 ###Fin de funciones de provincias###
+
+
+###Funciones de sitios históricos###
+def list_site_history():
+    """Función para listar todo el historial de sitios."""
+
+    site_history = db.session.query(SiteHistory).all()
+    return site_history
+
+
+def create_site_history(**kwargs):
+    """Función para crear un nuevo registro en el historial de sitios."""
+
+    new_site_history = SiteHistory(**kwargs)
+    db.session.add(new_site_history)
+    db.session.commit()
+    return new_site_history
+
+
+def assign_site_to_history(site_history, site):
+    """Función para asignar un sitio a un registro del historial de sitios."""
+    site_history.site = site
+    db.session.commit()
+    return site_history
+
+
+def assign_user_to_hisotry(site_history, user):
+    """Función para asignar un usuario a un registro del historial de sitios."""
+    site_history.user = user
+    db.session.commit()
+    return site_history
+
+
+###Fin de funciones de sitios históricos###
