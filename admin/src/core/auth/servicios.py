@@ -1,6 +1,6 @@
 from sqlalchemy import desc
 from src.core.database import db
-from src.core.auth.user import User
+from src.core.auth.users import User
 
 def create_user(**kwargs):
     try:

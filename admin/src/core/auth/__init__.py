@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-from .user import User 
+from .users import User 
 
 from .servicios import (
     create_user,
@@ -7,7 +6,6 @@ from .servicios import (
     get_user_by_email,
     # etc...
 )
-=======
 """Modulo para gestionar usuarios"""
 
 # pylint: disable=import-error
@@ -76,4 +74,3 @@ def create_permission(**kwargs):
 
 
 ####Fin de funciones de permisos###
->>>>>>> d21b7b8ea841935959a666799ac421390864b820
