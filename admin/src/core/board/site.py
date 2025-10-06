@@ -3,8 +3,18 @@
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, Boolean, ForeignKey, DateTime, Text, DECIMAL
-from src.core.database import Base, Table, Column
+from sqlalchemy import (
+    String,
+    Integer,
+    Boolean,
+    ForeignKey,
+    DateTime,
+    Text,
+    DECIMAL,
+    Table,
+    Column,
+)
+from src.core.database import Base
 
 if TYPE_CHECKING:
     from src.core.auth.users import Users
