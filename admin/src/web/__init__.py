@@ -3,6 +3,7 @@ from flask import Flask, render_template, Blueprint
 import os
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.auth import bp as auth_bp
 from src.web.config import config
 from src.core import database
 
@@ -34,6 +35,7 @@ def moderacion_resenias():
 @web.route("/gestion_usuarios")
 def gestion_usuarios():
     return render_template("gestion_usuarios.html")
+
 
 
 def create_app(env="development"):
@@ -68,6 +70,7 @@ def create_app(env="development"):
     # Registrar blueprints
     app.register_blueprint(web)
     app.register_blueprint(issues_bp)
+    app.register_blueprint(auth_bp)
 
     # Manejo de errores
     app.register_error_handler(404, error.not_found)
