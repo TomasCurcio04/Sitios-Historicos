@@ -4,12 +4,21 @@ from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, Boolean, ForeignKey, DateTime, Text, DECIMAL
-from src.core.database import Base
+from src.core.database import Base, Table, Column
 
 if TYPE_CHECKING:
     from src.core.auth.users import Users
     from src.core.board.category import Category
     from src.core.board.state import State
+    from src.core.board.tag import Tag
+
+
+site_tag = Table(
+    "site_tag",
+    Base.metadata,
+    Column("id_site", ForeignKey("site.id_site"), nullable=False),
+    Column("id_tag", ForeignKey("tag.id_tag"), nullable=False),
+)
 
 
 class Site(Base):
@@ -39,6 +48,7 @@ class Site(Base):
         nullable=False,
         default=False,
     )
+    tag: Mapped[list["Tag"]] = relationship(secondary=site_tag)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
     user: Mapped["Users"] = relationship(back_populates="site")
 

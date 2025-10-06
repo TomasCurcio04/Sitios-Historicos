@@ -6,6 +6,7 @@ from src.core.board.site import Site
 from src.core.board.category import Category
 from src.core.board.state import State
 from src.core.board.site_history import SiteHistory
+from src.core.board.tag import Tag
 
 
 ###Funciones de sitios###
@@ -95,3 +96,28 @@ def assign_user_to_hisotry(site_history, user):
 
 
 ###Fin de funciones de sitios históricos###
+
+
+###Funciones de etiquetas###
+def list_tags():
+    """Función para listar todas las etiquetas."""
+    tags = db.session.query(Tag).all()
+    return tags
+
+
+def create_tag(**kwargs):
+    """Función para crear una nueva etiqueta."""
+    new_tag = Tag(**kwargs)
+    db.session.add(new_tag)
+    db.session.commit()
+    return new_tag
+
+
+def assign_tag_to_site(tag, site):
+    """Función para asignar una etiqueta a un sitio."""
+    site.tag.append(tag)
+    db.session.commit()
+    return site
+
+
+###Fin de funciones de etiquetas###
