@@ -26,7 +26,7 @@ class Role(Base):
     id_role: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[str] = mapped_column(String(255))
-    users: Mapped[list["Users"]] = relationship(back_populates="categroy")
+    users: Mapped[list["Users"]] = relationship(back_populates="rol_rel")
     permission: Mapped[list["Permission"]] = relationship(secondary=permission_list)
 
     def __repr__(self):

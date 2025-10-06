@@ -20,10 +20,10 @@ class Users(Base):
     email: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(100), nullable=False)
     role: Mapped[int] = mapped_column(ForeignKey("role.id_role"), nullable=False)
-    rol_rel: Mapped["Role"] = relationship(back_populates="role")
+    rol_rel: Mapped["Role"] = relationship(back_populates="users")
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     s_user: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    site: Mapped[list["Site"]] = relationship(back_populates="users")
+    sites: Mapped[list["Site"]] = relationship(back_populates="user")
     date_create: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
