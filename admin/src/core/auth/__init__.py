@@ -48,7 +48,7 @@ def assign_role(user, role):
     return user
 
 
-####Fin de funciones de roles###
+# ####Fin de funciones de roles###
 
 
 ####Funciones de permisos###

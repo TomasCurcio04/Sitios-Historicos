@@ -24,6 +24,7 @@ class Users(Base):
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     s_user: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     sites: Mapped[list["Site"]] = relationship(back_populates="user")
+    user_history: Mapped[list["SiteHistory"]] = relationship(back_populates="user_rel")
     date_create: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),

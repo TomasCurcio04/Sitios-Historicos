@@ -61,9 +61,7 @@ class Site(Base):
     tag: Mapped[list["Tag"]] = relationship(secondary=site_tag)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
     user: Mapped["Users"] = relationship(back_populates="sites")
-    history: Mapped[list["SiteHistory"]] = relationship(
-        "SiteHistory", back_populates="site_rel"
-    )
+    history: Mapped[list["SiteHistory"]] = relationship(back_populates="site_rel")
 
     def __repr__(self):
         return f"<Site(name='{self.name}', state='{self.state}', is_visible={self.is_visible})>"
