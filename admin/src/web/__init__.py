@@ -6,6 +6,7 @@ from src.web.controllers.issues import bp as issues_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.config import config
 from src.core import database
+from src.core import seeds
 
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
@@ -65,7 +66,11 @@ def create_app(env="development"):
     def reset_db_command():
         """Reinicia la base de datos."""
         database.reset_db()
-        print("✔️Base de datos reiniciada.")
+
+    @app.cli.command("seed-db")
+    def seed_db_command():
+        """Llena la base de datos con datos iniciales."""
+        seeds.run()
 
     # Registrar blueprints
     app.register_blueprint(web)

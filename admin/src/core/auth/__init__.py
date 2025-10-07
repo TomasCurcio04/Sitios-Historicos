@@ -35,6 +35,14 @@ def list_roles():
     return roles
 
 
+def create_role(**kwargs):
+    """Función para crear un nuevo rol."""
+    new_role = Role(**kwargs)
+    db.session.add(new_role)
+    db.session.commit()
+    return new_role
+
+
 def assign_role(user, role):
     """Función para asignar un rol a un usuario."""
     user.role = role
@@ -42,7 +50,7 @@ def assign_role(user, role):
     return user
 
 
-####Fin de funciones de roles###
+# ####Fin de funciones de roles###
 
 
 ####Funciones de permisos###
@@ -67,4 +75,4 @@ def create_permission(**kwargs):
     return new_permission
 
 
-####Fin de funciones de permisos###
+# ####Fin de funciones de permisos###

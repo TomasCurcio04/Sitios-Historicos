@@ -17,9 +17,9 @@ class SiteHistory(Base):
     __tablename__ = "site_history"
     id_site_history: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     id_site: Mapped[int] = mapped_column(ForeignKey("site.id_site"), nullable=False)
-    site_rel: Mapped["Site"] = relationship(back_populates="site")
+    site_rel: Mapped["Site"] = relationship(back_populates="history")
     id_user: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
-    user_rel: Mapped["Users"] = relationship(back_populates="users")
+    user_rel: Mapped["Users"] = relationship(back_populates="user_history")
     action_type: Mapped[str] = mapped_column(String(50), nullable=False)
     action_detail: Mapped[str] = mapped_column(Text)
     date_action: Mapped[datetime] = mapped_column(
