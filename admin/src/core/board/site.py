@@ -44,8 +44,8 @@ class Site(Base):
     state_rel: Mapped["State"] = relationship(back_populates="sites")
     latitude: Mapped[float] = mapped_column(DECIMAL(9, 6))
     longitude: Mapped[float] = mapped_column(DECIMAL(9, 6))
-    conservation_state: Mapped[str] = mapped_column(String(20), nullable=False)
-    inauguration_year: Mapped[int] = mapped_column(Integer)
+    conservation_state: Mapped[str] = mapped_column(String(20), nullable=True)
+    inauguration_year: Mapped[int] = mapped_column(Integer, nullable=True)
     category: Mapped[int] = mapped_column(
         ForeignKey("category.id_category"), nullable=False
     )

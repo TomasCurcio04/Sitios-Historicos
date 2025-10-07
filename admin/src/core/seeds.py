@@ -9,29 +9,26 @@ from src.core import auth
 def run():
     """Función para ejecutar el script de semillas."""
 
-    permissions1 = auth.create_permission(name="view_site", description="Ver el Sitio")
+    permissions1 = auth.create_permission(
+        permission_name="view_site", permission_description="Ver el Sitio"
+    )
     permissions2 = auth.create_permission(
-        name="edit_site", description="Editar el Sitio"
+        permission_name="edit_site", permission_description="Editar el Sitio"
     )
     permissions3 = auth.create_permission(
-        name="delete_site", description="Eliminar el Sitio"
+        permission_name="delete_site", permission_description="Eliminar el Sitio"
     )
     permissions4 = auth.create_permission(
-        name="create_site", description="Crear el Sitio"
+        permission_name="create_site", permission_description="Crear el Sitio"
     )
 
     role1 = auth.create_role(name="admin", description="Administrador")
     role2 = auth.create_role(name="editor", description="Editor")
     role3 = auth.create_role(name="viewer", description="Visualizador")
 
-    role1.permissions = auth.assign_permissions(
-        role1, [permissions1, permissions2, permissions3, permissions4]
-    )
-
-    role2.permissions = auth.assign_permissions(
-        role2, [permissions1, permissions2, permissions4]
-    )
-    role3.permissions = auth.assign_permissions(role3, [permissions1])
+    role1.permission = [permissions1, permissions2, permissions3, permissions4]
+    role2.permission = [permissions1, permissions2, permissions4]
+    role3.permission = [permissions1]
 
     user1 = auth.create_user(
         user_name="admin",
@@ -44,13 +41,12 @@ def run():
         user_name="editor", email="editor@mysite.com", password="editorpass", role=2
     )
     user3 = auth.create_user(
-        user_name="viewer", email="viewer@mysite.com ", password="viewerpass", role=3
+        user_name="viewer", email="viewer@mysite.com", password="viewerpass", role=3
     )
 
     board_category1 = board.create_category(
         name="Monumento", description="Monumento histórico"
     )
-
     board_category2 = board.create_category(
         name="Edificio Histórico", description="Edificio histórico"
     )
@@ -63,12 +59,14 @@ def run():
     board_state3 = board.create_state(name="Buenos Aires")
     board_state4 = board.create_state(name="Jujuy")
 
-    board_tag1 = board.create_tag(name="Arqueológico")
-    board_tag2 = board.create_tag(name="Natural")
-    board_tag3 = board.create_tag(name="Cultural")
-    board_tag4 = board.create_tag(name="Histórico")
-    board_tag5 = board.create_tag(name="Turístico")
-    board_tag6 = board.create_tag(name="Patrimonio de la Humanidad")
+    board_tag1 = board.create_tag(name="Arqueológico", slug="arqueologico")
+    board_tag2 = board.create_tag(name="Natural", slug="natural")
+    board_tag3 = board.create_tag(name="Cultural", slug="cultural")
+    board_tag4 = board.create_tag(name="Histórico", slug="historico")
+    board_tag5 = board.create_tag(name="Turístico", slug="turistico")
+    board_tag6 = board.create_tag(
+        name="Patrimonio de la Humanidad", slug="patrimonio-humanidad"
+    )
 
     site1 = board.create_site(
         name="Cerro de los 7 colores",
@@ -81,7 +79,7 @@ def run():
         conservation_state="Bueno",
         category=3,
         is_visible=True,
-        created_by=user1,
+        created_by=user1.id_user,
         tag=[board_tag2, board_tag5, board_tag6],
     )
     site2 = board.create_site(
@@ -95,7 +93,7 @@ def run():
         conservation_state="Excelente",
         category=3,
         is_visible=True,
-        created_by=user1,
+        created_by=user1.id_user,
         tag=[board_tag1, board_tag3, board_tag6],
     )
     site3 = board.create_site(
@@ -109,7 +107,7 @@ def run():
         conservation_state="Muy Bueno",
         category=2,
         is_visible=True,
-        created_by=user1,
+        created_by=user1.id_user,
         tag=[board_tag1, board_tag3, board_tag4, board_tag6],
     )
     site4 = board.create_site(
@@ -123,11 +121,11 @@ def run():
         conservation_state="Bueno",
         category=2,
         is_visible=True,
-        created_by=user1,
+        created_by=user1.id_user,
         tag=[board_tag1, board_tag3, board_tag4, board_tag6],
         inauguration_year=1610,
     )
 
-    board.session.commit()
-    board.session.close()
-    print("Datos de semillas insertados correctamente.")
+    board.db.session.commit()
+    board.db.session.close()
+    print("✔️   DB rellenada con datos de prueba.")
