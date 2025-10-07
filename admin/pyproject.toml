@@ -10,6 +10,8 @@ python = ">=3.12"
 flask = "^3.1.2"
 psycopg2-binary = "^2.9.10"
 flask-sqlalchemy-lite = "^0.1.0"
+flask-session = "^0.8.0"
+flask-bcrypt = "^1.0.1"
 
 
 [tool.poetry.group.test.dependencies]

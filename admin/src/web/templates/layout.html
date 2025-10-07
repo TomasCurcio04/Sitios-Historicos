@@ -44,7 +44,7 @@
                 <a href="{{ url_for('web.moderacion_resenias') }}" class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
                     Moderación de reseñas
                 </a>
-                <a href="{{ url_for('web.gestion_usuarios') }}" class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
+                <a href="{{ url_for('users.user_index') }}" class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
                     Gestión de usuarios
                 </a>
             </nav>

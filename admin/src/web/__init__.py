@@ -1,9 +1,12 @@
 # pylint: disable=import-error
 from flask import Flask, render_template, Blueprint
+from flask_session import Session
 import os
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
 from src.web.controllers.auth import bp as auth_bp
+from src.web.controllers.users import user_bp
+from src.core.auth.bcrypt import bcrypt
 from src.web.config import config
 from src.core import database
 from src.core import seeds
@@ -11,10 +14,11 @@ from src.core import seeds
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
 
+session = Session()
 
 # Rutas del blueprint
 @web.route("/")
-def home():
+def home(): 
     return render_template("home.html")
 
 
@@ -31,11 +35,6 @@ def validacion_propuesta():
 @web.route("/moderacion_resenias")
 def moderacion_resenias():
     return render_template("moderacion_resenias.html")
-
-
-@web.route("/gestion_usuarios")
-def gestion_usuarios():
-    return render_template("gestion_usuarios.html")
 
 
 
@@ -60,6 +59,10 @@ def create_app(env="development"):
 
     # Inicialización de la base de datos
     database.init_db(app)
+    # Inicializando Session
+    session.init_app(app)
+    # Inicializando Bcrypt
+    bcrypt.init_app(app)
 
     # Register commands
     @app.cli.command("reset-db")
@@ -76,6 +79,7 @@ def create_app(env="development"):
     app.register_blueprint(web)
     app.register_blueprint(issues_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
 
     # Manejo de errores
     app.register_error_handler(404, error.not_found)

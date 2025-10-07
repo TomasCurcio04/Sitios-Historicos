@@ -1,5 +1,6 @@
-from flask import Blueprint, flash, redirect, render_template, request, session
-from src.core.auth import servicios
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from src.core.auth.__init__ import verificar_usuario
+
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @bp.get("/")
@@ -14,11 +15,11 @@ def logout():
 def authenticate():
     params = request.form
 
-    user = servicios.buscar_usuario(params.get("email"), params.get("password"))
+    user = verificar_usuario(params["email"], params["password"])
     if not user:
-        flash("Email o contraseñas incorrecto", "error")
-        return redirect("login.html", error="Credenciales inválidas")
+        flash("Email o contraseñas incorrecto", "error")    
+        return redirect(url_for('auth.login'))
     
     session["user"] = user.email
     flash("Inicio de sesión exitoso", "success")
-    return redirect("home.html")
+    return redirect(url_for('users.user_index'))

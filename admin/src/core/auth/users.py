@@ -45,22 +45,9 @@ class Users(Base):
         email = email.strip()
         
         if not re.match(EMAIL_REGEX, email):
-            # Si el formato NO COINCIDE, lanza un error
-            raise ValueError("El email ingresado no tiene un formato válido (ej. usuario@dominio.com).")
+            raise ValueError("Formato de email inválido")
         
         return email
-    
-    @validates("pass_")
-    def validador_password(self, key, password):        
-        """Hashea la contraseña antes de guardarla en el atributo 'pass_'."""
-        # Convierte la contraseña a bytes si es una cadena
-        password_bytes = password.encode('utf-8')
-
-        # Se genera un hash aleatorio para cada una de las contraseñas ingresadas
-        hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
-        
-        # Guardamos el hash (que es bytes) como una cadena de texto (str)
-        return hashed_password.decode('utf-8')
 
     def verificar_password(self, password: str) -> bool:        
         """Verifica una contraseña de texto plano contra el hash almacenado."""

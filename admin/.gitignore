@@ -44,3 +44,4 @@ build/
 # Otros
 .DS_Store
 Thumbs.db
+flask-session/
