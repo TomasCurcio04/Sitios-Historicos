@@ -38,26 +38,6 @@ class Users(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    @validates("email")
-    def validate_email(self, key, email):
-        """Asegura que el email tiene un formato válido."""
-        
-        email = email.strip()
-        
-        if not re.match(EMAIL_REGEX, email):
-            raise ValueError("Formato de email inválido")
-        
-        return email
-
-    def verificar_password(self, password: str) -> bool:        
-        """Verifica una contraseña de texto plano contra el hash almacenado."""
-        # Codificar la contraseña ingresada y el hash almacenado a bytes
-        stored_hash = self.pass_.encode('utf-8')
-        input_password = password.encode('utf-8')
-        
-        # Usar checkpw para una verificación segura contra ataques de tiempo
-        return bcrypt.checkpw(input_password, stored_hash)
-
     
     def __repr__(self):
         return f"<Users(user_name='{self.user_name}', email='{self.email}', role={self.role})>"

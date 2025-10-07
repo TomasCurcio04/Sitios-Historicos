@@ -9,7 +9,13 @@ def login():
 
 @bp.get("/logout") 
 def logout():
-    pass
+    if session.get("user"):
+        session.pop("user")
+        session.clear()
+        flash("Cierre de sesión exitoso", "success")
+    else:
+        flash("No hay una sesión activa", "error")
+    return redirect(url_for('auth.login'))        
 
 @bp.post("/authenticate")
 def authenticate():
