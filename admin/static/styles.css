@@ -369,4 +369,43 @@ hr {
         top: 100%;
         display: none; /* se mostrará con JS */
     }
+
+    .login-button {
+        /* Mismos estilos de margen que el .user-dropdown */
+        margin-right: 40px; 
+    }
+
+    .login-button .btn-login {
+        /* Copia los estilos de .user-dropdown */
+        background: rgba(255, 255, 255, 0.15); /* Fondo semitransparente */
+        border-radius: 6px; 
+        padding: 6px 10px; 
+        transition: background 0.3s ease; 
+        
+        /* Estilos del texto */
+        color: #fff; 
+        text-decoration: none; /* Quita el subrayado */
+        font-size: 1em; /* Asegura el tamaño de fuente */
+        cursor: pointer;
+        
+        /* Hace que el enlace se comporte como un bloque para que el padding funcione */
+        display: inline-block; 
+    }
+
+    .login-button .btn-login:hover {
+        /* Copia el estilo de hover de .user-dropdown:hover */
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* --- Ajuste para el botón de usuario actual --- */
+
+    /* Es importante ajustar el estilo del botón original para que el texto sea blanco */
+    .user-dropdown button {
+        color: #fff; 
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1em;
+    }
 }
