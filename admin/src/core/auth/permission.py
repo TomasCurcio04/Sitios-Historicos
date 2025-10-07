@@ -18,6 +18,7 @@ class Permission(Base):
 
     id_permission: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     permission_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    permission_description: Mapped[str] = mapped_column(String(255))
 
     def __repr__(self):
         return f"<Permission(id_permission={self.id_permission}, permission_name='{self.permission_name}')>"
