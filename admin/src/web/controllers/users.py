@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
-from src.core.auth.__init__ import listar_usuarios, eliminar_usuario
-from src.core.auth.users import Users  
+from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user
+from src.core.auth.users import Users, EMAIL_REGEX
+import re
+
 
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
@@ -33,11 +35,13 @@ def user_index():
         elif is_active_param_lower in ('false', '0'):
             is_active_filter = False
     
+    search_email_param = request.args.get('email', type=str)
 
     users = listar_usuarios(
         is_active=is_active_filter, 
         rol=rol_param, 
-        order_by_creation_date=order_param
+        order_by_creation_date=order_param,
+        search_email=search_email_param
     )
     
     
@@ -54,6 +58,33 @@ def user_new():
     """Muestra el formulario para crear un nuevo usuario. Endpoint: users.user_new"""
     # Aquí irá el formulario real de creación
     return render_template("user_new.html") # Necesitas crear user_new.html
+
+@user_bp.route("/create", methods=["POST"])
+def user_create():
+    email = request.form.get("email")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    confirm_password = request.form.get("confirm_password")
+    rol = request.form.get("rol")
+
+    if not re.match(EMAIL_REGEX, email):
+        flash("Email inválido", "error")
+        return redirect(url_for("users.user_new"))
+
+
+    if password != confirm_password:
+        flash("Las contraseñas no coinciden", "error")
+        return redirect(url_for("users.user_new"))
+    
+    rol = int(rol)
+
+    error = create_user(email=email, user_name=username, password=password, role=rol)
+    if error:
+        flash("El email ya esta registrado", "error")
+        return redirect(url_for("users.user_new"))
+    
+    flash("Usuario creado exitosamente", "success")
+    return redirect(url_for("users.user_index"))
 
 
 # Ruta para PROCESAR la eliminación de un usuario

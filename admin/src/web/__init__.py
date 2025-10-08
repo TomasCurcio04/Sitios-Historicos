@@ -7,6 +7,7 @@ from src.web.controllers.issues import bp as issues_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.core.auth.bcrypt import bcrypt
+from src.web.handlers.auth import is_authenticated
 from src.web.config import config
 from src.core import database
 from src.core import seeds
@@ -85,5 +86,7 @@ def create_app(env="development"):
     app.register_error_handler(404, error.not_found)
     app.register_error_handler(401, error.not_authorized)
     app.register_error_handler(500, error.internal_server_error)
+
+    app.jinja_env.globals['is_authenticated'] = is_authenticated
 
     return app

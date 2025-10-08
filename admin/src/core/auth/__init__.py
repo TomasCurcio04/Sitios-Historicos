@@ -19,7 +19,8 @@ from src.core.auth.role import Role
 
 def listar_usuarios(is_active: bool | None = None, 
  rol: str | None = None, 
- order_by_creation_date: str | None = 'asc'
+ order_by_creation_date: str | None = 'asc',
+ search_email=None
 ):
     """ Lista usuarios aplicando solo un criterio """
     
@@ -41,6 +42,8 @@ def listar_usuarios(is_active: bool | None = None,
     elif order_by_creation_date == 'desc':
         query = query.order_by(Users.date_create.desc())
     
+    if search_email:
+        query = query.filter(Users.email.ilike(f"%{search_email}%"))
     
     return query.all()
 
@@ -53,7 +56,6 @@ def verificar_usuario(email, password):
     if not user:
         return None, "Email o contraseña incorrectos"
     
-
     if not user.password or user.password.strip() == "" or not bcrypt.check_password_hash(user.password, password):
         return None, "Email o contraseña incorrectos"
     
@@ -64,12 +66,19 @@ def verificar_usuario(email, password):
 
 def create_user(**kwargs):
     """Función para crear un nuevo usuario con contraseña hasheada."""
+    if "email" in kwargs and buscar_usuario(kwargs["email"]):
+        return "El email ya está registrado"
     if "password" in kwargs:
         kwargs["password"] = bcrypt.generate_password_hash(kwargs["password"]).decode("utf-8")
     new_user = Users(**kwargs)
     db.session.add(new_user)
-    db.session.commit()
-    return new_user
+    
+    try:
+        db.session.commit()
+        return new_user
+    except:
+        db.session.rollback()
+        return "Error al crear el usuario"
 
 def eliminar_usuario(email):
     """Funcion para recibir un usuario y eliminarlo."""

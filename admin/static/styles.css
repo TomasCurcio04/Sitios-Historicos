@@ -408,4 +408,149 @@ hr {
         padding: 0;
         font-size: 1em;
     }
+
+}
+
+/* --- ESTILOS DE TABLA (MOVIDOS DEL MEDIA QUERY) --- */
+
+.table-responsive {
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    border-radius: 8px; /* Esquinas redondeadas al contenedor */
+    overflow: hidden; /* Importante para que las esquinas redondeadas funcionen */
+}
+
+.table th, .table td {
+    padding: 12px 15px; /* Más padding vertical y horizontal */
+    vertical-align: middle; /* Centra verticalmente el contenido */
+}
+
+/* 3. Resaltar la fila al pasar el mouse (Mejora la interactividad) */
+.table-hover tbody tr:hover {
+    background-color: #f1f8ff; /* Un azul muy suave al hacer hover */
+    transition: background-color 0.3s ease; /* Transición suave */
+}
+
+/* 4. Estilo de los encabezados de columna (Clickeables) */
+.table-dark th a {
+    text-decoration: none; 
+    color: white !important;
+    display: block;
+}
+
+/* --- ESTILOS DE FORMULARIO (MOVIDOS DEL MEDIA QUERY) --- */
+
+.form-container {
+    max-width: 500px;
+    margin: auto;
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.form-container form > div {
+    margin-bottom: 1.2rem;
+}
+
+.form-control, .form-select {
+    width: 100%;
+    min-width: 200px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- ESTILOS FLASH MESSAGES (MOVIDOS DEL MEDIA QUERY) --- */
+
+.flashes {
+    list-style: none; 
+    padding: 10px 20px;
+    margin: 15px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    border: 1px solid transparent;
+}
+
+.flashes li {
+    padding: 0;
+    margin: 5px 0;
+}
+
+.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+}
+
+.badge {
+    font-size: 0.85em; /* Un poco más grandes */
+    padding: 0.4em 0.8em;
+    /* min-width: 70px; <--- RETIRA ESTA LÍNEA */
+    text-align: center;
+    font-weight: 600;
+    border-radius: 4px; /* Esquinas ligeramente redondeadas */
+}
+
+/* Ajuste específico si usas bg-info para el rol */
+.badge.bg-info {
+    background-color: #31d2f2 !important; /* Color de fondo más visible */
+    color: #055160 !important; /* Texto oscuro para contraste */
+}
+
+/* --- ESTILO DE BOTONES UNIFICADO --- */
+
+/* Clase base para botones unificados */
+.btn-unified {
+    /* Colores primarios basados en tu tema */
+    background-color: #1a237e; 
+    border-color: #1a237e;
+    color: #fff;
+    
+    /* Apariencia */
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecto Hover (al pasar el ratón) */
+.btn-unified:hover {
+    background-color: #0d47a1; /* Un azul ligeramente más oscuro */
+    border-color: #0d47a1;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Importante para sobrescribir el estilo de hover de Bootstrap */
+    opacity: 1; 
+}
+
+/* Estado Focus (al hacer clic o navegar con teclado) */
+.btn-unified:focus {
+    background-color: #0d47a1;
+    border-color: #0d47a1;
+    box-shadow: 0 0 0 0.25rem rgba(26, 35, 126, 0.5); /* Sombra de enfoque azul suave */
+}
+
+/* Asegurar que los enlaces también tengan el mismo estilo */
+.btn-unified:not(button) {
+    text-decoration: none; /* Quitar subrayado en enlaces <a> */
+    display: inline-block; /* Asegura el padding correcto */
 }

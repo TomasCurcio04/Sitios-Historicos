@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}Crear Usuario{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="form-container">
+        <h1 class="mb-4 text-center">Crear Usuario</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} mb-3">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('users.user_create') }}">
+            <div>
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="username" class="form-label">Nombre de usuario:</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password" class="form-label">Contraseña:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div>
+                <label for="confirm_password" class="form-label">Repetir contraseña:</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+            </div>
+            <div>
+                <label for="rol" class="form-label">Rol:</label>
+                <select class="form-select" id="rol" name="rol" required>
+                    <option value="">Selecciona un rol</option>
+                    <option value="1">Administrador</option>
+                    <option value="2">Editor</option>
+                    <option value="3">Visualizador</option>
+                </select>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-unified">Crear Usuario</button>
+                <a href="{{ url_for('users.user_index') }}" class="btn btn-unified">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
