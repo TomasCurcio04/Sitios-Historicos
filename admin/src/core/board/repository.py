@@ -21,7 +21,7 @@ from src.core.board.sitio_historico import SitioHistorico
 
 # Si está en True -> usa archivo JSON
 # Si está en False -> usa base de datos real
-USE_JSON = False
+USE_JSON = True
 
 # Ruta del archivo JSON (solo si USE_JSON es True)
 DATA_FILE = os.path.join(os.path.dirname(__file__), "sites.json")
@@ -31,11 +31,10 @@ DATA_FILE = os.path.join(os.path.dirname(__file__), "sites.json")
 # FUNCIONES AUXILIARES JSON
 # --------------------------
 
+
 def load_sites():
-    """Carga todos los sitios desde el archivo JSON."""
-    if not os.path.exists(DATA_FILE):
-        return []
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
+    path = os.path.join(os.path.dirname(__file__), "sites.json")
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -49,16 +48,7 @@ def save_sites(sites):
 # CRUD PRINCIPAL
 # --------------------------
 
-def list_sites():
-    """
-    Devuelve la lista de sitios históricos.
-    Si USE_JSON=True -> lee del archivo JSON
-    Si USE_JSON=False -> consulta la base de datos
-    """
-    if USE_JSON:
-        return load_sites()
-    else:
-        return db.session.query(Site).all()
+
 
 
 def get_site(site_id):
