@@ -34,6 +34,13 @@ def assign_user(site, user):
     return site
 
 
+def assign_category_to_site(category, site):
+    """Función para asignar una categoría a un sitio."""
+    site.category = category
+    db.session.commit()
+    return site
+
+
 ###Fin de funciones de sitios###
 
 ###Funciones de categorías###
@@ -43,6 +50,14 @@ def list_categories():
     """Función para listar todas las categorías."""
     categories = db.session.query(Category).all()
     return categories
+
+
+def create_category(**kwargs):
+    """Función para crear una nueva categoría."""
+    new_category = Category(**kwargs)
+    db.session.add(new_category)
+    db.session.commit()
+    return new_category
 
 
 ###Fin de funciones de categorías###
@@ -62,6 +77,13 @@ def create_state(**kwargs):
     db.session.add(new_state)
     db.session.commit()
     return new_state
+
+
+def assign_state_to_site(state, site):
+    """Función para asignar una provincia a un sitio."""
+    site.state = state
+    db.session.commit()
+    return site
 
 
 ###Fin de funciones de provincias###

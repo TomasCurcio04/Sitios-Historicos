@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from src.core.board.category import Category
     from src.core.board.state import State
     from src.core.board.tag import Tag
+    from src.core.board.site_history import SiteHistory
 
 # Tabla intermedia para relación muchos a muchos con tags
 site_tag = Table(
@@ -35,20 +36,22 @@ class Site(Base):
     city: Mapped[str] = mapped_column(String(50), nullable=False)
     province: Mapped[str] = mapped_column(String(50), nullable=False)
     state: Mapped[int] = mapped_column(ForeignKey("state.id_state"), nullable=False)
-    state_rel: Mapped["State"] = relationship(back_populates="site")
+    state_rel: Mapped["State"] = relationship(back_populates="sites")
     latitude: Mapped[float] = mapped_column(DECIMAL(9, 6))
     longitude: Mapped[float] = mapped_column(DECIMAL(9, 6))
-    conservation_state: Mapped[str] = mapped_column(String(20), nullable=False)
-    inauguration_year: Mapped[int] = mapped_column(Integer)
+    # Campos adaptados a DB y JSON
+    conservation_state: Mapped[str] = mapped_column(String(20), nullable=True)
+    inauguration_year: Mapped[int] = mapped_column(Integer, nullable=True)
     category: Mapped[int] = mapped_column(ForeignKey("category.id_category"), nullable=False)
-    category_rel: Mapped["Category"] = relationship(back_populates="site")
+    category_rel: Mapped["Category"] = relationship(back_populates="sites")
     date_registered: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc)
     )
     is_visible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     tag: Mapped[list["Tag"]] = relationship(secondary=site_tag)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
-    user: Mapped["Users"] = relationship(back_populates="site")
+    user: Mapped["Users"] = relationship(back_populates="sites")
+    history: Mapped[list["SiteHistory"]] = relationship(back_populates="site_rel")
 
     def __repr__(self):
         return f"<Site(name='{self.name}', city='{self.city}', province='{self.province}', is_visible={self.is_visible})>"

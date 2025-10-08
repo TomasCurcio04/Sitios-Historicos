@@ -6,6 +6,7 @@
 
 from flask_sqlalchemy_lite import SQLAlchemy  # pyright: ignore[reportMissingImports]
 from sqlalchemy.orm import DeclarativeBase  # pyright: ignore[reportMissingImports]
+from sqlalchemy import text  # pyright: ignore[reportMissingImports]
 
 db = SQLAlchemy()
 """Inicializa la base de datos SQLAlchemy."""
@@ -28,11 +29,11 @@ def reset_db():
     print("Reiniciando la base de datos...")
     Base.metadata.drop_all(bind=db.engine)
     # with db.engine.begin() as conn:
-    #   conn.execute(text("DROP SCHEMA public CASCADE"))
-    #    conn.execute(text("CREATE SCHEMA public"))
+    #     conn.execute(text("DROP SCHEMA public CASCADE"))
+    #     conn.execute(text("CREATE SCHEMA public"))
 
     Base.metadata.create_all(bind=db.engine)
-    print("✔️Base de datos reiniciada.")
+    print("✔️  Base de datos reiniciada.")
 
 
 class Base(DeclarativeBase):

@@ -16,4 +16,4 @@ class State(Base):
     __tablename__ = "state"
     id_state: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
-    site: Mapped[list["Site"]] = relationship(back_populates="state")
+    sites: Mapped[list["Site"]] = relationship(back_populates="state_rel")
