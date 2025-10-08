@@ -1,0 +1,28 @@
+<form method="get" action="{{ url_for(endpoint) }}">
+    <input type="text" name="texto" placeholder="Buscar..." value="{{ texto }}">
+
+    <label>Ordenar por:</label>
+    <select name="sort">
+        <option value="name" {% if sort=="name" %}selected{% endif %}>Nombre</option>
+        <option value="date_created" {% if sort=="date_created" %}selected{% endif %}>Fecha de creación</option>
+    </select>
+
+    <label>Orden:</label>
+    <select name="order">
+        <option value="asc" {% if order=="asc" %}selected{% endif %}>Ascendente</option>
+        <option value="desc" {% if order=="desc" %}selected{% endif %}>Descendente</option>
+    </select>
+
+    <button type="submit">Aplicar</button>
+</form>
+
+<!-- Paginación -->
+<div>
+    {% if page > 1 %}
+        <a href="{{ url_for(endpoint, page=page-1, sort=sort, order=order, texto=texto) }}">« Anterior</a>
+    {% endif %}
+    Página {{ page }} de {{ total_pages }}
+    {% if page < total_pages %}
+        <a href="{{ url_for(endpoint, page=page+1, sort=sort, order=order, texto=texto) }}">Siguiente »</a>
+    {% endif %}
+</div>
