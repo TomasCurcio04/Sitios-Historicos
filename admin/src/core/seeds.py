@@ -59,14 +59,12 @@ def run():
     board_state3 = board.create_state(name="Buenos Aires")
     board_state4 = board.create_state(name="Jujuy")
 
-    board_tag1 = board.create_tag(name="Arqueológico", slug="arqueologico")
-    board_tag2 = board.create_tag(name="Natural", slug="natural")
-    board_tag3 = board.create_tag(name="Cultural", slug="cultural")
-    board_tag4 = board.create_tag(name="Histórico", slug="historico")
-    board_tag5 = board.create_tag(name="Turístico", slug="turistico")
-    board_tag6 = board.create_tag(
-        name="Patrimonio de la Humanidad", slug="patrimonio-humanidad"
-    )
+    board_tag1 = board.create_tag(name="Arqueológico")
+    board_tag2 = board.create_tag(name="Natural")
+    board_tag3 = board.create_tag(name="Cultural")
+    board_tag4 = board.create_tag(name="Histórico")
+    board_tag5 = board.create_tag(name="Turístico")
+    board_tag6 = board.create_tag(name="Patrimonio de la Humanidad")
 
     site1 = board.create_site(
         name="Cerro de los 7 colores",
