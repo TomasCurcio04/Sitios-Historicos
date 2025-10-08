@@ -11,48 +11,17 @@
     </label>
     <br>
 
-    <label>Provincia:
-        <select name="provincia">
-            <option value="" {% if provincia=="" %}selected{% endif %}>--Cualquiera--</option>
-            <option value="Buenos Aires" {% if provincia=="Buenos Aires" %}selected{% endif %}>Buenos Aires</option>
-            <option value="Córdoba" {% if provincia=="Córdoba" %}selected{% endif %}>Córdoba</option>
-            <option value="Santa Fe" {% if provincia=="Santa Fe" %}selected{% endif %}>Santa Fe</option>
-            <option value="Mendoza" {% if provincia=="Mendoza" %}selected{% endif %}>Mendoza</option>
-            <option value="Tucumán" {% if provincia=="Tucumán" %}selected{% endif %}>Tucumán</option>
-            <option value="Salta" {% if provincia=="Salta" %}selected{% endif %}>Salta</option>
-            <option value="Jujuy" {% if provincia=="Jujuy" %}selected{% endif %}>Jujuy</option>
-            <option value="Entre Ríos" {% if provincia=="Entre Ríos" %}selected{% endif %}>Entre Ríos</option>
-            <option value="Corrientes" {% if provincia=="Corrientes" %}selected{% endif %}>Corrientes</option>
-            <option value="Chaco" {% if provincia=="Chaco" %}selected{% endif %}>Chaco</option>
-            <option value="Formosa" {% if provincia=="Formosa" %}selected{% endif %}>Formosa</option>
-            <option value="Misiones" {% if provincia=="Misiones" %}selected{% endif %}>Misiones</option>
-            <option value="San Juan" {% if provincia=="San Juan" %}selected{% endif %}>San Juan</option>
-            <option value="San Luis" {% if provincia=="San Luis" %}selected{% endif %}>San Luis</option>
-            <option value="La Rioja" {% if provincia=="La Rioja" %}selected{% endif %}>La Rioja</option>
-            <option value="Catamarca" {% if provincia=="Catamarca" %}selected{% endif %}>Catamarca</option>
-            <option value="Santiago del Estero" {% if provincia=="Santiago del Est  ero" %}selected{% endif %}>Santiago del Estero</option>
-            <option value="La Pampa" {% if provincia=="La Pampa" %} selected{% endif %}>La Pampa</option>
-            <option value="Neuquén" {% if provincia=="Neuquén" %} selected{% endif %}>Neuquén</option>  
-            <option value="Río Negro" {% if provincia=="Río Negro" %} selected{% endif %}>Río Negro</option>        
-            <option value="Santa Cruz" {% if provincia=="Santa Cruz" %} selected{% endif %}>Santa Cruz</option>     
-            <option value="CABA" {% if provincia=="CABA" %}selected{% endif %}>Ciudad Autónoma de Buenos Aires</option>
-            <option value="Chubut" {% if provincia=="Chubut" %}selected{% endif %}>Chubut</option>
-            <option value="Tierra del Fuego, Antártida e Islas del Atlántico Sur" {% if provincia=="Tierra del Fuego, Antártida e Islas del Atlántico Sur" %}selected{% endif %}>Tierra del Fuego, Antártida e Islas del Atlántico Sur</option>
-        </select>
-    </label>
-    <br>
-
     <label>Tags:</label>
     {% for tag in tags %}
         <label>
-            <input type="checkbox" name="tags" value="{{ tag.id }}" 
-                {% if tag.id in selected_tags %}checked{% endif %}>
-            {{ tag.nombre }}
+            <input type="checkbox" name="tags" value="{{ tag.id_tag }}" 
+                {% if tag.id_tag in selected_tags %}checked{% endif %}>
+            {{ tag.name }}
         </label>
     {% endfor %}
     <br>
 
-    <label>Estado:
+    <label>Estado de conservación:
         <select name="estado">
             <option value="" {% if estado=="" %}selected{% endif %}>--Cualquiera--</option>
             <option value="Bueno" {% if estado=="Bueno" %}selected{% endif %}>Bueno</option>
@@ -82,9 +51,9 @@
 
     <label>Ordenar por:</label>
     <select name="sort">
-        <option value="nombre" {% if sort=="nombre" %}selected{% endif %}>Nombre</option>
-        <option value="fecha_registro" {% if sort=="fecha_registro" %}selected{% endif %}>Fecha de registro</option>
-        <option value="ciudad" {% if sort=="ciudad" %}selected{% endif %}>Ciudad</option>
+        <option value="name" {% if sort=="name" %}selected{% endif %}>Nombre</option>
+        <option value="date_registered" {% if sort=="date_registered" %}selected{% endif %}>Fecha de registro</option>
+        <option value="city" {% if sort=="city" %}selected{% endif %}>Ciudad</option>
     </select>
 
     <label>Orden:</label>
@@ -100,6 +69,7 @@
     </a>
 
 </form>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <ul class="flashes">
@@ -112,25 +82,24 @@
 
 {% if results %}
 <p>Total de resultados: {{ total_results }}</p>
-<table>
+<table border="1" cellpadding="5" cellspacing="0">
     <thead>
         <tr>
             <th>Nombre</th>
             <th>Ciudad</th>
-            <th>Provincia</th>
             <th>Estado de conservación</th>
             <th>Visibilidad</th>
+            <th>Fecha de registro</th>
         </tr>
     </thead>
-
     <tbody>
         {% for r in results %}
         <tr>
-            <td>{{ r.nombre }}</td>
-            <td>{{ r.ciudad }}</td>
-            <td>{{ r.provincia }}</td>
-            <td>{{ r.estado }}</td>
-            <td>{% if r.visibilidad %}Visible{% else %}No visible{% endif %}</td>
+            <td>{{ r.name }}</td>
+            <td>{{ r.city }}</td>
+            <td>{{ r.conservation_state }}</td>
+            <td>{% if r.is_visible %}Visible{% else %}No visible{% endif %}</td>
+            <td>{{ r.date_registered.strftime("%Y-%m-%d") }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -138,7 +107,6 @@
 
 <form id="pagination-form" method="get">
     <input type="hidden" name="ciudad" value="{{ ciudad }}">
-    <input type="hidden" name="provincia" value="{{ provincia }}">
     <input type="hidden" name="estado" value="{{ estado }}">
     <input type="hidden" name="visibilidad" value="{{ visibilidad }}">
     <input type="hidden" name="busqueda_texto" value="{{ busqueda_texto }}">
@@ -165,6 +133,3 @@
 
 <a href="{{ url_for('web.home') }}">Volver al inicio</a>
 {% endblock %}
-
-
-
