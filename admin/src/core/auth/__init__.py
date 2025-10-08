@@ -52,11 +52,16 @@ def verificar_usuario(email, password):
     user = buscar_usuario(email)
     if not user:
         return None, "Email o contraseña incorrectos"
-    if not user.active:
-        return None, "El usuario no está activo"
+    
+
     if not user.password or user.password.strip() == "" or not bcrypt.check_password_hash(user.password, password):
         return None, "Email o contraseña incorrectos"
+    
+    if not user.active:
+        return None, "El usuario no está activo"
+    
     return user, None
+
 def create_user(**kwargs):
     """Función para crear un nuevo usuario con contraseña hasheada."""
     if "password" in kwargs:
