@@ -37,6 +37,7 @@ class Users(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+    flags: Mapped[list["FeatureFlag"]] = relationship(back_populates="user")
 
     
     def __repr__(self):
