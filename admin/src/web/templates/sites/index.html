@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Sitios Históricos</title>
+
+    <!-- Fuente moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        /* ======================= Estilos generales ======================= */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+
+        /* Flash messages */
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto 1.5rem;
+            max-width: 900px;
+        }
+        .flash-messages li {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+
+        /* Botones */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .btn-create { background: #007bff; color: #fff; margin-bottom: 1rem; }
+        .btn-create:hover { background: #0069d9; }
+        .btn-edit { background: #f0ad4e; color: #fff; }
+        .btn-edit:hover { background: #ec971f; }
+        .btn-delete { background: #d9534f; color: #fff; }
+        .btn-delete:hover { background: #c9302c; }
+
+        /* Tabla de sitios */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e6e6e6;
+        }
+        th {
+            background: #007bff;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        tr:hover { background: #f9fafb; }
+        td { color: #444; font-size: 0.9rem; }
+
+        /* Acciones (Editar/Eliminar) */
+        .acciones { display: flex; justify-content: center; gap: 8px; }
+        .acciones form { display: inline; margin: 0; }
+
+        /* Barra de búsqueda */
+        .search-bar {
+            text-align: center;
+            margin: 1.5rem 0 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .search-bar input, .search-bar select {
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+        .search-bar button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            background: #007bff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .search-bar button:hover { background: #0056b3; }
+
+        /* Paginación */
+        .pagination {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .pagination a {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            background: #e0e0e0;
+            color: #333;
+            margin: 0 0.2rem;
+            transition: 0.2s;
+            font-weight: 600;
+        }
+        .pagination a.active { background: #007bff; color: #fff; }
+        .pagination a:hover { background: #007bff; color: #fff; }
+
+        /* Etiquetas */
+        .badge {
+            display: inline-block;
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin: 2px;
+        }
+        .text-muted { color: #777; }
+
+        /* Responsive */
+        @media(max-width:1024px){ table{ font-size:0.85rem; } }
+        @media(max-width:768px){
+            body{ padding:1rem; }
+            table{ font-size:0.75rem; }
+            th,td{ padding:8px 10px; }
+            .search-bar{ flex-direction:column; gap:0.5rem; }
+            .search-bar input,.search-bar select{ width:100%; max-width:250px; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Listado de Sitios Históricos</h1>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flash-messages">
+      {% for category, msg in messages %}
+        <li class="{{ category }}">{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<!-- Búsqueda avanzada -->
+<div class="search-bar">
+    <form action="{{ url_for('issues.index') }}" method="get" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+        <input type="text" name="nombre" placeholder="Nombre" value="{{ request.args.get('nombre','') }}">
+        <input type="text" name="descripcion_breve" placeholder="Descripción breve" value="{{ request.args.get('descripcion_breve','') }}">
+        <input type="text" name="descripcion_completa" placeholder="Descripción completa" value="{{ request.args.get('descripcion_completa','') }}">
+        <input type="text" name="ciudad" placeholder="Ciudad" value="{{ request.args.get('ciudad','') }}">
+        <input type="text" name="provincia" placeholder="Provincia" value="{{ request.args.get('provincia','') }}">
+        <input type="text" name="categoria" placeholder="Categoría" value="{{ request.args.get('categoria','') }}">
+        <input type="text" name="estado" placeholder="Estado" value="{{ request.args.get('estado','') }}">
+        <input type="number" name="anio" placeholder="Año" value="{{ request.args.get('anio','') }}">
+        <input type="text" name="latitud" placeholder="Latitud" value="{{ request.args.get('latitud','') }}">
+        <input type="text" name="longitud" placeholder="Longitud" value="{{ request.args.get('longitud','') }}">
+        <input type="text" name="created_by" placeholder="Creado por" value="{{ request.args.get('created_by','') }}">
+        <input type="date" name="created_at" placeholder="Fecha de registro" value="{{ request.args.get('created_at','') }}">
+        <select name="visible">
+            <option value="">Visible</option>
+            <option value="1" {% if request.args.get('visible')=='1' %}selected{% endif %}>Sí</option>
+            <option value="0" {% if request.args.get('visible')=='0' %}selected{% endif %}>No</option>
+        </select>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <form action="{{ url_for('issues.index') }}" method="get" style="margin-top:0.5rem; display:inline-block;">
+        <button type="submit" class="btn btn-create">Mostrar todos</button>
+    </form>
+    <form action="{{ url_for('issues.exportar') }}" method="get" style="margin-top:0.5rem; display:inline-block;">
+        {% for key in ['nombre','descripcion_breve','descripcion_completa','ciudad','provincia','categoria','estado','anio','latitud','longitud','created_by','created_at','visible'] %}
+            <input type="hidden" name="{{ key }}" value="{{ request.args.get(key,'') }}">
+        {% endfor %}
+        <button type="submit" class="btn btn-create">Exportar CSV</button>
+    </form>
+</div>
+
+<!-- Crear nuevo sitio -->
+<div style="text-align:center; margin-bottom:1rem;">
+    <form action="{{ url_for('issues.nuevo') }}" method="get" style="display:inline;">
+        <button type="submit" class="btn btn-create">+ Crear Nuevo Sitio</button>
+    </form>
+</div>
+
+<!-- Tabla de sitios -->
+{% if sitios %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción breve</th>
+            <th>Descripción completa</th>
+            <th>Ciudad</th>
+            <th>Provincia</th>
+            <th>Estado</th>
+            <th>Año</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
+            <th>Creado por</th>
+            <th>Fecha de registro</th>
+            <th>Visible</th>
+            <th>Etiquetas</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sitio in sitios %}
+        <tr>
+            <td>{{ sitio['id'] }}</td>
+            <td>{{ sitio['nombre'] }}</td>
+            <td>{{ sitio.get('descripcion_breve','') }}</td>
+            <td>{{ sitio.get('descripcion_completa','') }}</td>
+            <td>{{ sitio['ciudad'] }}</td>
+            <td>{{ sitio['provincia'] }}</td>
+            <td>{{ sitio.get('estado_conservacion','') }}</td>
+            <td>{{ sitio['anio_inauguracion'] }}</td>
+            <td>{{ sitio.get('latitud','') }}</td>
+            <td>{{ sitio.get('longitud','') }}</td>
+            <td>{{ sitio.get('created_by','') }}</td>
+            <td>{{ sitio.get('created_at','') }}</td>
+            <td>{{ 'Sí' if sitio.get('visible') else 'No' }}</td>
+
+            <!-- ================== Etiquetas ================== -->
+            <td>
+                {% if sitio.etiquetas %}
+                    {% for etiqueta in sitio.etiquetas %}
+                        <span class="badge">{{ etiqueta }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-muted">Sin etiquetas</span>
+                {% endif %}
+            </td>
+
+            <td>
+                <div class="acciones">
+                    <form action="{{ url_for('issues.editar', site_id=sitio['id']) }}" method="get">
+                        <button type="submit" class="btn btn-edit">Editar</button>
+                    </form>
+                    {% if usuario_es_admin %}
+                    <form action="{{ url_for('issues.eliminar', site_id=sitio['id']) }}" method="post">
+                        <button type="submit" class="btn btn-delete" onclick="return confirm('¿Seguro que querés eliminar este sitio?')">Eliminar</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación compatible -->
+<div class="pagination">
+{% for p in range(1,total_pages+1) %}
+<a href="{{ url_for('issues.index',
+    nombre=request.args.get('nombre',''),
+    descripcion_breve=request.args.get('descripcion_breve',''),
+    descripcion_completa=request.args.get('descripcion_completa',''),
+    ciudad=request.args.get('ciudad',''),
+    provincia=request.args.get('provincia',''),
+    categoria=request.args.get('categoria',''),
+    estado=request.args.get('estado',''),
+    anio=request.args.get('anio',''),
+    latitud=request.args.get('latitud',''),
+    longitud=request.args.get('longitud',''),
+    created_by=request.args.get('created_by',''),
+    created_at=request.args.get('created_at',''),
+    visible=request.args.get('visible',''),
+    page=p
+) }}" class="{{ 'active' if p==page else '' }}">{{ p }}</a>
+{% endfor %}
+</div>
+
+{% else %}
+<p style="text-align:center; font-size:1.1rem; color:#666;">No hay sitios históricos registrados.</p>
+{% endif %}
+
+</body>
+</html>
