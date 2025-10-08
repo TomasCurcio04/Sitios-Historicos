@@ -74,3 +74,38 @@ def create_permission(**kwargs):
 
 
 # ####Fin de funciones de permisos###
+
+####Funciones de feature flags###
+
+
+def list_feature_flags():
+    """Función para listar todas las feature flags."""
+    from src.core.auth import feature_flags
+
+    flags = db.session.query(feature_flags.FeatureFlag).all()
+    return flags
+
+
+def get_feature_flag(name):
+    """Función para obtener una feature flag por su nombre."""
+    from src.core.auth import feature_flags
+
+    flag = feature_flags.FeatureFlag.get_flag(name)
+    return flag
+
+
+def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
+    """Función para modificar una feature flag."""
+    from src.core.auth import feature_flags
+
+    flag = feature_flags.FeatureFlag.get_flag(name)
+    if flag:
+        flag.enabled = enabled
+        flag.updated_by = updated_by
+        if maintenance_message is not None:
+            flag.maintenance_message = maintenance_message
+        db.session.commit()
+    return flag
+
+
+# ####Fin de funciones de feature flags###
