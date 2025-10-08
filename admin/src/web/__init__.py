@@ -5,6 +5,8 @@ from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
 from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.config import config
+from src.core import database
+from src.core import seeds
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
 
