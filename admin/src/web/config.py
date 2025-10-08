@@ -1,23 +1,41 @@
-class Config:
+"""Configuration classes for different environments."""
+
+from os import environ
+
+
+class BaseConfig:
+    """Base configuration class."""
 
     TESTING = False
+    DEBUG = False
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "filesystem"
 
-class ProductionConfig(Config):
 
-    pass
+class ProductionConfig(BaseConfig):
+    """Production configuration class."""
 
-class DevelopmentConfig(Config):
+    SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
 
-    SECRET_KEY = "your_development_secret_key"
 
-class TestingConfig(Config):
+class DevelopmentConfig(BaseConfig):
+    """Development configuration class."""
 
-    TESTING = True 
+    SECRET_KEY = "your_dev_secret_key"
+    DB_USER = "postgres"
+    DB_PASSWORD = "KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm"
+    DB_NAME = "railway"
+    DB_HOST = "nozomi.proxy.rlwy.net"
+    DB_PORT = "55215"
+    DB_SCHEME = "postgresql+psycopg2"
+    DEBUG = True
+    SQLALCHEMY_ENGINES = {
+        "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    }
+
 
 config = {
-    'production': ProductionConfig,
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "default": DevelopmentConfig,
 }

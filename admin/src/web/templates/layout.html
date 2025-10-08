@@ -9,26 +9,32 @@
 <body>
     <div class="wrapper">
         <!-- Topbar -->
-        <header> 
+        <header>
             <div class="topbar">
-                <div class="logo-container">
+                <div class="topbar-left">
                     <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-img">
                     <span class="logo-text">Administración de Sitios Históricos</span>
                 </div>
-                <div class="user-dropdown">
-                    <span>Usuario &#x25BC;</span>
-                    <div class="user-dropdown-content">
-                        <a href="javascript:void(0)">Ver perfil</a>
-                        <a href="javascript:void(0)">Cerrar sesión</a>
+
+                <div class="topbar-right">
+                    <div class="user-dropdown">
+                        <button id="user-btn">Usuario &#9662;</button>
+                        <div id="user-menu" class="user-dropdown-content">
+                            <a href="javascript:void(0)">Ver perfil</a>
+                            <a href="javascript:void(0)">Cerrar sesión</a>
+                        </div>
                     </div>
+
+                    <!-- Botón menú móvil -->
+                    <div class="menu-toggle" id="menu-toggle">&#9776;</div>
                 </div>
-            </div>       
+            </div>
         </header>
 
         <!-- Contenedor principal -->
         <div class="container">
             <!-- Menú lateral -->
-            <nav class="sidenav">
+            <nav class="sidenav" id="sidenav">
                 <a href="{{ url_for('web.gestionsitioshistoricos') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
                     Gestión de sitios históricos
                 </a>
@@ -55,5 +61,28 @@
             <p>Proyecto de software</p>
         </footer>
     </div>
+
+    <script>
+        // Toggle del menú lateral en móvil
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidenav = document.getElementById('sidenav');
+
+        menuToggle.addEventListener('click', () => {
+            sidenav.classList.toggle('open');
+        });
+
+        // Dropdown usuario
+        const userBtn = document.getElementById('user-btn');
+        const userMenu = document.getElementById('user-menu');
+
+        userBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', () => {
+            userMenu.style.display = 'none';
+        });
+    </script>
 </body>
 </html>
