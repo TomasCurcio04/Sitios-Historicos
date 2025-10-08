@@ -3,6 +3,7 @@ from flask import Flask, render_template, Blueprint
 import os
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.tags import bp as tags_bp
 from src.web.config import config
 from src.core import database
 from src.core import seeds
@@ -73,6 +74,7 @@ def create_app(env="development"):
     # Registrar blueprints
     app.register_blueprint(web)
     app.register_blueprint(issues_bp)
+    app.register_blueprint(tags_bp)
 
     # Manejo de errores
     app.register_error_handler(404, error.not_found)
