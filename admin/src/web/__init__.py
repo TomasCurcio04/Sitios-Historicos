@@ -52,6 +52,20 @@ def create_app(env="development"):
         static_folder=static_folder,
     )
 
+    app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
+    # Configuración de la app
+    app.config.from_mapping(
+        DEBUG=True,
+        TESTING=False,
+        DB_HOST='nozomi.proxy.rlwy.net',
+        DB_NAME='railway',
+        DB_USER='postgres',
+        DB_PASSWORD='KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm',
+        DB_PORT='55215',
+        DB_SCHEME='postgresql+psycopg2'
+    )
+
+
     # Configuración
     app.config.from_object(config[env])
 
@@ -74,9 +88,10 @@ def create_app(env="development"):
     app.register_blueprint(issues_bp)
     app.register_blueprint(busqueda_avanzada_bp)
 
-    # Manejo de errores
-    app.register_error_handler(404, error.not_found)
-    app.register_error_handler(401, error.not_authorized)
-    app.register_error_handler(500, error.internal_server_error)
+    # Comando CLI para reiniciar la base de datos
+    @app.cli.command("reset-db")
+    def reset_db_command():
+        """Reinicia la base de datos de forma segura."""
+        database.reset_db()
 
     return app

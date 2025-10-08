@@ -1,25 +1,23 @@
-"""Modulo para gestionar usuarios"""
-
-# pylint: disable=import-error
-from src.core.database import db
+from src.core.database import SessionLocal
 from src.core.auth.users import Users
 from src.core.auth.role import Role
 from src.core.auth.permission import Permission
 
-
-####Funciones de usuarios###
+#### Funciones de usuarios ###
 def list_users():
-    """Función para listar todos los usuarios."""
-    users = db.session.query(Users).all()
-    return users
-
+    """Listar todos los usuarios."""
+    with SessionLocal() as session:
+        users = session.query(Users).all()
+        return users
 
 def create_user(**kwargs):
-    """Función para crear un nuevo usuario."""
-    new_user = Users(**kwargs)
-    db.session.add(new_user)
-    db.session.commit()
-    return new_user
+    """Crear un nuevo usuario."""
+    with SessionLocal() as session:
+        new_user = Users(**kwargs)
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
+        return new_user
 
 
 ####Fin de funciones de usuarios###
@@ -28,24 +26,24 @@ def create_user(**kwargs):
 
 
 def list_roles():
-    """Función para listar todos los roles."""
-    roles = db.session.query(Role).all()
-    return roles
-
+    with SessionLocal() as session:
+        return session.query(Role).all()
 
 def create_role(**kwargs):
-    """Función para crear un nuevo rol."""
-    new_role = Role(**kwargs)
-    db.session.add(new_role)
-    db.session.commit()
-    return new_role
+    with SessionLocal() as session:
+        new_role = Role(**kwargs)
+        session.add(new_role)
+        session.commit()
+        session.refresh(new_role)
+        return new_role
 
-
-def assign_role(user, role):
-    """Función para asignar un rol a un usuario."""
-    user.role = role
-    db.session.commit()
-    return user
+def assign_role(user_id, role_id):
+    with SessionLocal() as session:
+        user = session.query(Users).get(user_id)
+        role = session.query(Role).get(role_id)
+        user.role = role
+        session.commit()
+        return user
 
 
 # ####Fin de funciones de roles###
@@ -53,24 +51,48 @@ def assign_role(user, role):
 
 ####Funciones de permisos###
 def list_permissions():
-    """Función para listar todos los permisos."""
-    permissions = db.session.query(Permission).all()
-    return permissions
-
-
-def assign_permission(role, permission):
-    """Función para asignar un permiso a un rol."""
-    role.permission.append(permission)
-    db.session.commit()
-    return role
-
+    with SessionLocal() as session:
+        return session.query(Permission).all()
 
 def create_permission(**kwargs):
-    """Función para crear un nuevo permiso."""
-    new_permission = Permission(**kwargs)
-    db.session.add(new_permission)
-    db.session.commit()
-    return new_permission
+    with SessionLocal() as session:
+        perm = Permission(**kwargs)
+        session.add(perm)
+        session.commit()
+        session.refresh(perm)
+        return perm
+
+def assign_permission(role_id, permission_id):
+    with SessionLocal() as session:
+        role = session.query(Role).get(role_id)
+        perm = session.query(Permission).get(permission_id)
+        role.permission.append(perm)
+        session.commit()
+        return role
 
 
 # ####Fin de funciones de permisos###
+
+####Funciones de feature flags###
+
+
+
+def list_feature_flags():
+    from src.core.auth import feature_flags
+    with SessionLocal() as session:
+        return session.query(feature_flags.FeatureFlag).all()
+
+def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
+    from src.core.auth import feature_flags
+    with SessionLocal() as session:
+        flag = session.query(feature_flags.FeatureFlag).filter_by(name=name).first()
+        if flag:
+            flag.enabled = enabled
+            flag.updated_by = updated_by
+            if maintenance_message:
+                flag.maintenance_message = maintenance_message
+            session.commit()
+        return flag
+
+
+# ####Fin de funciones de feature flags###
