@@ -1,4 +1,3 @@
-# tests/test_sitio_historico.py
 """Pruebas unitarias para el modelo SitioHistorico."""
 
 import unittest

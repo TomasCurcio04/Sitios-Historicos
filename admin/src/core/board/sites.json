@@ -258,7 +258,7 @@
     },
     {
         "id": 15,
-        "nombre": "Museo del Vidrio",
+        "nombre": "Museo del Vidrio coca",
         "descripcion_breve": "Museo dedicado a la industria vidriera local.",
         "descripcion_completa": "El Museo del Vidrio exhibe piezas y maquinarias vinculadas al desarrollo industrial de Berazategui, reconocida como ‘Capital del Vidrio’.",
         "ciudad": "Berazategui",
@@ -268,13 +268,25 @@
         "estado_conservacion": "Excelente",
         "anio_inauguracion": 2001,
         "categoria": "Industrial",
-        "visible": true,
-        "etiquetas": [
-            "Museo",
-            "Industrial",
-            "Cultural"
-        ],
+        "visible": false,
+        "etiquetas": [],
         "fecha_registro": "2025-10-03T17:25:00",
         "creado_por": "admin"
+    },
+    {
+        "nombre": "mc donal",
+        "descripcion_breve": "",
+        "descripcion_completa": "",
+        "ciudad": "quilmes",
+        "provincia": "Buenos Aires",
+        "latitud": -37.047505,
+        "longitud": -59.018555,
+        "estado_conservacion": "",
+        "anio_inauguracion": 1930,
+        "categoria": "",
+        "visible": false,
+        "etiquetas": [],
+        "id": 16,
+        "fecha_registro": "2025-10-08T19:25:14.704158"
     }
 ]

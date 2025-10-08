@@ -10,20 +10,20 @@ class SitioHistorico:
     Representa un sitio histórico con todos sus campos y validaciones.
     """
 
-    # Campos obligatorios
+    # Campos obligatorios (adaptados a inglés)
     CAMPOS_OBLIGATORIOS = [
-        "nombre",
-        "descripcion_breve",
-        "descripcion_completa",
-        "ciudad",
-        "provincia",
-        "estado_conservacion",
-        "anio_inauguracion",
-        "categoria",
-        "visible"
+        "name",
+        "short_description",
+        "full_description",
+        "city",
+        "province",
+        "conservation_state",
+        "inauguration_year",
+        "category",
+        "is_visible"
     ]
 
-    # Estados válidos para el campo estado_conservacion
+    # Estados válidos para el campo conservation_state
     ESTADOS_VALIDOS = ["Bueno", "Regular", "Malo"]
 
     def __init__(self, data: dict):
@@ -43,28 +43,28 @@ class SitioHistorico:
                 raise ValueError(f"El campo '{campo}' es obligatorio.")
 
         # 2. Estado de conservación válido
-        if data["estado_conservacion"] not in cls.ESTADOS_VALIDOS:
+        if data["conservation_state"] not in cls.ESTADOS_VALIDOS:
             raise ValueError(
                 f"Estado de conservación inválido. Debe ser uno de: {cls.ESTADOS_VALIDOS}"
             )
 
         # 3. Año de inauguración numérico y razonable
-        anio = int(data["anio_inauguracion"])
+        anio = int(data["inauguration_year"])
         if anio < 1500 or anio > datetime.now().year:
             raise ValueError("El año de inauguración debe estar entre 1500 y el año actual.")
 
         # 4. Latitud y longitud opcionales, pero válidas si se incluyen
-        if "latitud" in data and data["latitud"] not in (None, ""):
+        if "latitude" in data and data["latitude"] not in (None, ""):
             try:
-                lat = float(data["latitud"])
+                lat = float(data["latitude"])
                 if not (-90 <= lat <= 90):
                     raise ValueError("La latitud debe estar entre -90 y 90.")
             except ValueError:
                 raise ValueError("La latitud debe ser numérica.")
 
-        if "longitud" in data and data["longitud"] not in (None, ""):
+        if "longitude" in data and data["longitude"] not in (None, ""):
             try:
-                lon = float(data["longitud"])
+                lon = float(data["longitude"])
                 if not (-180 <= lon <= 180):
                     raise ValueError("La longitud debe estar entre -180 y 180.")
             except ValueError:
