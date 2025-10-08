@@ -21,9 +21,9 @@ def logout():
 def authenticate():
     params = request.form
 
-    user = verificar_usuario(params["email"], params["password"])
+    user,error = verificar_usuario(params["email"], params["password"])
     if not user:
-        flash("Email o contraseñas incorrecto", "error")    
+        flash(error, "error")    
         return redirect(url_for('auth.login'))
     
     session["user"] = user.email

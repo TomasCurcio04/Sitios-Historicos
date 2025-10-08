@@ -90,6 +90,7 @@
                     </td>
                     <td>
                         <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
+                            <input type="hidden" name="email" value="{{ user.email }}">
                             <button type="submit" class="btn btn-sm btn-danger"
                                 onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
                                 Eliminar

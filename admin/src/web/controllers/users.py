@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
-from src.core.auth.__init__ import listar_usuarios
+from src.core.auth.__init__ import listar_usuarios, eliminar_usuario
+from src.core.auth.users import Users  
 
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
@@ -59,9 +60,10 @@ def user_new():
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
 def user_delete(user_id):
     """Elimina un usuario por su ID y redirige a la lista. Endpoint: users.user_delete"""
-    
-    # Llama a la función para eliminar el usuario de la DB
-    delete_user(user_id)
+    email = request.form.get("email")
+    if email:
+        # Llama a la función para eliminar el usuario de la DB
+        eliminar_usuario(email)
     
     # Redirige de vuelta a la lista de usuarios.
     return redirect(url_for("users.user_index"))

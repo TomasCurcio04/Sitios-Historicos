@@ -49,12 +49,14 @@ def buscar_usuario(email):
     return db.session.query(Users).filter_by(email=email).first()
 
 def verificar_usuario(email, password):
-    """Verifica si un usuario existe por su correo electrónico."""
     user = buscar_usuario(email)
-    if user and bcrypt.check_password_hash(user.password, password):
-        return user
-    return None
-
+    if not user:
+        return None, "Email o contraseña incorrectos"
+    if not user.active:
+        return None, "El usuario no está activo"
+    if not user.password or user.password.strip() == "" or not bcrypt.check_password_hash(user.password, password):
+        return None, "Email o contraseña incorrectos"
+    return user, None
 def create_user(**kwargs):
     """Función para crear un nuevo usuario con contraseña hasheada."""
     if "password" in kwargs:
@@ -63,6 +65,15 @@ def create_user(**kwargs):
     db.session.add(new_user)
     db.session.commit()
     return new_user
+
+def eliminar_usuario(email):
+    """Funcion para recibir un usuario y eliminarlo."""
+    user = buscar_usuario(email)
+    if user:
+        user.active = False
+        db.session.commit()
+        return user
+    return None
 
 
 ####Fin de funciones de usuarios###
