@@ -57,6 +57,9 @@
         <form action="{{ url_for('busqueda_avanzada.index') }}" method="get">
             <button type="submit" class="btn btn-create middle">Búsqueda Avanzada</button>
         </form>
+        <form action="{{ url_for('web.home') }}" method="get">
+            <button type="submit" class="btn btn-create middle">Volver al home</button>
+        </form>
         <form action="{{ url_for('issues.exportar') }}" method="get">
             {% for key in ['nombre','descripcion_breve','descripcion_completa','ciudad','provincia','categoria','estado','anio','latitud','longitud','created_by','created_at','visible'] %}
                 <input type="hidden" name="{{ key }}" value="{{ request.args.get(key,'') }}">
