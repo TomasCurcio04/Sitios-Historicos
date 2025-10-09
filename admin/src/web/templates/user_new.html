@@ -6,40 +6,52 @@
 <div class="row justify-content-center mt-5">
     <div class="form-container">
         <h1 class="mb-4 text-center">Crear Usuario</h1>
+
+        {# BLOQUE DE MENSAJES FLASH #}
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }} mb-3">{{ message }}</div>
+              <div class="alert alert-{{ category if category != 'message' else 'primary' }} mb-3">
+                {{ message }}
+              </div>
             {% endfor %}
           {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('users.user_create') }}">
-            <div>
+            <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email"
+                       value="{{ request.form.get('email', '') }}" required>
             </div>
-            <div>
+
+            <div class="mb-3">
                 <label for="username" class="form-label">Nombre de usuario:</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+                <input type="text" class="form-control" id="username" name="username"
+                       value="{{ request.form.get('username', '') }}" required>
             </div>
-            <div>
+
+            <div class="mb-3">
                 <label for="password" class="form-label">Contraseña:</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <div>
+
+            <div class="mb-3">
                 <label for="confirm_password" class="form-label">Repetir contraseña:</label>
                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
             </div>
-            <div>
+
+            <div class="mb-3">
                 <label for="rol" class="form-label">Rol:</label>
                 <select class="form-select" id="rol" name="rol" required>
                     <option value="">Selecciona un rol</option>
-                    <option value="1">Administrador</option>
-                    <option value="2">Editor</option>
-                    <option value="3">Visualizador</option>
+                    <option value="1" {% if request.form.get('rol') == '1' %}selected{% endif %}>Administrador</option>
+                    <option value="2" {% if request.form.get('rol') == '2' %}selected{% endif %}>Editor</option>
+                    <option value="3" {% if request.form.get('rol') == '3' %}selected{% endif %}>Visualizador</option>
                 </select>
             </div>
-            <div class="d-flex justify-content-between">
+
+            <div class="d-flex justify-content-between mt-4">
                 <button type="submit" class="btn btn-unified">Crear Usuario</button>
                 <a href="{{ url_for('users.user_index') }}" class="btn btn-unified">Cancelar</a>
             </div>

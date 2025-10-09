@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
-from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user
+from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user, buscar_usuario, actualizar_usuario
 from src.core.auth.users import Users, EMAIL_REGEX
 import re
 
@@ -17,75 +17,122 @@ user_bp = Blueprint("users", __name__, url_prefix="/gestion_usuarios")
 def user_index():
     """Muestra la lista de todos los usuarios con filtros y ordenamiento."""
     
+    page = request.args.get('page', 1, type=int)
+    PER_PAGE = 25
 
     is_active_param = request.args.get('is_active', type=str)
-    
 
     rol_param = request.args.get('rol', type=str)
     
-
-    order_param = request.args.get('order_by_creation_date', 'asc', type=str).lower()
-    
-
-    is_active_filter = None
-    if is_active_param is not None:
-        is_active_param_lower = is_active_param.lower()
-        if is_active_param_lower in ('true', '1'):
-            is_active_filter = True
-        elif is_active_param_lower in ('false', '0'):
-            is_active_filter = False
-    
     search_email_param = request.args.get('email', type=str)
 
-    users = listar_usuarios(
+    sort_order = request.args.get('sort', 'asc')
+    
+    is_active_filter = None
+    if is_active_param:
+        lower_param = is_active_param.lower()
+        if lower_param in ('true', '1'):
+            is_active_filter = True
+        elif lower_param in ('false', '0'):
+            is_active_filter = False
+    
+
+    pagination = listar_usuarios(
+        page=page,
+        per_page=PER_PAGE,
         is_active=is_active_filter, 
         rol=rol_param, 
-        order_by_creation_date=order_param,
-        search_email=search_email_param
+        search_email=search_email_param,
+        sort_order = sort_order
     )
     
+    start = ((pagination["page"] - 1) * pagination["per_page"]) + 1
+    end = min(pagination["page"] * pagination["per_page"], pagination["total"])
     
-    return render_template("gestion_usuarios.html", 
-                           users=users,
-                           # Variables para el HTML (current_X)
-                           current_is_active=is_active_param,
-                           current_rol=rol_param,
-                           current_order=order_param)
+    return render_template(
+        "gestion_usuarios.html", 
+        pagination=pagination,
+        users=pagination["items"],  
+        # Usamos la versión string para el filtro 'Activo' en la plantilla
+        current_is_active=is_active_param, 
+        current_rol=rol_param,
+        # filters=request.args ya contiene todos los parámetros de la URL para la paginación
+        filters=request.args,
+        sort_order = request.args.get('sort', 'asc'),
+        start=start,
+        end=end
+    )
 
 # Ruta para el formulario de CREAR nuevo usuario
 @user_bp.route("/new", methods=["GET"])
 def user_new():
     """Muestra el formulario para crear un nuevo usuario. Endpoint: users.user_new"""
     # Aquí irá el formulario real de creación
-    return render_template("user_new.html") # Necesitas crear user_new.html
+    return render_template("user_new.html")
 
 @user_bp.route("/create", methods=["POST"])
 def user_create():
-    email = request.form.get("email")
-    username = request.form.get("username")
-    password = request.form.get("password")
-    confirm_password = request.form.get("confirm_password")
-    rol = request.form.get("rol")
+    # Obtener los datos del formulario
+    email = request.form.get("email", "").strip().lower()
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+    confirm_password = request.form.get("confirm_password", "")
+    rol = request.form.get("rol", "")
 
+    # Validaciones
     if not re.match(EMAIL_REGEX, email):
         flash("Email inválido", "error")
-        return redirect(url_for("users.user_new"))
+        return render_template(
+            "user_new.html",
+            email=email,
+            username=username,
+            rol=rol
+        )
 
+    if len(password) < 6:
+        flash("La contraseña debe tener al menos 6 caracteres", "error")
+        return render_template(
+            "user_new.html",
+            email=email,
+            username=username,
+            rol=rol
+        )
 
     if password != confirm_password:
         flash("Las contraseñas no coinciden", "error")
-        return redirect(url_for("users.user_new"))
-    
-    rol = int(rol)
+        return render_template(
+            "user_new.html",
+            email=email,
+            username=username,
+            rol=rol
+        )
 
-    error = create_user(email=email, user_name=username, password=password, role=rol)
-    if error:
-        flash("El email ya esta registrado", "error")
-        return redirect(url_for("users.user_new"))
+    
+    try:
+        rol = int(rol)
+    except ValueError:
+        flash("Debes seleccionar un rol válido", "error")
+        return render_template(
+            "user_new.html",
+            email=email,
+            username=username
+        )
+
+    
+    result = create_user(email=email, user_name=username, password=password, role=rol)
+
+    if isinstance(result, str):
+        flash(result, "error")
+        return render_template(
+            "user_new.html",
+            email=email,
+            username=username,
+            rol=rol
+        )
+
     
     flash("Usuario creado exitosamente", "success")
     return redirect(url_for("users.user_index"))
-
 
 # Ruta para PROCESAR la eliminación de un usuario
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
@@ -98,3 +145,41 @@ def user_delete(user_id):
     
     # Redirige de vuelta a la lista de usuarios.
     return redirect(url_for("users.user_index"))
+
+@user_bp.route("/<string:email>/edit", methods=["GET"])
+def user_edit(email):
+    user = buscar_usuario(email)
+
+    if not user:
+        flash("Usuario no encontrado", "error")
+        return redirect(url_for("users.user_index"))
+
+    return render_template("user_edit.html", user=user) 
+
+@user_bp.route("/<string:email>/update", methods=["POST"])
+def user_update(email):
+    """Procesa los datos y actualiza el usuario."""
+
+    user = buscar_usuario(email)
+    if not user:
+        flash("Usuario no encontrado", "error")
+        return redirect(url_for("users.user_index"))
+    
+    rol_str = request.form.get("role")
+
+    rol_value = int(rol_str)
+    data = {
+        "user_name": request.form.get("user_name"),
+        "role": rol_value,
+        "s_user": True if request.form.get("s_user") == "on" else False
+    }
+
+    success, message = actualizar_usuario(email, **data)
+
+    if success:
+        flash(f"Usuario {data['user_name']} actualizado exitosamente.", "success")
+        return redirect(url_for("users.user_index"))
+    else:
+        # Esto captura errores como problemas de DB o lógica del Core
+        flash(f"Error al actualizar el usuario: {message}", "error")
+        return redirect(url_for("users.user_edit", email=email))

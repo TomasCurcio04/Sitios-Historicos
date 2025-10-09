@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
 from sqlalchemy import desc
 from .users import Users
+import math
 
 """Modulo para gestionar usuarios"""
 
@@ -17,35 +19,45 @@ from sqlalchemy import desc
 from src.core.auth.role import Role
 # Asegúrate de importar db y Users
 
-def listar_usuarios(is_active: bool | None = None, 
- rol: str | None = None, 
- order_by_creation_date: str | None = 'asc',
- search_email=None
-):
-    """ Lista usuarios aplicando solo un criterio """
-    
+def listar_usuarios(page=1, per_page=25, is_active: bool | None = None,
+                    rol: str | None = None, search_email=None,sort_order='asc'):
+    """Lista usuarios aplicando solo un criterio."""
+
     query = db.session.query(Users)
 
-    
     if is_active is not None:
         query = query.filter(Users.active == is_active)
-        return query.all() 
 
-    
     if rol is not None:
         query = query.join(Users.rol_rel).filter(Role.name == rol)
-        return query.all() 
 
-    
-    if order_by_creation_date == 'asc':
-        query = query.order_by(Users.date_create.asc()) 
-    elif order_by_creation_date == 'desc':
-        query = query.order_by(Users.date_create.desc())
-    
     if search_email:
         query = query.filter(Users.email.ilike(f"%{search_email}%"))
-    
-    return query.all()
+
+    if sort_order == 'desc':
+        query = query.order_by(Users.date_create.desc())
+    else:
+        query = query.order_by(Users.date_create.asc())
+
+    total = query.count()
+    items = (
+        query.order_by(Users.date_create.asc())
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+        .all()
+    )
+
+    pages = math.ceil(total / per_page)  
+
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": pages,
+        "sort_order": sort_order
+    }
+
 
 def buscar_usuario(email):
     """Busca un usuario por su correo electrónico y contraseña."""
@@ -88,6 +100,20 @@ def eliminar_usuario(email):
         db.session.commit()
         return user
     return None
+
+def actualizar_usuario(email, **kwargs):
+    user = buscar_usuario(email)
+
+    if not user:
+        return False, "Usuario no encontrado"
+    
+    user.user_name = kwargs.get("user_name", user.user_name)
+    user.role = kwargs.get("role", user.role)
+    user.s_user = kwargs.get("s_user", user.s_user)
+    user.modify = datetime.now(timezone.utc)
+        
+    db.session.commit()
+    return True, "Usuario actualizado."
 
 
 ####Fin de funciones de usuarios###

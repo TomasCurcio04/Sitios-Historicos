@@ -3,143 +3,216 @@
 {% block title %}Gestión de Usuarios{% endblock %}
 {% block content %}
 
-    <h1 class="mb-4">Gestión de Usuarios</h1>
-    <p>Acá podés administrar los usuarios del sistema (ver y eliminar). Haz clic en los encabezados "Activo" y "Rol" para filtrar.</p>
+<h1 class="mb-4">Gestión de Usuarios</h1>
+<p>Acá podés administrar los usuarios del sistema (ver y eliminar). Haz clic en los encabezados "Activo" y "Rol" para filtrar.</p>
 
-    {# BLOQUE DE MENSAJES FLASH (MANTENIDO) #}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="mb-3">
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category if category != 'message' else 'primary' }}">{{ message }}</div>
-            {% endfor %}
+{# BLOQUE DE MENSAJES FLASH CON MEJOR ESTILO #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="row justify-content-center">
+            <div class="col-md-8 mb-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'primary' }} alert-dismissible fade show" role="alert">
+                        <strong>{{ "Éxito:" if category == 'success' else "Error:" if category == 'error' else "Información:" }}</strong> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             </div>
-        {% endif %}
-    {% endwith %}
-    {% if is_authenticated(session) %}
-    
-    <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex mb-3">
-            <input type="email" 
-                   name="email" 
-                   class="form-control me-2" 
-                   placeholder="Buscar usuario por email" 
-                   value="{{ request.args.get('email', '') }}">
-            <button type="submit" class="btn btn-unified">
-                Buscar
-            </button>
+        </div>
+    {% endif %}
+{% endwith %}
+{# FIN DEL BLOQUE FLASH #}
+
+{% if is_authenticated(session) %}
+
+<form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex mb-3">
+    <input type="email"
+           name="email"
+           class="form-control me-2"
+           placeholder="Buscar usuario por email"
+           value="{{ request.args.get('email', '') }}">
+    <button type="submit" class="btn btn-unified">
+        Buscar
+    </button>
+</form>
+
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <div class="d-flex gap-4">
+        <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center">
+            <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
+            <label for="active-filter" class="form-label me-2 mb-0 fw-bold">Estado:</label>
+            <select name="is_active" id="active-filter" class="form-select" onchange="this.form.submit()">
+                <option value="" {% if current_is_active == None or current_is_active == "" %}selected{% endif %}>Todos</option>
+                <option value="True" {% if current_is_active == 'True' %}selected{% endif %}>Activo (Sí)</option>
+                <option value="False" {% if current_is_active == 'False' %}selected{% endif %}>Inactivo (No)</option>
+            </select>
         </form>
 
-        
-
-        <div class="mb-4 d-flex justify-content-between align-items-center">
-        
-        <div class="d-flex gap-4">
-            
-
-            <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center">
-
-                <input type="hidden" name="email" value="{{ request.args.get('email', '') }}"> 
-                
-                <label for="active-filter" class="form-label me-2 mb-0 fw-bold">Estado:</label>
-                <select name="is_active" id="active-filter" class="form-select" onchange="this.form.submit()">
-                    <option value="" {% if current_is_active == None or current_is_active == "" %}selected{% endif %}>Todos</option>
-                    <option value="True" {% if current_is_active == 'True' %}selected{% endif %}>Activo (Sí)</option>
-                    <option value="False" {% if current_is_active == 'False' %}selected{% endif %}>Inactivo (No)</option>
-                </select>
-            </form>
-            
-
-            <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center">
- 
-                <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
-                
-                <label for="rol-filter" class="form-label me-2 mb-0 fw-bold">Rol:</label>
-                <select name="rol" id="rol-filter" class="form-select" onchange="this.form.submit()">
-                    <option value="" {% if current_rol == None or current_rol == "" %}selected{% endif %}>Todos los Roles</option>
-                    <option value="admin" {% if current_rol == 'admin' %}selected{% endif %}>Administrador</option>
-                    <option value="editor" {% if current_rol == 'editor' %}selected{% endif %}>Editor</option>
-                    <option value="viewer" {% if current_rol == 'viewer' %}selected{% endif %}>Visualizador</option>
-                </select>
-            </form>
-        </div>
+        <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center">
+            <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
+            <label for="rol-filter" class="form-label me-2 mb-0 fw-bold">Rol:</label>
+            <select name="rol" id="rol-filter" class="form-select" onchange="this.form.submit()">
+                <option value="" {% if current_rol == None or current_rol == "" %}selected{% endif %}>Todos los Roles</option>
+                <option value="admin" {% if current_rol == 'admin' %}selected{% endif %}>Administrador</option>
+                <option value="editor" {% if current_rol == 'editor' %}selected{% endif %}>Editor</option>
+                <option value="viewer" {% if current_rol == 'viewer' %}selected{% endif %}>Visualizador</option>
+            </select>
+        </form>
     </div>
-    <hr>
-    <h2>Lista de Usuarios</h2>
+</div>
 
-        {% if users %}
-        <div class="table-responsive">
-            <table class="table table-striped table-hover table-sm align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nombre de Usuario</th>
-                        <th scope="col">Email</th>
-                        
-                        <th scope="col">
-                            <a href="{{ url_for('users.user_index', order_by_creation_date='asc' if current_order == 'desc' else 'desc') }}" class="text-white text-decoration-none">
-                                Fecha de Creación
-                                {% if current_order == 'asc' %}▲{% elif current_order == 'desc' %}▼{% endif %}
-                            </a>
-                        </th>
-                        <th scope="col">Activo</th>
-                        <th scope="col">Rol</th>
-                        <th scope="col">Superuser</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in users %}
-                    <tr>
-                        <th scope="row">{{ user.id_user }}</th>
-                        <td>{{ user.user_name }}</td>
-                        <td>{{ user.email }}</td>
-                        
-                        <td>{{ user.date_create.strftime('%d/%m/%Y') if user.date_create else 'N/A' }}</td>
-                        
-                        <td>
-                            <span class="badge bg-{{ 'success' if user.active else 'danger' }}">
-                                {{ 'Sí' if user.active else 'No' }}
-                            </span>
-                        </td>
+<hr>
+<h2>Lista de Usuarios</h2>
 
-                        <td>
-                            <span class="badge bg-info text-dark">
-                                {{ user.rol }}
-                            </span>
-                        </td>
-                        
-                        <td>
-                            <span class="badge bg-{{ 'primary' if user.s_user else 'secondary' }}">
-                                {{ 'Sí' if user.s_user else 'No' }}
-                            </span>
-                        </td>
-                        
-                        <td>
-                            <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
-                                <input type="hidden" name="email" value="{{ user.email }}">
-                                <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
-                                    Eliminar
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="alert alert-info mt-3" role="alert">
-            No hay usuarios registrados en el sistema.
-        </div>
-        {%endif%}
-        <div class="mb-4">
-            <a href="{{ url_for('users.user_new') }}" class="btn btn-unified">
-                Crear Usuario
-            </a>
-            <a href="{{ url_for('users.user_index') }}" class="btn btn-unified">
-                Quitar Filtros
-            </a>
-        </div>
-        {% endif %}
-        {% endblock %}
+{% if users %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover table-sm align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Nombre de Usuario</th>
+                <th scope="col">Email</th>
+
+                {# --- BLOQUE DE ORDENAMIENTO POR FECHA --- #}
+                {% set safe_filters = filters.copy() %}
+                {% if 'sort' in safe_filters %}
+                    {% set _ = safe_filters.pop('sort') %}
+                {% endif %}
+                <th scope="col">
+                    <a href="{{ url_for('users.user_index', sort='desc' if sort_order == 'asc' else 'asc', **safe_filters) }}"
+                       class="text-decoration-none"
+                       style="color: #212529 !important;">
+                        Fecha de Creación
+                    </a>
+                </th>
+                {# --- FIN BLOQUE ORDENAMIENTO --- #}
+
+                <th scope="col">Activo</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Superuser</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.user_name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.date_create.strftime('%d/%m/%Y') if user.date_create else 'N/A' }}</td>
+                <td>
+                    <span class="badge bg-{{ 'success' if user.active else 'danger' }}">
+                        {{ 'Sí' if user.active else 'No' }}
+                    </span>
+                </td>
+                <td>
+                    {% if user.role == 1 %}
+                        Administrador
+                    {% elif user.role == 2 %}
+                        Editor
+                    {% elif user.role == 3 %}
+                        Visualizador
+                    {% else %}
+                        Desconocido
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge bg-{{ 'primary' if user.s_user else 'secondary' }}">
+                        {{ 'Sí' if user.s_user else 'No' }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ url_for('users.user_edit', email=user.email) }}" class="btn btn-unified btn-sm me-2">Editar</a>
+                    {% if user.active %}
+                    <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
+                        <input type="hidden" name="email" value="{{ user.email }}">
+                        <button type="submit" class="btn btn-unified btn-sm me-2"
+                                onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
+                            Eliminar
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# --- PAGINACIÓN --- #}
+{% if pagination["pages"] > 1 %}
+<nav aria-label="Paginación de Usuarios" class="mt-4">
+    {% set page = pagination["page"] %}
+    {% set pages = pagination["pages"] %}
+
+        <ul class="pagination justify-content-center flex-wrap">
+
+            {# Botón Anterior #}
+            <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                <a class="page-link btn-unified px-3 py-1"
+                   href="{{ url_for('users.user_index', page=page - 1, **filters) if page > 1 else '#' }}"
+                   aria-label="Anterior">
+                    &laquo;
+                </a>
+            </li>
+
+            {# Calcular el rango visible #}
+            {% set start_page = 1 if page - 2 < 1 else page - 2 %}
+            {% set end_page = pages if page + 2 > pages else page + 2 %}
+
+            {# Primeras páginas (si no estamos al principio) #}
+            {% if start_page > 1 %}
+                <li class="page-item">
+                    <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=1, **filters) }}">1</a>
+                </li>
+                {% if start_page > 2 %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+            {% endif %}
+
+            {# Páginas visibles #}
+            {% for num in range(start_page, end_page + 1) %}
+                <li class="page-item {% if num == page %}active{% endif %}">
+                    <a class="page-link btn-unified px-3 py-1 {% if num == page %}fw-bold{% endif %}"
+                       href="{{ url_for('users.user_index', page=num, **filters) }}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            {# Últimas páginas (si no estamos al final) #}
+            {% if end_page < pages %}
+                {% if end_page < pages - 1 %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=pages, **filters) }}">{{ pages }}</a>
+                </li>
+            {% endif %}
+
+            {# Botón Siguiente #}
+            <li class="page-item {% if page >= pages %}disabled{% endif %}">
+                <a class="page-link btn-unified px-3 py-1"
+                   href="{{ url_for('users.user_index', page=page + 1, **filters) if page < pages else '#' }}"
+                   aria-label="Siguiente">
+                    &raquo;
+                </a>
+            </li>
+        </ul>
+    {% endif %}
+</nav>
+
+<p class="text-center text-muted mt-2">
+    Mostrando usuarios {{ start }} - {{ end }} de {{ pagination["total"] }}
+</p>
+{% else %}
+<div class="alert alert-info mt-3" role="alert">
+    No hay usuarios registrados que coincidan con los filtros.
+</div>
+{% endif %}
+
+<div class="mb-4 d-flex justify-content-between">
+    <a href="{{ url_for('users.user_new') }}" class="btn btn-unified">Crear Usuario</a>
+    <a href="{{ url_for('users.user_index') }}" class="btn btn-unified">Quitar Filtros</a>
+</div>
+
+{% endif %}
+{% endblock %}
