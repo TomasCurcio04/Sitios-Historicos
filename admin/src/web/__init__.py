@@ -4,6 +4,7 @@ from flask_session import Session
 import os
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.core.auth.bcrypt import bcrypt
@@ -11,7 +12,6 @@ from src.web.handlers.auth import is_authenticated
 from src.web.config import config
 from src.core import database
 from src.core import seeds
-
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
 
@@ -54,9 +54,22 @@ def create_app(env="development"):
         static_folder=static_folder,
     )
 
+    app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
+    # Configuración de la app
+    app.config.from_mapping(
+        DEBUG=True,
+        TESTING=False,
+        DB_HOST='nozomi.proxy.rlwy.net',
+        DB_NAME='railway',
+        DB_USER='postgres',
+        DB_PASSWORD='KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm',
+        DB_PORT='55215',
+        DB_SCHEME='postgresql+psycopg2'
+    )
+
+
     # Configuración
     app.config.from_object(config[env])
-    print(app.config)
 
     # Inicialización de la base de datos
     database.init_db(app)
@@ -81,11 +94,13 @@ def create_app(env="development"):
     app.register_blueprint(issues_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
-
-    # Manejo de errores
-    app.register_error_handler(404, error.not_found)
-    app.register_error_handler(401, error.not_authorized)
-    app.register_error_handler(500, error.internal_server_error)
+    app.register_blueprint(busqueda_avanzada_bp)
+    
+    # Comando CLI para reiniciar la base de datos
+    @app.cli.command("reset-db")
+    def reset_db_command():
+        """Reinicia la base de datos de forma segura."""
+        database.reset_db()
 
     app.jinja_env.globals['is_authenticated'] = is_authenticated
 
