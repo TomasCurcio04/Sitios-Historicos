@@ -6,9 +6,7 @@ Se integra con base de datos usando SQLAlchemy y mantiene soporte JSON para prue
 import os
 import json
 from datetime import datetime
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from src.core.database import Base, engine
+from src.core.database import db
 from src.core.board.site import Site
 from src.core.board.category import Category
 from src.core.board.state import State
@@ -79,153 +77,153 @@ def delete_site_json(site_id):
 def list_sites():
     if USE_JSON:
         return get_all_sites_json()
-    with Session(engine) as session:
-        return session.scalars(select(Site)).all()
+    session = db.session
+    return session.query(Site).all()
 
 def get_site(site_id):
     if USE_JSON:
         return get_site_json(site_id)
-    with Session(engine) as session:
-        return session.get(Site, site_id)
+    session = db.session
+    return session.get(Site, site_id)
 
 def create_site(**kwargs):
     if USE_JSON:
         return create_site_json(kwargs)
     site = Site(**kwargs)
-    with Session(engine) as session:
-        session.add(site)
-        session.commit()
-        session.refresh(site)
-        return site
+    session = db.session
+    session.add(site)
+    session.commit()
+    session.refresh(site)
+    return site
 
 def update_site(site_id, **kwargs):
     if USE_JSON:
         return update_site_json(site_id, kwargs)
-    with Session(engine) as session:
-        site = session.get(Site, site_id)
-        for key, value in kwargs.items():
-            setattr(site, key, value)
-        session.commit()
-        session.refresh(site)
-        return site
+    session = db.session
+    site = session.get(Site, site_id)
+    for key, value in kwargs.items():
+        setattr(site, key, value)
+    session.commit()
+    session.refresh(site)
+    return site
 
 def delete_site(site_id):
     if USE_JSON:
         return delete_site_json(site_id)
-    with Session(engine) as session:
-        site = session.get(Site, site_id)
-        session.delete(site)
-        session.commit()
-        return True
+    session = db.session
+    site = session.get(Site, site_id)
+    session.delete(site)
+    session.commit()
+    return True
 
 # -------------------------
 # Funciones de asignación
 # -------------------------
 def assign_user(site, user):
-    with Session(engine) as session:
-        site = session.merge(site)
-        site.user = user
-        session.commit()
-        session.refresh(site)
-        return site
+    session = db.session
+    site = session.merge(site)
+    site.user = user
+    session.commit()
+    session.refresh(site)
+    return site
 
 def assign_category_to_site(category, site):
-    with Session(engine) as session:
-        site = session.merge(site)
-        site.category_rel = category
-        session.commit()
-        session.refresh(site)
-        return site
+    session = db.session
+    site = session.merge(site)
+    site.category_rel = category
+    session.commit()
+    session.refresh(site)
+    return site
 
 def assign_state_to_site(state, site):
-    with Session(engine) as session:
-        site = session.merge(site)
-        site.state_rel = state
-        session.commit()
-        session.refresh(site)
-        return site
+    session = db.session
+    site = session.merge(site)
+    site.state_rel = state
+    session.commit()
+    session.refresh(site)
+    return site
 
 def assign_tag_to_site(tag, site):
-    with Session(engine) as session:
-        site = session.merge(site)
-        if tag not in site.tag:
-            site.tag.append(tag)
-        session.commit()
-        session.refresh(site)
-        return site
+    session = db.session
+    site = session.merge(site)
+    if tag not in site.tag:
+        site.tag.append(tag)
+    session.commit()
+    session.refresh(site)
+    return site
 
 # -------------------------
 # Funciones de categorías
 # -------------------------
 def list_categories():
-    with Session(engine) as session:
-        return session.scalars(select(Category)).all()
+    session = db.session
+    return session.query(Category).all()
 
 def create_category(**kwargs):
     category = Category(**kwargs)
-    with Session(engine) as session:
-        session.add(category)
-        session.commit()
-        session.refresh(category)
-        return category
+    session = db.session
+    session.add(category)
+    session.commit()
+    session.refresh(category)
+    return category
 
 # -------------------------
 # Funciones de estados/provincias
 # -------------------------
 def list_states():
-    with Session(engine) as session:
-        return session.scalars(select(State)).all()
+    session = db.session
+    return session.query(State).all()
 
 def create_state(**kwargs):
     state = State(**kwargs)
-    with Session(engine) as session:
-        session.add(state)
-        session.commit()
-        session.refresh(state)
-        return state
+    session = db.session
+    session.add(state)
+    session.commit()
+    session.refresh(state)
+    return state
 
 # -------------------------
 # Funciones de historial de sitios
 # -------------------------
 def list_site_history():
-    with Session(engine) as session:
-        return session.scalars(select(SiteHistory)).all()
+    session = db.session
+    return session.query(SiteHistory).all()
 
 def create_site_history(**kwargs):
     site_history = SiteHistory(**kwargs)
-    with Session(engine) as session:
-        session.add(site_history)
-        session.commit()
-        session.refresh(site_history)
-        return site_history
+    session = db.session
+    session.add(site_history)
+    session.commit()
+    session.refresh(site_history)
+    return site_history
 
 def assign_site_to_history(site_history, site):
-    with Session(engine) as session:
-        site_history = session.merge(site_history)
-        site_history.site_rel = site
-        session.commit()
-        session.refresh(site_history)
-        return site_history
+    session = db.session
+    site_history = session.merge(site_history)
+    site_history.site_rel = site
+    session.commit()
+    session.refresh(site_history)
+    return site_history
 
 def assign_user_to_history(site_history, user):
-    with Session(engine) as session:
-        site_history = session.merge(site_history)
-        site_history.user = user
-        session.commit()
-        session.refresh(site_history)
-        return site_history
+    session = db.session
+    site_history = session.merge(site_history)
+    site_history.user = user
+    session.commit()
+    session.refresh(site_history)
+    return site_history
 
 # -------------------------
 # Funciones de tags
 # -------------------------
 def list_tags():
-    with Session(engine) as session:
-        return session.scalars(select(Tag)).all()
+    session = db.session
+    return session.query(Tag).all()
 
 def create_tag(**kwargs):
     tag = Tag(**kwargs)
-    with Session(engine) as session:
-        session.add(tag)
-        session.commit()
-        session.refresh(tag)
-        return tag
+    session = db.session
+    session.add(tag)
+    session.commit()
+    session.refresh(tag)
+    return tag

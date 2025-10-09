@@ -1,31 +1,40 @@
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+"""Módulo para la configuración y manejo de la base de datos SQLAlchemy en una aplicación Flask."""
 
-DATABASE_URL = "postgresql+psycopg2://postgres:KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm@nozomi.proxy.rlwy.net:55215/railway"
+# pylint: disable=import-error
+# pylint: disable=import-outside-toplevel
+# pylint: disable=unused-import
 
-engine = create_engine(DATABASE_URL, echo=True)
-SessionLocal = sessionmaker(bind=engine)
+from flask_sqlalchemy_lite import SQLAlchemy  # pyright: ignore[reportMissingImports]
+from sqlalchemy.orm import DeclarativeBase  # pyright: ignore[reportMissingImports]
+from sqlalchemy import text  # pyright: ignore[reportMissingImports]
 
-class Base(DeclarativeBase):
-    pass
+db = SQLAlchemy()
+"""Inicializa la base de datos SQLAlchemy."""
 
-# Funciones
-def init_db(*args, **kwargs):
-    """Inicializa la base de datos creando todas las tablas."""
-    Base.metadata.create_all(bind=engine)
+
+def init_db(app):
+    """Inicializa la base de datos SQLAlchemy con la aplicación Flask."""
+    db.init_app(app)
+    return db
 
 
 def reset_db():
-    """Reinicia la base de datos: elimina todas las tablas y las vuelve a crear."""
-    print("Eliminando todas las tablas existentes...")
+    """Reinicia la base de datos eliminando todas las tablas y volviéndolas a crear."""
 
-    with engine.connect() as conn:
-        # Borra todo el esquema público con CASCADE (elimina tablas y dependencias)
-        conn.execute(text("DROP SCHEMA public CASCADE"))
-        conn.execute(text("CREATE SCHEMA public"))
-        conn.commit()
+    from src.core.auth.users import Users  # noqa: F401
+    from src.core.board.site import Site  # noqa: F401
+    from src.core.board.category import Category  # noqa: F401
+    from src.core.board.state import State  # noqa: F401
 
-    print("Creando todas las tablas nuevamente...")
-    Base.metadata.create_all(bind=engine)
-    print("Base de datos reiniciada correctamente.")
+    print("Reiniciando la base de datos...")
+    Base.metadata.drop_all(bind=db.engine)
+    # with db.engine.begin() as conn:
+    #     conn.execute(text("DROP SCHEMA public CASCADE"))
+    #     conn.execute(text("CREATE SCHEMA public"))
 
+    Base.metadata.create_all(bind=db.engine)
+    print("✔️  Base de datos reiniciada.")
+
+
+class Base(DeclarativeBase):
+    """Clase base para los modelos de la base de datos."""
