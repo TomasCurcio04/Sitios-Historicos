@@ -1,9 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Búsqueda avanzada | Mi aplicación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/sitios.css">
+</head>
 {% extends "layout.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='sitios.css') }}">
+    
+{% endblock %}
 
 {% block title %}Búsqueda avanzada | Mi aplicación{% endblock %}
 
 {% block content %}
 <h1>Búsqueda Avanzada de Sitios Históricos</h1>
+
+  <label>Provincia:
+        <select name="provincia">
+            <option value="" {% if provincia=="" %}selected{% endif %}>--Cualquiera--</option>
+            {% for p in provincias %}
+                <option value="{{ p }}" {% if provincia==p %}selected{% endif %}>{{ p }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <br>
 
 <form method="get" action="{{ url_for('busqueda_avanzada.index') }}">
     <label>Ciudad:
@@ -86,6 +110,7 @@
     <thead>
         <tr>
             <th>Nombre</th>
+            <th >Provincia  </th>
             <th>Ciudad</th>
             <th>Estado de conservación</th>
             <th>Visibilidad</th>
@@ -96,6 +121,7 @@
         {% for r in results %}
         <tr>
             <td>{{ r.name }}</td>
+            <td>{{ r.state_rel.name}}</td>
             <td>{{ r.city }}</td>
             <td>{{ r.conservation_state }}</td>
             <td>{% if r.is_visible %}Visible{% else %}No visible{% endif %}</td>
@@ -131,5 +157,5 @@
 <p>No se encontraron resultados.</p>
 {% endif %}
 
-<a href="{{ url_for('web.home') }}">Volver al inicio</a>
+<a href="{{ url_for('issues.index') }}">Volver al menu de sitios</a>
 {% endblock %}
