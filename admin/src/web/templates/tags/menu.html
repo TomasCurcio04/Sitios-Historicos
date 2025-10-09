@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Menú de Etiquetas{% endblock %}
+
+{% block content %}
+<h1>Menú de Etiquetas</h1>
+
+<ul>
+    <li><a href="{{ url_for('tags.create_tag_form') }}">Crear nueva etiqueta</a></li>
+    <li><a href="{{ url_for('tags.list_tags') }}">Listar todas las etiquetas</a></li>
+    <li><a href="{{ url_for('tags.edit_all_tags') }}">Actualizar etiquetas</a></li>
+     <li><a href="{{ url_for('tags.delete_all_tags') }}">Eliminar etiquetas</a></li> 
+  </ul>
+{% endblock %}
+
+

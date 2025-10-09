@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Listar Etiquetas{% endblock %}
+
+{% block content %}
+<h1>Listado de Etiquetas</h1>
+<p>Total de etiquetas encontradas: {{ total_results }}</p>
+
+{% set endpoint = 'tags.list_tags' %}
+
+{% include "tags/_busqueda_orden.html" %}
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Slug</th>
+            <th>Fecha creación</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in tags %}
+        <tr>
+            <td>{{ t.name }}</td>
+            <td>{{ t.slug }}</td>
+            <td>{{ t.date_created.strftime("%Y-%m-%d") }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No se encontraron etiquetas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('tags.menu_tags') }}">Volver al menú</a>
+{% endblock %}
+
+
+
