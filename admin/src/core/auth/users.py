@@ -38,4 +38,8 @@ class Users(Base):
 
     def __repr__(self):
         return f"<Users(user_name='{self.user_name}', email='{self.email}')>"
-        # , role={self.role})>"
+        # , role={self.role})>"}
+
+    def is_authenticated(self):
+        """Indica si el usuario está autenticado."""
+        return True

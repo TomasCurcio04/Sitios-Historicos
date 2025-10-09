@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Mi App{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
     <div class="wrapper">
         <!-- Topbar -->
@@ -35,21 +37,29 @@
         <div class="container">
             <!-- Menú lateral -->
             <nav class="sidenav" id="sidenav">
-                <a href="{{ url_for('web.gestionsitioshistoricos') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
+                <a href="{{ url_for('web.gestionsitioshistoricos') }}"
+                    class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
                     Gestión de sitios históricos
                 </a>
-                <a href="{{ url_for('web.validacion_propuesta') }}" class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
+                <a href="{{ url_for('web.validacion_propuesta') }}"
+                    class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
                     Validación de propuestas
                 </a>
-                <a href="{{ url_for('web.moderacion_resenias') }}" class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
+                <a href="{{ url_for('web.moderacion_resenias') }}"
+                    class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
                     Moderación de reseñas
                 </a>
-                <a href="{{ url_for('web.gestion_usuarios') }}" class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
+                <a href="{{ url_for('web.gestion_usuarios') }}"
+                    class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
                     Gestión de usuarios
+                </a>
+                <a href="{{ url_for('web.feature_flags') }}"
+                    class="{% if request.path == '/feature_flags' %}active{% endif %}">
+                    Feature Flags
                 </a>
             </nav>
 
-            <!-- Contenido dinámico -->    
+            <!-- Contenido dinámico -->
             <main>
                 {% block content %}{% endblock %}
             </main>
@@ -85,4 +95,5 @@
         });
     </script>
 </body>
+
 </html>

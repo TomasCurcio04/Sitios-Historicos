@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block title %}Administración de flags{% endblock %}
+
+{% block content %}
+<h1>Feature Flags</h1>
+<p>Sección destinada a la activación/desactivación de feature flags</p>
+
+<a href="{{ url_for('web.home') }}" class="btn btn-primary">Volver al Inicio</a>
+{% endblock %}

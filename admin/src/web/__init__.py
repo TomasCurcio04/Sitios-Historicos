@@ -1,11 +1,15 @@
 # pylint: disable=import-error
-from flask import Flask, render_template, Blueprint
+"""Inicialización del módulo web de la aplicación Flask."""
 import os
+from flask import Flask, render_template, Blueprint
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
 from src.web.config import config
 from src.core import database
 from src.core import seeds
+from src.web.utils import admin_maintenance_required
+
+# from flask import redirect, url_for, flash, session
 
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
@@ -35,6 +39,45 @@ def moderacion_resenias():
 @web.route("/gestion_usuarios")
 def gestion_usuarios():
     return render_template("gestion_usuarios.html")
+
+
+@web.route("/feature_flags", endpoint="feature_flags")
+@admin_maintenance_required
+def feature_flags():
+    """Vista del menu de feature flags."""
+    return render_template("feature_flags.html")
+
+
+@web.route("/mantenimiento_admin", endpoint="mantenimiento_admin")
+def mantenimiento_admin():
+    """Vista de mantenimiento administrativo."""
+    return render_template("mantenimiento_admin.html")
+
+
+@web.before_request
+def check_admin_maintenance():
+    from src.core import auth
+    from flask import request, redirect, url_for
+
+    flag = auth.get_feature_flag("admin_maintenance_mode")
+    if not flag or not flag.enabled:
+        return
+
+    exempt_endpoints = ["login", "static", "web.feature_flags"]
+    if request.endpoint in exempt_endpoints:
+        return
+    usuario = auth.current_user()
+    if not usuario.is_authenticated():
+        return render_template(
+            "mantenimiento_admin.html", message=flag.maintenance_message
+        )
+
+    if getattr(auth.current_user(), "s_user", False):
+        # Si ya está en feature_flags, no redirigir
+        if request.endpoint != "web.feature_flags":
+            return redirect(url_for("web.feature_flags"))
+
+    return render_template("mantenimiento_admin.html", message=flag.maintenance_message)
 
 
 def create_app(env="development"):

@@ -5,6 +5,7 @@ from src.core.database import db
 from src.core.auth.users import Users
 from src.core.auth.role import Role
 from src.core.auth.permission import Permission
+from src.core.auth.feature_flag import FeatureFlag
 
 
 ####Funciones de usuarios###
@@ -80,25 +81,26 @@ def create_permission(**kwargs):
 
 def list_feature_flags():
     """Función para listar todas las feature flags."""
-    from src.core.auth import feature_flags
 
-    flags = db.session.query(feature_flags.FeatureFlag).all()
+    flags = db.session.query(FeatureFlag).all()
     return flags
+
+
+# flag = FeatureFlag.get_flag("admin_maintenance_mode")
+# print(flag.enabled)
 
 
 def get_feature_flag(name):
     """Función para obtener una feature flag por su nombre."""
-    from src.core.auth import feature_flags
 
-    flag = feature_flags.FeatureFlag.get_flag(name)
+    flag = FeatureFlag.get_flag(name)
     return flag
 
 
 def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
     """Función para modificar una feature flag."""
-    from src.core.auth import feature_flags
 
-    flag = feature_flags.FeatureFlag.get_flag(name)
+    flag = FeatureFlag.get_flag(name)
     if flag:
         flag.enabled = enabled
         flag.updated_by = updated_by
@@ -106,6 +108,11 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
             flag.maintenance_message = maintenance_message
         db.session.commit()
     return flag
+
+
+# Placeholder para current_user, en una aplicación real esto vendría de Flask-Login u otro sistema de autenticación
+def current_user():
+    return Users(id_user=1, user_name="admin", s_user=False)
 
 
 # ####Fin de funciones de feature flags###

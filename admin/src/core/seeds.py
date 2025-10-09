@@ -4,7 +4,8 @@
 
 from src.core import board
 from src.core import auth
-from src.core.auth import feature_flags
+
+# from src.core.auth import feature_flag
 
 
 def run():
@@ -128,21 +129,21 @@ def run():
     )
 
     flags = [
-        feature_flags.FeatureFlag(
+        auth.FeatureFlag(
             name="admin_maintenance_mode",
             description="Modo mantenimiento de administración",
             enabled=False,
             maintenance_message="El sistema de administración está en mantenimiento.",
             updated_by=user1.id_user,
         ),
-        feature_flags.FeatureFlag(
+        auth.FeatureFlag(
             name="portal_maintenance_mode",
             description="Modo mantenimiento de portal web",
             enabled=False,
             maintenance_message="El portal está en mantenimiento.",
             updated_by=user1.id_user,
         ),
-        feature_flags.FeatureFlag(
+        auth.FeatureFlag(
             name="reviews_enabled",
             description="Permitir nuevas reseñas",
             enabled=True,

@@ -27,10 +27,9 @@ class FeatureFlag(Base):
     def __repr__(self):
         return f"<FeatureFlag(name={self.name}, enabled={self.enabled})>"
 
+    @staticmethod
+    def get_flag(name):
+        """Obtener una Feature Flag por su nombre."""
+        from src.core.database import db  # Import here to avoid circular imports
 
-@staticmethod
-def get_flag(name):
-    """Obtener una Feature Flag por su nombre."""
-    from src.core.database import db  # Import here to avoid circular imports
-
-    return db.session.query(FeatureFlag).filter_by(name=name).first()
+        return db.session.query(FeatureFlag).filter_by(name=name).first()
