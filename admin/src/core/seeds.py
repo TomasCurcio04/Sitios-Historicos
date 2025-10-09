@@ -4,6 +4,7 @@
 
 from src.core import board
 from src.core import auth
+from src.core.auth import feature_flags
 
 
 def run():
@@ -124,6 +125,30 @@ def run():
         inauguration_year=1610,
     )
 
+    flags = [
+        feature_flags.FeatureFlag(
+            name="admin_maintenance_mode",
+            description="Modo mantenimiento de administración",
+            enabled=False,
+            maintenance_message="El sistema de administración está en mantenimiento.",
+            updated_by=user1.id_user,
+        ),
+        feature_flags.FeatureFlag(
+            name="portal_maintenance_mode",
+            description="Modo mantenimiento de portal web",
+            enabled=False,
+            maintenance_message="El portal está en mantenimiento.",
+            updated_by=user1.id_user,
+        ),
+        feature_flags.FeatureFlag(
+            name="reviews_enabled",
+            description="Permitir nuevas reseñas",
+            enabled=True,
+            maintenance_message=None,
+            updated_by=user1.id_user,
+        ),
+    ]
+    board.db.session.add_all(flags)
     board.db.session.commit()
     board.db.session.close()
     print("✔️   DB rellenada con datos de prueba.")

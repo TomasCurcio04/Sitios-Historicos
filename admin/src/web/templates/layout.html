@@ -17,13 +17,22 @@
                 </div>
 
                 <div class="topbar-right">
+                    {% if 'user' in session %}
                     <div class="user-dropdown">
-                        <button id="user-btn">Usuario &#9662;</button>
+                        <button id="user-btn">
+                            {{ session['user'] }} &#9662; 
+                        </button>
                         <div id="user-menu" class="user-dropdown-content">
                             <a href="javascript:void(0)">Ver perfil</a>
-                            <a href="javascript:void(0)">Cerrar sesión</a>
+                            <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
                         </div>
                     </div>
+                    {% else %}
+                    <div class="login-button">
+                        <a href="{{ url_for('auth.login') }}" class="user-dropdown">Iniciar Sesión</a>
+                    </div>
+                    {% endif %}
+                    
 
                     <!-- Botón menú móvil -->
                     <div class="menu-toggle" id="menu-toggle">&#9776;</div>
@@ -35,7 +44,7 @@
         <div class="container">
             <!-- Menú lateral -->
             <nav class="sidenav" id="sidenav">
-                <a href="{{ url_for('web.gestionsitioshistoricos') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
+                <a href="{{ url_for('issues.index') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
                     Gestión de sitios históricos
                 </a>
                 <a href="{{ url_for('web.validacion_propuesta') }}" class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
@@ -44,7 +53,7 @@
                 <a href="{{ url_for('web.moderacion_resenias') }}" class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
                     Moderación de reseñas
                 </a>
-                <a href="{{ url_for('web.gestion_usuarios') }}" class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
+                <a href="{{ url_for('users.user_index') }}" class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
                     Gestión de usuarios
                 </a>
             </nav>
