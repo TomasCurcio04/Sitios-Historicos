@@ -44,7 +44,7 @@
         <div class="container">
             <!-- Menú lateral -->
             <nav class="sidenav" id="sidenav">
-                <a href="{{ url_for('web.gestionsitioshistoricos') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
+                <a href="{{ url_for('issues.index') }}" class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
                     Gestión de sitios históricos
                 </a>
                 <a href="{{ url_for('web.validacion_propuesta') }}" class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
