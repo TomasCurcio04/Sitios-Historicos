@@ -1,9 +1,14 @@
 # pylint: disable=import-error
 """Modelo de Feature Flags para la tabla 'feature_flag' en la base de datos."""
+
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from src.core.database import Base
+
+if TYPE_CHECKING:
+    from src.core.auth.users import Users
 
 
 class FeatureFlag(Base):
@@ -18,8 +23,8 @@ class FeatureFlag(Base):
     maintenance_message: Mapped[str] = mapped_column(String(255), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda x: datetime.now(timezone.utc),
-        onupdate=lambda x: datetime.now(timezone.utc),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
     updated_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
     user: Mapped["Users"] = relationship(back_populates="flags")
@@ -30,6 +35,6 @@ class FeatureFlag(Base):
     @staticmethod
     def get_flag(name):
         """Obtener una Feature Flag por su nombre."""
-        from src.core.database import db  # Import here to avoid circular imports
+        from src.core.database import db
 
         return db.session.query(FeatureFlag).filter_by(name=name).first()

@@ -51,7 +51,7 @@ class Site(Base):
     )
     category_rel: Mapped["Category"] = relationship(back_populates="sites")
     date_registered: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda x: datetime.now(timezone.utc)
+        DateTime, default=lambda: datetime.now(timezone.utc)
     )
     is_visible: Mapped[bool] = mapped_column(
         Boolean,

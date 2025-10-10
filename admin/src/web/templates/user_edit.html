@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Usuario{% endblock %}
+{% block content %}
+
+    {# BLOQUE DE MENSAJES FLASH (IMPORTANTE PARA MOSTRAR ERRORES DE CONTRASEÑA) #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mb-3">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'primary' }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <h1 class="mb-4">Editar Usuario: {{ user.email }}</h1>
+
+    <form action="{{ url_for('users.user_update', email=user.email) }}" method="POST">
+
+        <div class="mb-3">
+            <label for="username" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="username" name="user_name" value="{{ user.user_name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="rol" class="form-label">Rol:</label>
+            <select class="form-select" id="rol" name="role" required>
+                <option value="1" {% if user.rol == 'admin' or user.rol == 1 %}selected{% endif %}>Administrador</option>
+                <option value="2" {% if user.rol == 'editor' or user.rol == 2 %}selected{% endif %}>Editor</option>
+                <option value="3" {% if user.rol == 'viewer' or user.rol == 3 %}selected{% endif %}>Visualizador</option>
+            </select>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="s_user" name="s_user" {% if user.s_user %}checked{% endif %}>
+            <label class="form-check-label" for="s_user">
+                Superusuario
+            </label>
+        </div>
+        
+        <button type="submit" class="btn btn-unified">Guardar Cambios</button>
+        <a href="{{ url_for('users.user_index') }}" class="btn btn-unified">Cancelar</a>
+    </form>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Crear Etiqueta{% endblock %}
+{% block content %}
+<h1>Crear nueva etiqueta</h1>
+
+<form method="post" action="{{ url_for('tags.create_tag') }}">
+  <label>Nombre:</label>
+  <input type="text" name="name" required>
+  <button type="submit">Crear</button>
+</form>
+
+<a href="{{ url_for('tags.menu_tags') }}">⬅️ Volver al menú</a>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <script>
+                alert("{{ message }}");
+                window.location.href = "{{ url_for('tags.create_tag_form') }}";
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+{% endblock %}

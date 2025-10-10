@@ -1,18 +1,26 @@
 # pylint: disable=import-error
 """Inicialización del módulo web de la aplicación Flask."""
+from flask import Flask, render_template, Blueprint
+from flask_session import Session
 import os
 from flask import Flask, render_template, Blueprint
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.tags import bp as tags_bp
+from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
+from src.web.controllers.auth import bp as auth_bp
+from src.web.controllers.users import user_bp
+from src.core.auth.bcrypt import bcrypt
+from src.web.handlers.auth import is_authenticated
 from src.web.config import config
 from src.core import database
 from src.core import seeds
 from src.web.utils import admin_maintenance_required
 
-# from flask import redirect, url_for, flash, session
-
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
+
+session = Session()
 
 
 # Rutas del blueprint
@@ -34,11 +42,6 @@ def validacion_propuesta():
 @web.route("/moderacion_resenias")
 def moderacion_resenias():
     return render_template("moderacion_resenias.html")
-
-
-@web.route("/gestion_usuarios")
-def gestion_usuarios():
-    return render_template("gestion_usuarios.html")
 
 
 @web.route("/feature_flags", endpoint="feature_flags")
@@ -95,12 +98,28 @@ def create_app(env="development"):
         static_folder=static_folder,
     )
 
+    app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
+    # Configuración de la app
+    app.config.from_mapping(
+        DEBUG=True,
+        TESTING=False,
+        DB_HOST="nozomi.proxy.rlwy.net",
+        DB_NAME="railway",
+        DB_USER="postgres",
+        DB_PASSWORD="KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm",
+        DB_PORT="55215",
+        DB_SCHEME="postgresql+psycopg2",
+    )
+
     # Configuración
     app.config.from_object(config[env])
-    print(app.config)
 
     # Inicialización de la base de datos
     database.init_db(app)
+    # Inicializando Session
+    session.init_app(app)
+    # Inicializando Bcrypt
+    bcrypt.init_app(app)
 
     # Register commands
     @app.cli.command("reset-db")
@@ -116,10 +135,17 @@ def create_app(env="development"):
     # Registrar blueprints
     app.register_blueprint(web)
     app.register_blueprint(issues_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(busqueda_avanzada_bp)
+    app.register_blueprint(tags_bp)
 
-    # Manejo de errores
-    app.register_error_handler(404, error.not_found)
-    app.register_error_handler(401, error.not_authorized)
-    app.register_error_handler(500, error.internal_server_error)
+    # Comando CLI para reiniciar la base de datos
+    @app.cli.command("reset-db")
+    def reset_db_command():
+        """Reinicia la base de datos de forma segura."""
+        database.reset_db()
+
+    app.jinja_env.globals["is_authenticated"] = is_authenticated
 
     return app
