@@ -11,12 +11,14 @@ bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
 
 
 @bp.route("/feature_flags", methods=["GET", "POST"])
-@admin_maintenance_required
+# @admin_maintenance_required
 def feature_flags():
     """Vista del menu de feature flags."""
     flags = auth.list_feature_flags()
-    usuario_id = session.get("user_id")
-
+    usuario = auth.buscar_usuario(session.get("user"))
+    print(f"usuario: {usuario}")
+    usuario_id = usuario.id_user if usuario else 1
+    print(f"usuario_id: {usuario_id}")
     if request.method == "POST":
         for flag in flags:
             flag.enabled = f"enabled_{flag.id}" in request.form

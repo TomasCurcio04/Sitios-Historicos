@@ -15,6 +15,7 @@
                 <th>Activo</th>
                 <th>Mensaje de mantenimiento</th>
                 <th>Última actualización</th>
+                <th>Administrador</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +32,13 @@
                 </td>
                 <td>
                     {{ flag.updated_at.strftime('%d/%m/%Y %H:%M') if flag.updated_at else '—' }}
+                </td>
+                <td>
+                    {% if flag.user %}
+                    {{ flag.user.user_name }}
+                    {% else %}
+                    —
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
