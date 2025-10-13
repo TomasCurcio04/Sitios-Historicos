@@ -26,6 +26,7 @@ from src.core import database
 from src.core import seeds
 from src.web.utils import admin_maintenance_required
 from src.core import auth
+from src.web.handlers.auth import login_required
 
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
@@ -35,15 +36,15 @@ session = Session()
 
 # Rutas del blueprint
 @web.route("/", endpoint="home")
+@login_required
 def home():
-    if not is_authenticated(current_user):
-        print("Entré aca en no es usuario autenticado")
-        return render_template("login.html")
+
     print("Entré aca en es usuario autenticado")
     return render_template("home.html")
 
 
 @web.route("/gestionsitioshistoricos")
+@login_required
 def gestionsitioshistoricos():
     return render_template("gestionsitioshistoricos.html")
 
@@ -59,6 +60,7 @@ def moderacion_resenias():
 
 
 @web.route("/feature_flags", methods=["GET", "POST"], endpoint="feature_flags")
+@login_required
 @admin_maintenance_required
 def feature_flags():
     """Vista del menu de feature flags."""

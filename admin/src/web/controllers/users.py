@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user, buscar_usuario, actualizar_usuario
 from src.core.auth.users import Users, EMAIL_REGEX
 import re
+from src.web.handlers.auth import admin_required
 
 
 
@@ -12,14 +13,16 @@ import re
 user_bp = Blueprint("users", __name__, url_prefix="/gestion_usuarios")
 
 
+
 # Ruta para LISTAR usuarios
 @user_bp.route("/", methods=["GET"])
+@admin_required
 def user_index():
     """Muestra la lista de todos los usuarios con filtros y ordenamiento."""
     
     page = request.args.get('page', 1, type=int)
     PER_PAGE = 25
-
+    
     is_active_param = request.args.get('is_active', type=str)
 
     rol_param = request.args.get('rol', type=str)
@@ -65,12 +68,14 @@ def user_index():
 
 # Ruta para el formulario de CREAR nuevo usuario
 @user_bp.route("/new", methods=["GET"])
+@admin_required
 def user_new():
     """Muestra el formulario para crear un nuevo usuario. Endpoint: users.user_new"""
     # Aquí irá el formulario real de creación
     return render_template("user_new.html")
 
 @user_bp.route("/create", methods=["POST"])
+@admin_required
 def user_create():
     # Obtener los datos del formulario
     email = request.form.get("email", "").strip().lower()
@@ -136,6 +141,7 @@ def user_create():
 
 # Ruta para PROCESAR la eliminación de un usuario
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
+@admin_required
 def user_delete(user_id):
     """Elimina un usuario por su ID y redirige a la lista. Endpoint: users.user_delete"""
     email = request.form.get("email")
@@ -147,6 +153,7 @@ def user_delete(user_id):
     return redirect(url_for("users.user_index"))
 
 @user_bp.route("/<string:email>/edit", methods=["GET"])
+@admin_required
 def user_edit(email):
     user = buscar_usuario(email)
 
@@ -157,6 +164,7 @@ def user_edit(email):
     return render_template("user_edit.html", user=user) 
 
 @user_bp.route("/<string:email>/update", methods=["POST"])
+@admin_required
 def user_update(email):
     """Procesa los datos y actualiza el usuario."""
 
