@@ -1,17 +1,14 @@
+# pylint: disable=import-error
 """Módulo de autenticación y autorización."""
 
 import math
 from datetime import datetime, timezone
 from src.core.auth.users import Users
 from src.core.auth.feature_flag import FeatureFlag
-
 from sqlalchemy import desc
-
 from src.core.database import db
-
 from src.core.auth.role import Role
 from src.core.auth.permission import Permission
-
 from src.core.auth.bcrypt import bcrypt
 
 
@@ -68,6 +65,7 @@ def buscar_usuario(email):
 
 
 def verificar_usuario(email, password):
+    """Verifica las credenciales de un usuario."""
     user = buscar_usuario(email)
     if not user:
         return None, "Email o contraseña incorrectos"
@@ -127,6 +125,10 @@ def actualizar_usuario(email, **kwargs):
 
     db.session.commit()
     return True, "Usuario actualizado."
+
+
+def obtener_usuario_por_id(usuario_id):
+    return db.session.query(Users).get(usuario_id)
 
 
 ####Fin de funciones de usuarios###

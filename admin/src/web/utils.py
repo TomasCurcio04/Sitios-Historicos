@@ -1,7 +1,7 @@
 # pylint: disable=import-error
 """Utilidades para la aplicación web."""
 
-from flask import render_template, flash
+from flask import flash, session as current_user, abort
 from src.core import auth
 
 
@@ -11,13 +11,21 @@ def admin_maintenance_required(view):
 
     def wrapped_view(*args, **kwargs):
         flag = auth.get_feature_flag("admin_maintenance_mode")
-        print(flag)
+        usuario = auth.buscar_usuario(current_user.get("user"))
+        if not usuario or not (usuario.s_user or usuario.role("1")):
+            abort(403)
         if flag and flag.enabled:
-            # if not getattr(current_user, "is_sysadmin", False):
             flash(flag.maintenance_message or "Mantenimiento", "warning")
-            return render_template(
-                "mantenimiento_admin.html", message=flag.maintenance_message
-            )
         return view(*args, **kwargs)
 
     return wrapped_view
+
+
+def usuario_actual():
+    """Obtiene el usuario actual."""
+    if not current_user.get("usuario_id"):
+        return None
+    usuario_id = current_user.get("usuario_id")
+    if usuario_id:
+        return auth.obtener_usuario_por_id(usuario_id)
+    return None
