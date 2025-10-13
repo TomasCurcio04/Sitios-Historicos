@@ -2,21 +2,25 @@
 """Módulo controlador de feature flags"""
 
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session
-
+import logging
 from src.core.database import db
 from src.web.utils import admin_maintenance_required
 from src.core import auth
 
-bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
+feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
 
 
-@bp.route("/feature_flags", methods=["GET", "POST"])
-# @admin_maintenance_required
+@feature_flags_bp.route("/", methods=["GET", "POST"], endpoint="feature_flags")
+@admin_maintenance_required
 def feature_flags():
     """Vista del menu de feature flags."""
     flags = auth.list_feature_flags()
-    usuario = auth.buscar_usuario(session.get("user"))
-    print(f"usuario: {usuario}")
+    try:
+        usuario = auth.buscar_usuario(session.get("user"))
+        print(f"usuario: {usuario}")
+    except Exception as e:
+        print(f"Error al buscar usuario: {e}")
+
     usuario_id = usuario.id_user if usuario else 1
     print(f"usuario_id: {usuario_id}")
     if request.method == "POST":

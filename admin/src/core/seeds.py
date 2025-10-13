@@ -45,7 +45,19 @@ def run():
     user3 = auth.create_user(
         user_name="viewer", email="viewer@mysite.com", password="viewerpass", role=3
     )
-
+    user4 = auth.create_user(
+        user_name="supereditor",
+        email="seditor@mysite.com",
+        password="seditorpass",
+        role=2,
+        s_user=True,
+    )
+    user5 = auth.create_user(
+        user_name="normaladmin",
+        email="nadmin@mysite.com",
+        password="nadminpass",
+        role=1,
+    )
     board_category1 = board.create_category(
         name="Monumento", description="Monumento histórico"
     )
