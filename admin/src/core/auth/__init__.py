@@ -198,7 +198,7 @@ def assign_permission(role_id, permission_id):
 def list_feature_flags():
     """Función para listar todas las feature flags."""
 
-    flags = db.session.query(FeatureFlag).all()
+    flags = db.session.query(FeatureFlag).order_by(FeatureFlag.id).all()
     return flags
 
 
@@ -240,7 +240,7 @@ def update_feature_flags(flags_data, updated_by):
     
     if has_changes:
         db.session.commit()
-    return flags
+    return has_changes
 
 
 ####Fin de funciones de feature flags###

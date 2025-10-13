@@ -23,8 +23,11 @@ def feature_flags():
                 "enabled": f"enabled_{flag.id}" in request.form,
                 "maintenance_message": request.form.get(f"mensaje_{flag.id}", ""),
             }
-        auth.update_feature_flags(flags_data, usuario_id)
-        flash("Feature flags actualizados correctamente", "success")
+        has_changes = auth.update_feature_flags(flags_data, usuario_id)
+        if has_changes:
+            flash("Feature flags actualizados correctamente", "success")
+        else:
+            flash("No se detectaron cambios", "info")
         return redirect(url_for("feature_flags.feature_flags"))
 
     return render_template("feature_flags.html", flags=flags)
