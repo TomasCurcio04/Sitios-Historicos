@@ -13,14 +13,6 @@
 
 
 
-
-{% if not (is_authenticated(session)) %}
-
-<h1 class="mb-4">Gestión de sitios históricos</h1>
-<p>Acá podés administrar los sitios históricos del sistema (ver, editar y eliminar).</p>
-
-{% else %}
-
 <h1>Listado de Sitios Históricos</h1>
 
 <!-- Flash messages -->
@@ -179,7 +171,7 @@
 
 {% else %}
 <p style="text-align:center; font-size:1.1rem; color:#666;">No hay sitios históricos registrados.</p>
-{% endif %}
+
 {% endif %}
 </body>
 </html>
