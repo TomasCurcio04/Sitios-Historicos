@@ -198,7 +198,7 @@ def assign_permission(role_id, permission_id):
 def list_feature_flags():
     """Función para listar todas las feature flags."""
 
-    flags = db.session.query(FeatureFlag).all()
+    flags = db.session.query(FeatureFlag).order_by(FeatureFlag.id).all()
     return flags
 
 
@@ -220,6 +220,27 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
             flag.maintenance_message = maintenance_message
         db.session.commit()
     return flag
+
+
+def update_feature_flags(flags_data, updated_by):
+    """Función para actualizar múltiples feature flags."""
+    flags = list_feature_flags()
+    has_changes = False
+    for flag in flags:
+        flag_id = str(flag.id)
+        if flag_id in flags_data:
+            new_enabled = flags_data[flag_id].get('enabled', False)
+            new_message = flags_data[flag_id].get('maintenance_message', '')
+            
+            if flag.enabled != new_enabled or flag.maintenance_message != new_message:
+                flag.enabled = new_enabled
+                flag.maintenance_message = new_message
+                flag.updated_by = updated_by
+                has_changes = True
+    
+    if has_changes:
+        db.session.commit()
+    return has_changes
 
 
 ####Fin de funciones de feature flags###

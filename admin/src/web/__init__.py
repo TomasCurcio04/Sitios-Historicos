@@ -18,6 +18,7 @@ from src.web.controllers.tags import bp as tags_bp
 from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
+from src.web.controllers.feature_flags import feature_flags_bp
 
 from src.core.auth.bcrypt import bcrypt
 from src.web.handlers.auth import is_authenticated
@@ -59,26 +60,28 @@ def moderacion_resenias():
     return render_template("moderacion_resenias.html")
 
 
-@web.route("/feature_flags", methods=["GET", "POST"], endpoint="feature_flags")
-@login_required
-@admin_maintenance_required
-def feature_flags():
-    """Vista del menu de feature flags."""
-    flags = auth.list_feature_flags()
-    print(f"DEBUG: Flags obtenidos: {flags}")
-    print(f"DEBUG: Cantidad de flags: {len(flags) if flags else 0}")
-    usuario_id = current_user.get("user_id")
+# @web.route("/feature_flags")
+# def feature_flags():
+#     return render_template("feature_flags.html")
 
-    if request.method == "POST":
-        for flag in flags:
-            flag.enabled = f"enabled_{flag.id}" in request.form
-            flag.maintenance_message = request.form.get(f"mensaje_{flag.id}", "")
-            flag.updated_by = usuario_id
-        database.db.session.commit()
-        flash("Feature flags actualizados correctamente", "success")
-        return redirect(url_for("web.feature_flags"))
 
-    return render_template("feature_flags.html", flags=flags)
+# @web.route("/feature_flags", methods=["GET", "POST"], endpoint="feature_flags")
+# @admin_maintenance_required
+# def feature_flags():
+#     """Vista del menu de feature flags."""
+#     flags = auth.list_feature_flags()
+#     usuario_id = current_user.get("user_id") or current_user.get("id") or 1
+
+#     if request.method == "POST":
+#         for flag in flags:
+#             flag.enabled = f"enabled_{flag.id}" in request.form
+#             flag.maintenance_message = request.form.get(f"mensaje_{flag.id}", "")
+#             flag.updated_by = usuario_id or 1
+#         database.db.session.commit()
+#         flash("Feature flags actualizados correctamente", "success")
+#         return redirect(url_for("web.feature_flags"))
+
+#     return render_template("feature_flags.html", flags=flags)
 
 
 @web.route("/mantenimiento_admin", endpoint="mantenimiento_admin")
@@ -156,6 +159,7 @@ def create_app(env="development"):
     app.register_blueprint(user_bp)
     app.register_blueprint(busqueda_avanzada_bp)
     app.register_blueprint(tags_bp)
+    app.register_blueprint(feature_flags_bp)
 
     app.jinja_env.globals["is_authenticated"] = is_authenticated
 
@@ -166,7 +170,13 @@ def create_app(env="development"):
         if not flag or not flag.enabled:
             return
 
-        exempt_endpoints = ["auth.login", "auth.logout", "auth.authenticate", "static"]
+        exempt_endpoints = [
+            "auth.login",
+            "auth.logout",
+            "auth.authenticate",
+            "static",
+            "feature_flags.feature_flags",
+        ]
 
         if request.endpoint in exempt_endpoints:
             return
@@ -181,7 +191,7 @@ def create_app(env="development"):
                 "bajo_mantenimiento.html", message=flag.maintenance_message
             )
         if getattr(usuario, "s_user", True):
-            destino = url_for("web.feature_flags")
+            destino = url_for("feature_flags.feature_flags")
             if request.path != destino:
                 return redirect(destino)
 
