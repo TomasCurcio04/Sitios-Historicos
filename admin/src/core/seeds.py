@@ -58,6 +58,16 @@ def run():
         password="nadminpass",
         role=1,
     )
+
+    # Crear 25 usuarios adicionales
+    for i in range(1, 26):
+        auth.create_user(
+            user_name=f"user{i}",
+            email=f"user{i}@mysite.com",
+            password=f"user{i}pass",
+            role=(i % 3) + 1,
+        )
+
     board_category1 = board.create_category(
         name="Monumento", description="Monumento histórico"
     )
@@ -72,6 +82,26 @@ def run():
     board_state2 = board.create_state(name="Córdoba")
     board_state3 = board.create_state(name="Buenos Aires")
     board_state4 = board.create_state(name="Jujuy")
+    board_state5 = board.create_state(name="Catamarca")
+    board_state6 = board.create_state(name="Chaco")
+    board_state7 = board.create_state(name="Chubut")
+    board_state8 = board.create_state(name="Corrientes")
+    board_state9 = board.create_state(name="Entre Ríos")
+    board_state10 = board.create_state(name="Formosa")
+    board_state11 = board.create_state(name="La Pampa")
+    board_state12 = board.create_state(name="La Rioja")
+    board_state13 = board.create_state(name="Mendoza")
+    board_state14 = board.create_state(name="Misiones")
+    board_state15 = board.create_state(name="Neuquén")
+    board_state16 = board.create_state(name="Río Negro")
+    board_state17 = board.create_state(name="Salta")
+    board_state18 = board.create_state(name="San Juan")
+    board_state19 = board.create_state(name="San Luis")
+    board_state20 = board.create_state(name="Santa Fe")
+    board_state21 = board.create_state(name="Santiago del Estero")
+    board_state22 = board.create_state(name="Tierra del Fuego")
+    board_state23 = board.create_state(name="Tucumán")
+    board_state24 = board.create_state(name="Ciudad de Buenos Aires")
 
     board_tag1 = board.create_tag(name="Arqueológico")
     board_tag2 = board.create_tag(name="Natural")
@@ -102,7 +132,7 @@ def run():
         state=1,
         latitude=-46.5725,
         longitude=-70.0736,
-        conservation_state="Excelente",
+        conservation_state="Regular",
         category=3,
         is_visible=True,
         created_by=user1.id_user,
@@ -116,7 +146,7 @@ def run():
         state=2,
         latitude=-31.4167,
         longitude=-64.1833,
-        conservation_state="Muy Bueno",
+        conservation_state="Malo",
         category=2,
         is_visible=True,
         created_by=user1.id_user,
@@ -161,7 +191,9 @@ def run():
             updated_by=user1.id_user,
         ),
     ]
-    board.db.session.add_all(flags)
-    board.db.session.commit()
-    board.db.session.close()
-    print("✔️   DB rellenada con datos de prueba.")
+    from src.core.database import db
+
+    db.session.add_all(flags)
+    db.session.commit()
+
+    print("✔️  Base de datos rellenada con datos de prueba.")
