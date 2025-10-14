@@ -64,12 +64,10 @@
                         class="{% if request.path.startswith('/gestion_usuarios') %}active{% endif %}">
                         Gestión de usuarios
                     </a>
-                    {% if is_authenticated(session) %}
-                    <a href="{{ url_for('web.feature_flags') }}"
+                    <a href="{{ url_for('feature_flags.feature_flags') }}"
                         class="{% if request.path == '/feature_flags' %}active{% endif %}">
                         Feature Flags
                     </a>
-                    {% endif %}
             </nav>
 
             <!-- Contenido dinámico -->

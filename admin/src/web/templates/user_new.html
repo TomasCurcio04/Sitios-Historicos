@@ -58,4 +58,32 @@
         </form>
     </div>
 </div>
+<script>
+document.querySelector("form").addEventListener("submit", function (event) {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirm_password").value;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Validar formato de email
+  if (!emailRegex.test(email)) {
+    alert("El formato del email no es válido.");
+    event.preventDefault();
+    return;
+  }
+
+  // Validar longitud de contraseña
+  if (password.length < 6) {
+    alert("La contraseña debe tener al menos 6 caracteres.");
+    event.preventDefault();
+    return;
+  }
+
+  // Validar coincidencia de contraseñas
+  if (password !== confirmPassword) {
+    alert("Las contraseñas no coinciden.");
+    event.preventDefault();
+  }
+});
+</script>
 {% endblock %}

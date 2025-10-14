@@ -11,7 +11,6 @@ from src.core.auth.role import Role
 from src.core.auth.permission import Permission
 from src.core.auth.bcrypt import bcrypt
 
-
 ####Funciones de usuarios###
 def listar_usuarios(
     page=1,
