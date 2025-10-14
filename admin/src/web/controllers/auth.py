@@ -27,5 +27,6 @@ def authenticate():
         return redirect(url_for('auth.login'))
     
     session["user"] = user.email
+    session["role"] = int(user.role)
     flash("Inicio de sesión exitoso", "success")
     return redirect(url_for('users.user_index'))

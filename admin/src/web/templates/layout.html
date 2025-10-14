@@ -61,7 +61,7 @@
                         Moderación de reseñas
                     </a>
                     <a href="{{ url_for('users.user_index') }}"
-                        class="{% if request.path == '/gestion_usuarios' %}active{% endif %}">
+                        class="{% if request.path.startswith('/gestion_usuarios') %}active{% endif %}">
                         Gestión de usuarios
                     </a>
                     <a href="{{ url_for('feature_flags.feature_flags') }}"

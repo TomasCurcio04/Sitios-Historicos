@@ -122,7 +122,7 @@
   {% endif %}
 {% endwith %}
 
-<form action="{% if sitio %}{{ url_for('issues.actualizar', site_id=sitio['id']) }}{% else %}{{ url_for('issues.crear') }}{% endif %}" method="post">
+<form action="{% if sitio %}{{ url_for('issues.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('issues.crear') }}{% endif %}" method="post">
     <label for="nombre">Nombre*</label>
     <input type="text" id="nombre" name="nombre" value="{{ sitio['nombre'] if sitio else '' }}" required>
 
