@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Listado de Sitios Históricos</title>
-
-    <!-- Fuente moderna -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='sitios.css') }}">
 </head>
 <body>
-
-
 
 <h1>Listado de Sitios Históricos</h1>
 
@@ -28,30 +24,35 @@
 
 <!-- Búsqueda avanzada -->
 <div class="search-bar">
-
-    <!-- Formulario principal de búsqueda -->
     <form action="{{ url_for('issues.index') }}" method="get" class="search-form" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
         <input type="text" name="nombre" placeholder="Nombre" value="{{ request.args.get('nombre','') }}">
-        <input type="text" name="descripcion_breve" placeholder="Descripción breve" value="{{ request.args.get('descripcion_breve','') }}">
-        <input type="text" name="descripcion_completa" placeholder="Descripción completa" value="{{ request.args.get('descripcion_completa','') }}">
-        <input type="text" name="ciudad" placeholder="Ciudad" value="{{ request.args.get('ciudad','') }}">
-        <input type="text" name="provincia" placeholder="Provincia" value="{{ request.args.get('provincia','') }}">
-        <input type="text" name="categoria" placeholder="Categoría" value="{{ request.args.get('categoria','') }}">
-        <input type="text" name="estado" placeholder="Estado" value="{{ request.args.get('estado','') }}">
-        <input type="number" name="anio" placeholder="Año" value="{{ request.args.get('anio','') }}">
-        <input type="text" name="latitud" placeholder="Latitud" value="{{ request.args.get('latitud','') }}">
-        <input type="text" name="longitud" placeholder="Longitud" value="{{ request.args.get('longitud','') }}">
-        <input type="text" name="created_by" placeholder="Creado por" value="{{ request.args.get('created_by','') }}">
-        <input type="date" name="created_at" placeholder="Fecha de registro" value="{{ request.args.get('created_at','') }}">
-        <select name="visible">
+        <input type="text" name="short_description" placeholder="Descripción breve" value="{{ request.args.get('short_description','') }}">
+        <input type="text" name="full_description" placeholder="Descripción completa" value="{{ request.args.get('full_description','') }}">
+        <input type="text" name="city" placeholder="Ciudad" value="{{ request.args.get('city','') }}">
+        <!-- Select de estado/provincia -->
+        <select name="state">
+            <option value="">Provincia/Estado</option>
+            {% for estado in estados %}
+                <option value="{{ estado.id_state }}"
+                    {% if request.args.get('state') == estado.id_state|string %}selected{% endif %}>
+                    {{ estado.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <input type="text" name="conservation_state" placeholder="Estado de conservación" value="{{ request.args.get('conservation_state','') }}">
+        <input type="number" name="inauguration_year" placeholder="Año" value="{{ request.args.get('inauguration_year','') }}">
+        <input type="text" name="latitude" placeholder="Latitud" value="{{ request.args.get('latitude','') }}">
+        <input type="text" name="longitude" placeholder="Longitud" value="{{ request.args.get('longitude','') }}">
+        <input type="text" name="created_by" placeholder="Creado por (ID)" value="{{ request.args.get('created_by','') }}">
+        <input type="date" name="date_registered" placeholder="Fecha de registro" value="{{ request.args.get('date_registered','') }}">
+        <select name="is_visible">
             <option value="">Visible</option>
-            <option value="1" {% if request.args.get('visible')=='1' %}selected{% endif %}>Sí</option>
-            <option value="0" {% if request.args.get('visible')=='0' %}selected{% endif %}>No</option>
+            <option value="1" {% if request.args.get('is_visible')=='1' %}selected{% endif %}>Sí</option>
+            <option value="0" {% if request.args.get('is_visible')=='0' %}selected{% endif %}>No</option>
         </select>
         <button type="submit" class="btn btn-search">Buscar</button>
     </form>
 
-    <!-- Botones secundarios estilo button group -->
     <div class="button-group">
         <form action="{{ url_for('issues.index') }}" method="get">
             <button type="submit" class="btn btn-create first">Mostrar todos</button>
@@ -63,23 +64,20 @@
             <button type="submit" class="btn btn-create middle">Volver al home</button>
         </form>
         <form action="{{ url_for('issues.exportar') }}" method="get">
-            {% for key in ['nombre','descripcion_breve','descripcion_completa','ciudad','provincia','categoria','estado','anio','latitud','longitud','created_by','created_at','visible'] %}
+            {% for key in ['nombre','short_description','full_description','city','state','conservation_state','inauguration_year','latitude','longitude','created_by','date_registered','is_visible'] %}
                 <input type="hidden" name="{{ key }}" value="{{ request.args.get(key,'') }}">
             {% endfor %}
             <button type="submit" class="btn btn-create last">Exportar CSV</button>
         </form>
     </div>
-
 </div>
 
-<!-- Crear nuevo sitio -->
 <div style="text-align:center; margin-bottom:1rem;">
     <form action="{{ url_for('issues.nuevo') }}" method="get" style="display:inline;">
         <button type="submit" class="btn btn-create">+ Crear Nuevo Sitio</button>
     </form>
 </div>
 
-<!-- Tabla de sitios -->
 {% if sitios %}
 <table>
     <thead>
@@ -89,8 +87,8 @@
             <th>Descripción breve</th>
             <th>Descripción completa</th>
             <th>Ciudad</th>
-            <th>Provincia</th>
-            <th>Estado</th>
+            <th>Provincia/Estado</th>
+            <th>Estado de conservación</th>
             <th>Año</th>
             <th>Latitud</th>
             <th>Longitud</th>
@@ -109,16 +107,20 @@
             <td>{{ sitio.short_description or '' }}</td>
             <td>{{ sitio.full_description or '' }}</td>
             <td>{{ sitio.city }}</td>
-            <td>{{ sitio.state_rel.name if sitio.state_rel else '' }}</td>
+            <td>{{ sitio.state_rel.name if sitio.state_rel else sitio.state }}</td>
             <td>{{ sitio.conservation_state or '' }}</td>
             <td>{{ sitio.inauguration_year or '' }}</td>
             <td>{{ sitio.latitude or '' }}</td>
             <td>{{ sitio.longitude or '' }}</td>
-            <td>{{ sitio.created_by or '' }}</td>
+            <td>
+                {% if sitio.user %}
+                    {{ sitio.user.nombre }}
+                {% else %}
+                    {{ sitio.created_by }}
+                {% endif %}
+            </td>
             <td>{{ sitio.date_registered or '' }}</td>
             <td>{{ 'Sí' if sitio.is_visible else 'No' }}</td>
-
-            <!-- Etiquetas -->
             <td>
                 {% if sitio.tag %}
                     {% for etiqueta in sitio.tag %}
@@ -128,8 +130,6 @@
                     <span class="text-muted">Sin etiquetas</span>
                 {% endif %}
             </td>
-
-            <!-- Acciones -->
             <td>
                 <div class="acciones">
                     <form action="{{ url_for('issues.editar', site_id=sitio.id_site) }}" method="get">
@@ -147,23 +147,21 @@
     </tbody>
 </table>
 
-<!-- Paginación -->
 <div class="pagination">
 {% for p in range(1,total_pages+1) %}
 <a href="{{ url_for('issues.index',
     nombre=request.args.get('nombre',''),
-    descripcion_breve=request.args.get('descripcion_breve',''),
-    descripcion_completa=request.args.get('descripcion_completa',''),
-    ciudad=request.args.get('ciudad',''),
-    provincia=request.args.get('provincia',''),
-    categoria=request.args.get('categoria',''),
-    estado=request.args.get('estado',''),
-    anio=request.args.get('anio',''),
-    latitud=request.args.get('latitud',''),
-    longitud=request.args.get('longitud',''),
+    short_description=request.args.get('short_description',''),
+    full_description=request.args.get('full_description',''),
+    city=request.args.get('city',''),
+    state=request.args.get('state',''),
+    conservation_state=request.args.get('conservation_state',''),
+    inauguration_year=request.args.get('inauguration_year',''),
+    latitude=request.args.get('latitude',''),
+    longitude=request.args.get('longitude',''),
     created_by=request.args.get('created_by',''),
-    created_at=request.args.get('created_at',''),
-    visible=request.args.get('visible',''),
+    date_registered=request.args.get('date_registered',''),
+    is_visible=request.args.get('is_visible',''),
     page=p
 ) }}" class="{{ 'active' if p==page else '' }}">{{ p }}</a>
 {% endfor %}
@@ -171,7 +169,6 @@
 
 {% else %}
 <p style="text-align:center; font-size:1.1rem; color:#666;">No hay sitios históricos registrados.</p>
-
 {% endif %}
 </body>
 </html>

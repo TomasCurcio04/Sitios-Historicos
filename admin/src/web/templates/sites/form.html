@@ -5,14 +5,8 @@
     <title>{% if sitio %}Editar Sitio{% else %}Crear Sitio{% endif %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
-    <!-- Leaflet CSS (para mapa interactivo) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
     <style>
-        /* ===============================
-           ESTILOS BASE ORIGINALES
-        =============================== */
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #f4f6f8;
@@ -39,7 +33,6 @@
         }
         .success { background: #d4edda; color: #155724; }
         .error { background: #f8d7da; color: #721c24; }
-
         form {
             max-width: 600px;
             margin: 0 auto;
@@ -65,7 +58,6 @@
             font-size: 0.95rem;
         }
         textarea { resize: vertical; }
-
         .btn-submit {
             margin-top: 1.5rem;
             padding: 0.6rem 1.2rem;
@@ -78,7 +70,6 @@
             transition: 0.2s;
         }
         .btn-submit:hover { background: #0069d9; }
-
         .btn-back {
             margin-top: 1rem;
             display: inline-block;
@@ -90,10 +81,6 @@
             font-weight: 600;
         }
         .btn-back:hover { background: #5a6268; }
-
-        /* ===============================
-           NUEVOS ESTILOS PARA EL MAPA
-        =============================== */
         #map {
             height: 300px;
             width: 100%;
@@ -111,7 +98,6 @@
 
 <h1>{% if sitio %}Editar Sitio{% else %}Crear Sitio{% endif %}</h1>
 
-<!-- Mensajes flash -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <ul class="flash-messages">
@@ -124,64 +110,70 @@
 
 <form action="{% if sitio %}{{ url_for('issues.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('issues.crear') }}{% endif %}" method="post">
     <label for="nombre">Nombre*</label>
-    <input type="text" id="nombre" name="nombre" value="{{ sitio['nombre'] if sitio else '' }}" required>
+    <input type="text" id="nombre" name="nombre" value="{{ sitio.nombre if sitio else '' }}" required>
 
-    <label for="descripcion_breve">Descripción breve</label>
-    <textarea id="descripcion_breve" name="descripcion_breve" rows="2">{{ sitio['descripcion_breve'] if sitio else '' }}</textarea>
+    <label for="short_description">Descripción breve</label>
+    <textarea id="short_description" name="short_description" rows="2">{{ sitio.short_description if sitio else '' }}</textarea>
 
-    <label for="descripcion_completa">Descripción completa</label>
-    <textarea id="descripcion_completa" name="descripcion_completa" rows="4">{{ sitio['descripcion_completa'] if sitio else '' }}</textarea>
+    <label for="full_description">Descripción completa</label>
+    <textarea id="full_description" name="full_description" rows="4">{{ sitio.full_description if sitio else '' }}</textarea>
 
-    <label for="ciudad">Ciudad*</label>
-    <input type="text" id="ciudad" name="ciudad" value="{{ sitio['ciudad'] if sitio else '' }}" required>
+    <label for="city">Ciudad*</label>
+    <input type="text" id="city" name="city" value="{{ sitio.city if sitio else '' }}" required>
 
-    <label for="provincia">Provincia*</label>
-    <input type="text" id="provincia" name="provincia" value="{{ sitio['provincia'] if sitio else '' }}" required>
+    <label for="state">Provincia/Estado*</label>
+    <select id="state" name="state" required>
+        <option value="">Selecciona un estado</option>
+        {% for estado in estados %}
+            <option value="{{ estado.id_state }}"
+                {% if sitio and sitio.state == estado.id_state %}selected{% endif %}>
+                {{ estado.name }}
+            </option>
+        {% endfor %}
+    </select>
 
-    <label for="latitud">Latitud</label>
-    <input type="number" step="any" id="latitud" name="latitud" value="{{ sitio['latitud'] if sitio else '' }}">
+    <label for="latitude">Latitud</label>
+    <input type="number" step="any" id="latitude" name="latitude" value="{{ sitio.latitude if sitio else '' }}">
 
-    <label for="longitud">Longitud</label>
-    <input type="number" step="any" id="longitud" name="longitud" value="{{ sitio['longitud'] if sitio else '' }}">
+    <label for="longitude">Longitud</label>
+    <input type="number" step="any" id="longitude" name="longitude" value="{{ sitio.longitude if sitio else '' }}">
 
-    <!-- ===============================
-         MAPA INTERACTIVO (Leaflet)
-         - Permite elegir coordenadas
-         - Actualiza automáticamente latitud/longitud
-    =============================== -->
     <div id="map"></div>
     <p class="map-note">Haz clic en el mapa para seleccionar la ubicación del sitio histórico.</p>
 
-    <label for="estado_conservacion">Estado de conservación</label>
-    <input type="text" id="estado_conservacion" name="estado_conservacion" value="{{ sitio['estado_conservacion'] if sitio else '' }}">
+    <label for="conservation_state">Estado de conservación</label>
+    <input type="text" id="conservation_state" name="conservation_state" value="{{ sitio.conservation_state if sitio else '' }}">
 
-    <label for="anio_inauguracion">Año de inauguración</label>
-    <input type="number" id="anio_inauguracion" name="anio_inauguracion" value="{{ sitio['anio_inauguracion'] if sitio else '' }}">
+    <label for="inauguration_year">Año de inauguración</label>
+    <input type="number" id="inauguration_year" name="inauguration_year" value="{{ sitio.inauguration_year if sitio else '' }}">
 
-    <label for="categoria">Categoría</label>
-    <input type="text" id="categoria" name="categoria" value="{{ sitio['categoria'] if sitio else '' }}">
-
-    <label for="visible">Visible</label>
-    <select id="visible" name="visible">
-        <option value="1" {% if sitio and sitio.get('visible') %}selected{% endif %}>Sí</option>
-        <option value="0" {% if sitio and not sitio.get('visible') %}selected{% endif %}>No</option>
+    <label for="category">Categoría*</label>
+    <select id="category" name="category" required>
+        <option value="">Selecciona una categoría</option>
+        {% for categoria in categorias %}
+            <option value="{{ categoria.id_category }}"
+                {% if sitio and sitio.category == categoria.id_category %}selected{% endif %}>
+                {{ categoria.name }}
+            </option>
+        {% endfor %}
     </select>
 
-    <!-- NUEVA SECCIÓN DE ETIQUETAS -->
-    <label for="etiquetas">Etiquetas</label>
-    {% if etiquetas %}
-        <select id="etiquetas" name="etiquetas" multiple>
-            {% for etiqueta in etiquetas %}
-                <option value="{{ etiqueta['id'] }}"
-                    {% if sitio and etiqueta['id'] in sitio.get('etiquetas_ids', []) %}selected{% endif %}>
-                    {{ etiqueta['nombre'] }}
-                </option>
-            {% endfor %}
-        </select>
-        <small>Puedes seleccionar múltiples etiquetas con Ctrl (Windows) o Cmd (Mac).</small>
-    {% else %}
-        <p style="font-size:0.9rem; color:#777;">No hay etiquetas disponibles.</p>
-    {% endif %}
+    <label for="is_visible">Visible</label>
+    <select id="is_visible" name="is_visible">
+        <option value="1" {% if sitio and sitio.is_visible %}selected{% endif %}>Sí</option>
+        <option value="0" {% if sitio and not sitio.is_visible %}selected{% endif %}>No</option>
+    </select>
+
+    <label for="tags">Etiquetas*</label>
+    <select id="tags" name="tags" multiple required>
+        {% for etiqueta in etiquetas %}
+            <option value="{{ etiqueta.id_tag }}"
+                {% if sitio and etiqueta in sitio.tag %}selected{% endif %}>
+                {{ etiqueta.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <small>Puedes seleccionar múltiples etiquetas con Ctrl (Windows) o Cmd (Mac).</small>
 
     <button type="submit" class="btn-submit">{% if sitio %}Actualizar{% else %}Crear{% endif %}</button>
 </form>
@@ -190,9 +182,6 @@
     <a href="{{ url_for('issues.index') }}" class="btn-back">← Volver al listado</a>
 </div>
 
-<!-- ===============================
-     Leaflet JS y configuración del mapa
-=============================== -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     // Inicializar mapa centrado en Argentina
@@ -204,8 +193,8 @@
     }).addTo(map);
 
     // Si el sitio ya tiene coordenadas, mostrar marcador
-    let lat = parseFloat(document.getElementById('latitud').value);
-    let lng = parseFloat(document.getElementById('longitud').value);
+    let lat = parseFloat(document.getElementById('latitude').value);
+    let lng = parseFloat(document.getElementById('longitude').value);
     let marker = null;
 
     if (!isNaN(lat) && !isNaN(lng) && (lat !== 0 && lng !== 0)) {
@@ -218,8 +207,8 @@
         const { lat, lng } = e.latlng;
 
         // Actualizar inputs
-        document.getElementById('latitud').value = lat.toFixed(6);
-        document.getElementById('longitud').value = lng.toFixed(6);
+        document.getElementById('latitude').value = lat.toFixed(6);
+        document.getElementById('longitude').value = lng.toFixed(6);
 
         // Colocar o mover marcador
         if (marker) {
@@ -231,3 +220,4 @@
 </script>
 
 </body>
+</html>
