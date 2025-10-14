@@ -12,8 +12,18 @@ def admin_maintenance_required(view):
     def wrapped_view(*args, **kwargs):
         flag = auth.get_feature_flag("admin_maintenance_mode")
         usuario = auth.buscar_usuario(current_user.get("user"))
-        if not usuario or not (usuario.s_user or usuario.role == 1):
-            abort(401)
+        # SI no es usuario, no puede entrar.
+        if not usuario:
+            abort(403)
+
+        # Si el flag está activado, solo s_user puede entrar
+        if flag and flag.enabled:
+            if not usuario.s_user:
+                abort(403)
+        # Si el flag está desactivado, s_user o role=1 pueden entrar
+        else:
+            if not (usuario.s_user or usuario.role == 1):
+                abort(403)
         if flag and flag.enabled:
             flash(flag.maintenance_message or "Mantenimiento", "warning")
         return view(*args, **kwargs)
