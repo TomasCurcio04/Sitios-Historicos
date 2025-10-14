@@ -6,7 +6,7 @@
 <h1 class="mb-4">Gestión de Usuarios</h1>
 <p>Acá podés administrar los usuarios del sistema (ver y eliminar). Haz clic en los encabezados "Activo" y "Rol" para filtrar.</p>
 
-{# BLOQUE DE MENSAJES FLASH CON MEJOR ESTILO #}
+{# --- BLOQUE DE MENSAJES FLASH --- #}
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <div class="row justify-content-center">
@@ -21,7 +21,7 @@
         </div>
     {% endif %}
 {% endwith %}
-{# FIN DEL BLOQUE FLASH #}
+{# --- FIN BLOQUE FLASH --- #}
 
 {% if is_authenticated(session) %}
 
@@ -77,11 +77,16 @@
                 {% if 'sort' in safe_filters %}
                     {% set _ = safe_filters.pop('sort') %}
                 {% endif %}
+                {% if 'page' in safe_filters %}
+                    {% set _ = safe_filters.pop('page') %}
+                {% endif %}
+
                 <th scope="col">
                     <a href="{{ url_for('users.user_index', sort='desc' if sort_order == 'asc' else 'asc', **safe_filters) }}"
                        class="text-decoration-none"
                        style="color: #212529 !important;">
                         Fecha de Creación
+                        {% if sort_order == 'asc' %} 🔼 {% else %} 🔽 {% endif %}
                     </a>
                 </th>
                 {# --- FIN BLOQUE ORDENAMIENTO --- #}
@@ -139,70 +144,76 @@
 
 {# --- PAGINACIÓN --- #}
 {% if pagination["pages"] > 1 %}
+{% set safe_filters = filters.copy() %}
+{% if 'page' in safe_filters %}
+    {% set _ = safe_filters.pop('page') %}
+{% endif %}
+
 <nav aria-label="Paginación de Usuarios" class="mt-4">
     {% set page = pagination["page"] %}
     {% set pages = pagination["pages"] %}
 
-        <ul class="pagination justify-content-center flex-wrap">
+    <ul class="pagination justify-content-center flex-wrap">
 
-            {# Botón Anterior #}
-            <li class="page-item {% if page <= 1 %}disabled{% endif %}">
-                <a class="page-link btn-unified px-3 py-1"
-                   href="{{ url_for('users.user_index', page=page - 1, **filters) if page > 1 else '#' }}"
-                   aria-label="Anterior">
-                    &laquo;
+        {# Botón Anterior #}
+        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+            <a class="page-link btn-unified px-3 py-1"
+               href="{{ url_for('users.user_index', page=page - 1, **safe_filters) if page > 1 else '#' }}"
+               aria-label="Anterior">
+                &laquo;
+            </a>
+        </li>
+
+        {# Calcular el rango visible #}
+        {% set start_page = 1 if page - 2 < 1 else page - 2 %}
+        {% set end_page = pages if page + 2 > pages else page + 2 %}
+
+        {# Primeras páginas #}
+        {% if start_page > 1 %}
+            <li class="page-item">
+                <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=1, **safe_filters) }}">1</a>
+            </li>
+            {% if start_page > 2 %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+        {% endif %}
+
+        {# Páginas visibles #}
+        {% for num in range(start_page, end_page + 1) %}
+            <li class="page-item {% if num == page %}active{% endif %}">
+                <a class="page-link btn-unified px-3 py-1 {% if num == page %}fw-bold{% endif %}"
+                   href="{{ url_for('users.user_index', page=num, **safe_filters) }}">
+                    {{ num }}
                 </a>
             </li>
+        {% endfor %}
 
-            {# Calcular el rango visible #}
-            {% set start_page = 1 if page - 2 < 1 else page - 2 %}
-            {% set end_page = pages if page + 2 > pages else page + 2 %}
-
-            {# Primeras páginas (si no estamos al principio) #}
-            {% if start_page > 1 %}
-                <li class="page-item">
-                    <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=1, **filters) }}">1</a>
-                </li>
-                {% if start_page > 2 %}
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
-                {% endif %}
+        {# Últimas páginas #}
+        {% if end_page < pages %}
+            {% if end_page < pages - 1 %}
+                <li class="page-item disabled"><span class="page-link">…</span></li>
             {% endif %}
-
-            {# Páginas visibles #}
-            {% for num in range(start_page, end_page + 1) %}
-                <li class="page-item {% if num == page %}active{% endif %}">
-                    <a class="page-link btn-unified px-3 py-1 {% if num == page %}fw-bold{% endif %}"
-                       href="{{ url_for('users.user_index', page=num, **filters) }}">
-                        {{ num }}
-                    </a>
-                </li>
-            {% endfor %}
-
-            {# Últimas páginas (si no estamos al final) #}
-            {% if end_page < pages %}
-                {% if end_page < pages - 1 %}
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
-                {% endif %}
-                <li class="page-item">
-                    <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=pages, **filters) }}">{{ pages }}</a>
-                </li>
-            {% endif %}
-
-            {# Botón Siguiente #}
-            <li class="page-item {% if page >= pages %}disabled{% endif %}">
-                <a class="page-link btn-unified px-3 py-1"
-                   href="{{ url_for('users.user_index', page=page + 1, **filters) if page < pages else '#' }}"
-                   aria-label="Siguiente">
-                    &raquo;
-                </a>
+            <li class="page-item">
+                <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=pages, **safe_filters) }}">{{ pages }}</a>
             </li>
-        </ul>
-    {% endif %}
+        {% endif %}
+
+        {# Botón Siguiente #}
+        <li class="page-item {% if page >= pages %}disabled{% endif %}">
+            <a class="page-link btn-unified px-3 py-1"
+               href="{{ url_for('users.user_index', page=page + 1, **safe_filters) if page < pages else '#' }}"
+               aria-label="Siguiente">
+                &raquo;
+            </a>
+        </li>
+    </ul>
 </nav>
+{% endif %}
 
 <p class="text-center text-muted mt-2">
     Mostrando usuarios {{ start }} - {{ end }} de {{ pagination["total"] }}
 </p>
+
 {% else %}
 <div class="alert alert-info mt-3" role="alert">
     No hay usuarios registrados que coincidan con los filtros.
