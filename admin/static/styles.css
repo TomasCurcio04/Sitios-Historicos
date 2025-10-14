@@ -168,7 +168,7 @@ main {
     box-shadow: 0 8px 12px rgba(44, 62, 80, 0.12); 
     padding: 2rem; 
     margin: 1.5rem; /* más separación del sidebar */
-    max-width: 900px; /* ancho más equilibrado */
+    max-width: 100%; /* ancho más equilibrado */
     min-height: 400px; /* altura más compacta */ 
     overflow: auto; /* permite scroll interno si es necesario */
 } 

@@ -179,7 +179,7 @@ def user_update(email):
     data = {
         "user_name": request.form.get("user_name"),
         "role": rol_value,
-        "s_user": True if request.form.get("s_user") == "on" else False
+        "s_user": "s_user" in request.form
     }
 
     success, message = actualizar_usuario(email, **data)
