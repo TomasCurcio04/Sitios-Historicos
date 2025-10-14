@@ -1,10 +1,10 @@
 # pylint: disable=import-error
 """Modelo de usuario para la tabla 'users' en la base de datos."""
-import bcrypt
-import re
+
+
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from src.core.database import Base
 
@@ -14,8 +14,9 @@ if TYPE_CHECKING:
     from src.core.auth.role import Role
     from src.core.auth.feature_flags import FeatureFlag
 
-#Expresion regular para validar emails
+# Expresion regular para validar emails
 EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+
 
 class Users(Base):
     """Modelo de usuario para la tabla 'users'."""
@@ -38,23 +39,23 @@ class Users(Base):
 
     # Relaciones con otros modelos
     sites: Mapped[list["Site"]] = relationship("Site", back_populates="user")
-    user_history: Mapped[list["SiteHistory"]] = relationship("SiteHistory", back_populates="user_rel")
-    flags: Mapped[list["FeatureFlag"]] = relationship("FeatureFlag", back_populates="user")
+    user_history: Mapped[list["SiteHistory"]] = relationship(
+        "SiteHistory", back_populates="user_rel"
+    )
+    flags: Mapped[list["FeatureFlag"]] = relationship(
+        "FeatureFlag", back_populates="user"
+    )
 
     # Fechas de creación y modificación
     date_create: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
     modify: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False
+        nullable=False,
     )
 
-    
     def __repr__(self):
         return f"<Users(user_name='{self.user_name}', email='{self.email}', role={self.role})>"
-

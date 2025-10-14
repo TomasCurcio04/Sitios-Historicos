@@ -1,0 +1,50 @@
+# pylint: disable=import-error
+"""Módulo controlador de feature flags"""
+
+from flask import request, render_template, redirect, url_for, flash, Blueprint, session
+from src.web.utils import admin_maintenance_required
+from src.core import auth
+
+feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
+
+
+@feature_flags_bp.route("/", methods=["GET", "POST"], endpoint="feature_flags")
+@admin_maintenance_required
+def feature_flags():
+    """Vista del menu de feature flags."""
+    flags = auth.list_feature_flags()
+    usuario = auth.buscar_usuario(session.get("user"))
+    usuario_id = usuario.id_user if usuario else 1
+    print(f"usuario_id: {usuario_id}")
+    if request.method == "POST":
+        flags_data = {}
+        admin_maintenance_disabled = False
+
+        for flag in flags:
+            new_enabled = f"enabled_{flag.id}" in request.form
+            new_message = request.form.get(f"mensaje_{flag.id}", "")
+
+            # Validar admin_maintenance_mode
+            if flag.name == "admin_maintenance_mode":
+                if flag.enabled and not new_enabled:
+                    admin_maintenance_disabled = True
+                    new_message = ""  # Borrar mensaje al desactivar
+                elif not flag.enabled and new_enabled and not new_message.strip():
+                    flash("El modo mantenimiento requiere un mensaje", "error")
+                    return redirect(url_for("feature_flags.feature_flags"))
+
+            flags_data[str(flag.id)] = {
+                "enabled": new_enabled,
+                "maintenance_message": new_message,
+            }
+        has_changes = auth.update_feature_flags(flags_data, usuario_id)
+        if has_changes:
+            if admin_maintenance_disabled:
+                flash("Mantenimiento desactivado", "success")
+            else:
+                flash("Feature flags actualizados correctamente", "success")
+        else:
+            flash("No se detectaron cambios", "info")
+        return redirect(url_for("feature_flags.feature_flags"))
+
+    return render_template("feature_flags.html", flags=flags)

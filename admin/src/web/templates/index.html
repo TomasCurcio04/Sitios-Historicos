@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block title %}Ingreso al Sistema{% endblock %}
+{% block body_class %}login-body{% endblock %}
+
+{% block content %}
+<div class="login-box">
+    <h2>Ingreso al Sistema</h2>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+
+    <form action="{{ url_for('auth.authenticate') }}" method="post">
+        <label for="email">Correo electrónico:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit" class="btn btn-unified">Ingresar</button>
+    </form>
+</div>
+{% endblock %}
