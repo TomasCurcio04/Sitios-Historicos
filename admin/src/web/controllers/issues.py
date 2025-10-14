@@ -190,7 +190,7 @@ def exportar():
     writer.writerow(campos)
 
     for sitio in sitios:
-        fila = [getattr(sitio, campo, "") for campo in Site.__table__.columns]
+        fila = [getattr(sitio, campo.name, "") for campo in Site.__table__.columns]
         fila.append(", ".join([tag.name for tag in sitio.tag]))
         writer.writerow(fila)
 
