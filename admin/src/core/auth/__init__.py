@@ -204,7 +204,7 @@ def list_feature_flags():
 def get_feature_flag(name):
     """Función para obtener una feature flag por su nombre."""
 
-    flag = FeatureFlag.get_flag(name)
+    flag = db.session.query(FeatureFlag).filter_by(name=name).first()
     return flag
 
 
@@ -228,15 +228,15 @@ def update_feature_flags(flags_data, updated_by):
     for flag in flags:
         flag_id = str(flag.id)
         if flag_id in flags_data:
-            new_enabled = flags_data[flag_id].get('enabled', False)
-            new_message = flags_data[flag_id].get('maintenance_message', '')
-            
+            new_enabled = flags_data[flag_id].get("enabled", False)
+            new_message = flags_data[flag_id].get("maintenance_message", "")
+
             if flag.enabled != new_enabled or flag.maintenance_message != new_message:
                 flag.enabled = new_enabled
                 flag.maintenance_message = new_message
                 flag.updated_by = updated_by
                 has_changes = True
-    
+
     if has_changes:
         db.session.commit()
     return has_changes
