@@ -18,14 +18,31 @@ def feature_flags():
     print(f"usuario_id: {usuario_id}")
     if request.method == "POST":
         flags_data = {}
+        admin_maintenance_disabled = False
+
         for flag in flags:
+            new_enabled = f"enabled_{flag.id}" in request.form
+            new_message = request.form.get(f"mensaje_{flag.id}", "")
+
+            # Validar admin_maintenance_mode
+            if flag.name == "admin_maintenance_mode":
+                if flag.enabled and not new_enabled:
+                    admin_maintenance_disabled = True
+                    new_message = ""  # Borrar mensaje al desactivar
+                elif not flag.enabled and new_enabled and not new_message.strip():
+                    flash("El modo mantenimiento requiere un mensaje", "error")
+                    return redirect(url_for("feature_flags.feature_flags"))
+
             flags_data[str(flag.id)] = {
-                "enabled": f"enabled_{flag.id}" in request.form,
-                "maintenance_message": request.form.get(f"mensaje_{flag.id}", ""),
+                "enabled": new_enabled,
+                "maintenance_message": new_message,
             }
         has_changes = auth.update_feature_flags(flags_data, usuario_id)
         if has_changes:
-            flash("Feature flags actualizados correctamente", "success")
+            if admin_maintenance_disabled:
+                flash("Mantenimiento desactivado", "success")
+            else:
+                flash("Feature flags actualizados correctamente", "success")
         else:
             flash("No se detectaron cambios", "info")
         return redirect(url_for("feature_flags.feature_flags"))

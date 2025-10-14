@@ -19,6 +19,7 @@ from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
+from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 
 from src.core.auth.bcrypt import bcrypt
 from src.web.handlers.auth import is_authenticated
@@ -81,12 +82,6 @@ def moderacion_resenias():
 #         return redirect(url_for("web.feature_flags"))
 
 #     return render_template("feature_flags.html", flags=flags)
-
-
-@web.route("/mantenimiento_admin", endpoint="mantenimiento_admin")
-def mantenimiento_admin():
-    """Vista de mantenimiento administrativo."""
-    return render_template("feature_flags.html")
 
 
 @web.route("/test_flash")
@@ -159,40 +154,41 @@ def create_app(env="development"):
     app.register_blueprint(busqueda_avanzada_bp)
     app.register_blueprint(tags_bp)
     app.register_blueprint(feature_flags_bp)
+    app.register_blueprint(mantenimiento_admin_bp)
 
     app.jinja_env.globals["is_authenticated"] = is_authenticated
 
     @app.before_request
     def check_admin_maintenance():
-
+        usuario = auth.buscar_usuario(current_user.get("user"))
+        print(f"current_user: {current_user.get('user')}")
         flag = auth.get_feature_flag("admin_maintenance_mode")
-        if not flag or not flag.enabled:
-            return
-
         exempt_endpoints = [
             "auth.login",
             "auth.logout",
             "auth.authenticate",
             "static",
             "feature_flags.feature_flags",
+            "mantenimiento_admin.mantenimiento_admin",
         ]
-
         if request.endpoint in exempt_endpoints:
+            print("request")
             return
-        usuario = auth.buscar_usuario(current_user.get("user"))
-        print("busque el usuario")
+        if not flag or not flag.enabled:
+            if not usuario:
+                print("no usuario")
+                return redirect(url_for("auth.login"))
+            return
         if not usuario:
-            print("no es usuario")
-            return render_template("login.html", message=flag.maintenance_message)
-        if not getattr(usuario, "s_user", True):
-            print(f"{usuario} No es sysadmin")
-            return render_template(
-                "bajo_mantenimiento.html", message=flag.maintenance_message
-            )
-        if getattr(usuario, "s_user", True):
-            destino = url_for("feature_flags.feature_flags")
-            if request.path != destino:
-                return redirect(destino)
+            return redirect(url_for("auth.login"))
+        print(f"Usuario s_user: {usuario.s_user}")
+        if not usuario.s_user:
+            return redirect(url_for("mantenimiento_admin.mantenimiento_admin"))
+
+        print(f"{usuario} Es sysadmin")
+        destino = url_for("feature_flags.feature_flags")
+        if request.path != destino:
+            return redirect(destino)
 
         return render_template("feature_flags.html", message=flag.maintenance_message)
 
