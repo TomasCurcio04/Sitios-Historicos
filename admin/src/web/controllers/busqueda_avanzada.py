@@ -69,7 +69,7 @@ def index():
         )
     
     if tags:
-        query = query.join(Site.tag).filter(Tag.id_tag.in_(tags))
+        query = query.join(Site.tag).filter(Tag.id_tag.in_(tags)).distinct()
 
     # -------------------- Ordenamiento --------------------
     if sort in ["name", "date_registered", "city"]:
