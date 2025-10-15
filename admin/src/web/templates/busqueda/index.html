@@ -19,7 +19,9 @@
 {% block content %}
 <h1>Búsqueda Avanzada de Sitios Históricos</h1>
 
-  <label>Provincia:
+<form method="get" action="{{ url_for('busqueda_avanzada.index') }}">
+    
+     <label>Provincia:
         <select name="provincia">
             <option value="" {% if provincia=="" %}selected{% endif %}>--Cualquiera--</option>
             {% for p in provincias %}
@@ -28,8 +30,7 @@
         </select>
     </label>
     <br>
-
-<form method="get" action="{{ url_for('busqueda_avanzada.index') }}">
+    
     <label>Ciudad:
         <input type="text" name="ciudad" value="{{ ciudad }}">
     </label>
