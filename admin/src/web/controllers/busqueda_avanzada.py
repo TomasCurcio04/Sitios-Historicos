@@ -44,7 +44,7 @@ def index():
         query = query.filter(Site.city.ilike(f"%{ciudad}%"))
     
     if provincia:
-        query = query.filter(Site.province.ilike(f"%{provincia}%"))
+        query = query.join(Site.state_rel).filter(State.name.ilike(f"%{provincia}%"))
     
     if estado:
         query = query.filter(Site.conservation_state.ilike(f"%{estado}%"))
