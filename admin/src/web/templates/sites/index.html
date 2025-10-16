@@ -46,9 +46,9 @@
         <input type="text" name="created_by" placeholder="Creado por (ID)" value="{{ request.args.get('created_by','') }}">
         <input type="date" name="date_registered" placeholder="Fecha de registro" value="{{ request.args.get('date_registered','') }}">
         <select name="is_visible">
-            <option value="">Visible</option>
-            <option value="1" {% if request.args.get('is_visible')=='1' %}selected{% endif %}>Sí</option>
-            <option value="0" {% if request.args.get('is_visible')=='0' %}selected{% endif %}>No</option>
+           <option value="">Todos (visible y ocultos)</option>  
+           <option value="1" {% if request.args.get('is_visible')=='1' %}selected{% endif %}>Solo visibles</option>
+           <option value="0" {% if request.args.get('is_visible')=='0' %}selected{% endif %}>Solo ocultos</option>
         </select>
         <button type="submit" class="btn btn-search">Buscar</button>
     </form>
@@ -136,7 +136,13 @@
                         <button type="submit" class="btn btn-edit">Editar</button>
                     </form>
                     {% if usuario_es_admin %}
+                    <form action="{{ url_for('issues.historial', site_id=sitio.id_site) }}" method="get">
+                         <button type="submit" class="btn btn-edit">Historial de cambios</button>
+                    </form>
+                    {% endif %}
+                    {% if usuario_es_admin %}
                     <form action="{{ url_for('issues.eliminar', site_id=sitio.id_site) }}" method="post">
+                        <input type="hidden" name="user_id" value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
                         <button type="submit" class="btn btn-delete" onclick="return confirm('¿Seguro que querés eliminar este sitio?')">Eliminar</button>
                     </form>
                     {% endif %}

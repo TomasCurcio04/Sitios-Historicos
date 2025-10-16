@@ -2,6 +2,7 @@
 """Modelo de sitio histórico para la tabla 'site' en la base de datos."""
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
+from src.core.board.site_history import SiteHistory
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
     String,

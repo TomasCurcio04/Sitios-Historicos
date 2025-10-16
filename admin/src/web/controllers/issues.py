@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy import or_
 from src.core.database import db
 from src.core.board.site import Site
+from src.core.board.site_history import SiteHistory
 from src.core.board.tag import Tag
 from src.core.board.state import State
 from src.core.board.category import Category
@@ -94,28 +95,44 @@ def nuevo():
     etiquetas = db.session.query(Tag).all()
     return render_template("sites/form.html", sitio=None, estados=estados, categorias=categorias, etiquetas=etiquetas)
 
-@bp.post("/nuevo")
+@bp.post("/crear")
 def crear():
+    # Obtener el user_id del formulario
+    user_id = int(request.form.get("user_id", 1))
+    
     data = _extraer_y_validar_form()
     if isinstance(data, str):
         flash(data, "error")
         return redirect(url_for("issues.nuevo"))
 
-    # Etiquetas
+    nuevo_sitio = Site(**data)
+    nuevo_sitio.created_by = user_id  # ← Usar el user_id del form
+    
     tags_ids = request.form.getlist("tags")
     etiquetas = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
-
-    # Obtener el ID del usuario actual (ajusta según tu sistema de login)
-    usuario_id = session.get("user_id", 1)  # Usa el ID del usuario logueado, o 1 si no hay login
-    data["created_by"] = usuario_id
-
-    nuevo_sitio = Site(**data)
     nuevo_sitio.tag = etiquetas
-    db.session.add(nuevo_sitio)
-    db.session.commit()
-
-    flash("Sitio creado correctamente", "success")
-    return redirect(url_for("issues.index"))
+    
+    try:
+        db.session.add(nuevo_sitio)
+        db.session.flush()
+        
+        estado = db.session.get(State, nuevo_sitio.state)
+        historial_creacion = SiteHistory(
+            id_site=nuevo_sitio.id_site,
+            id_user=user_id,  # ← Usar el user_id del form
+            action_type="CREATE",
+            action_detail=f"Sitio '{nuevo_sitio.name}' creado en {nuevo_sitio.city}, {estado.name if estado else 'N/A'}"
+        )
+        db.session.add(historial_creacion)
+        db.session.commit()
+        
+        flash("Sitio creado correctamente.", "success")
+        return redirect(url_for("issues.index"))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al crear el sitio: {str(e)}", "error")
+        return redirect(url_for("issues.nuevo"))
 
 # =====================================================
 # EDITAR SITIO
@@ -133,46 +150,235 @@ def editar(site_id):
 
 @bp.post("/<int:site_id>/editar")
 def actualizar(site_id):
+    print(f"\n{'='*60}")
+    print(f"INICIANDO ACTUALIZACIÓN DE SITIO {site_id}")
+    print(f"{'='*60}\n")
+    
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("issues.index"))
+    
+    print(f"✓ Sitio encontrado: {sitio.name}")
+    print(f"  - ID: {sitio.id_site}")
+    print(f"  - Visible antes: {sitio.is_visible}")
 
+    # Guardar estado ANTES de modificar
+    estado_anterior = {
+        'name': sitio.name,
+        'short_description': sitio.short_description,
+        'full_description': sitio.full_description,
+        'city': sitio.city,
+        'state': sitio.state,
+        'latitude': float(sitio.latitude) if sitio.latitude else None,
+        'longitude': float(sitio.longitude) if sitio.longitude else None,
+        'conservation_state': sitio.conservation_state,
+        'inauguration_year': sitio.inauguration_year,
+        'category': sitio.category,
+        'is_visible': sitio.is_visible,
+        'tags': set([tag.id_tag for tag in sitio.tag])
+    }
+
+    # Validar y aplicar cambios
     data = _extraer_y_validar_form()
     if isinstance(data, str):
+        print(f"❌ ERROR EN VALIDACIÓN: {data}")
         flash(data, "error")
         return redirect(url_for("issues.editar", site_id=site_id))
 
+    print(f"\n✓ Datos validados correctamente:")
+    print(f"  Data recibida: {data}")
+    
     for key, value in data.items():
+        print(f"  - Actualizando {key}: {getattr(sitio, key, 'N/A')} → {value}")
         setattr(sitio, key, value)
 
     # Etiquetas
     tags_ids = request.form.getlist("tags")
+    print(f"\n✓ Tags recibidos: {tags_ids}")
     etiquetas = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
+    print(f"✓ Tags encontrados en BD: {[t.name for t in etiquetas]}")
     sitio.tag = etiquetas
 
-    db.session.commit()
-    flash("Sitio actualizado correctamente", "success")
-    return redirect(url_for("issues.index"))
+    print(f"\n✓ Sitio después de cambios (ANTES de commit):")
+    print(f"  - Nombre: {sitio.name}")
+    print(f"  - Ciudad: {sitio.city}")
+    print(f"  - Visible: {sitio.is_visible}")
+    print(f"  - Tags: {[t.name for t in sitio.tag]}")
+
+    # Detectar cambios (código existente...)
+    cambios_detectados = []
+    
+    if estado_anterior['name'] != sitio.name:
+        cambios_detectados.append(f"Nombre: '{estado_anterior['name']}' → '{sitio.name}'")
+    
+    if estado_anterior['short_description'] != sitio.short_description:
+        cambios_detectados.append("Descripción breve modificada")
+    
+    if estado_anterior['full_description'] != sitio.full_description:
+        cambios_detectados.append("Descripción completa modificada")
+    
+    if estado_anterior['city'] != sitio.city:
+        cambios_detectados.append(f"Ciudad: '{estado_anterior['city']}' → '{sitio.city}'")
+    
+    if estado_anterior['state'] != sitio.state:
+        estado_viejo = db.session.get(State, estado_anterior['state'])
+        estado_nuevo = db.session.get(State, sitio.state)
+        cambios_detectados.append(f"Provincia: '{estado_viejo.name}' → '{estado_nuevo.name}'")
+    
+    lat_anterior = estado_anterior['latitude']
+    lat_nueva = float(sitio.latitude) if sitio.latitude else None
+    if lat_anterior != lat_nueva:
+        cambios_detectados.append(f"Latitud: {lat_anterior} → {lat_nueva}")
+    
+    lon_anterior = estado_anterior['longitude']
+    lon_nueva = float(sitio.longitude) if sitio.longitude else None
+    if lon_anterior != lon_nueva:
+        cambios_detectados.append(f"Longitud: {lon_anterior} → {lon_nueva}")
+    
+    if estado_anterior['conservation_state'] != sitio.conservation_state:
+        cambios_detectados.append(f"Estado conservación: '{estado_anterior['conservation_state'] or 'N/A'}' → '{sitio.conservation_state or 'N/A'}'")
+    
+    if estado_anterior['inauguration_year'] != sitio.inauguration_year:
+        cambios_detectados.append(f"Año inauguración: {estado_anterior['inauguration_year'] or 'N/A'} → {sitio.inauguration_year or 'N/A'}")
+    
+    if estado_anterior['category'] != sitio.category:
+        cat_vieja = db.session.get(Category, estado_anterior['category'])
+        cat_nueva = db.session.get(Category, sitio.category)
+        cambios_detectados.append(f"Categoría: '{cat_vieja.name}' → '{cat_nueva.name}'")
+    
+    if estado_anterior['is_visible'] != sitio.is_visible:
+        cambios_detectados.append(f"Visibilidad: {'Visible' if estado_anterior['is_visible'] else 'Oculto'} → {'Visible' if sitio.is_visible else 'Oculto'}")
+    
+    # Comparar tags
+    tags_nuevos = set([tag.id_tag for tag in sitio.tag])
+    if estado_anterior['tags'] != tags_nuevos:
+        tags_agregados = tags_nuevos - estado_anterior['tags']
+        tags_eliminados = estado_anterior['tags'] - tags_nuevos
+        
+        if tags_agregados:
+            nombres_tags = [db.session.get(Tag, tid).name for tid in tags_agregados]
+            cambios_detectados.append(f"Etiquetas agregadas: {', '.join(nombres_tags)}")
+        
+        if tags_eliminados:
+            nombres_tags = [db.session.get(Tag, tid).name for tid in tags_eliminados]
+            cambios_detectados.append(f"Etiquetas eliminadas: {', '.join(nombres_tags)}")
+
+    print(f"\n✓ Cambios detectados: {len(cambios_detectados)}")
+    for cambio in cambios_detectados:
+        print(f"  - {cambio}")
+
+    # Guardar en base de datos
+    try:
+        print(f"\n⏳ Ejecutando primer commit (actualización del sitio)...")
+        db.session.commit()
+        print(f"✓ Primer commit exitoso")
+        
+        # Verificar que el sitio sigue existiendo
+        sitio_verificacion = db.session.get(Site, site_id)
+        if sitio_verificacion:
+            print(f"✓ Sitio verificado después del commit: {sitio_verificacion.name}")
+        else:
+            print(f"❌ ALERTA El sitio desapareció después del commit")
+        
+        # Registrar en historial si hubo cambios
+        if cambios_detectados:
+            detalle_cambios = "\n".join(cambios_detectados)
+            
+            user_id = int(request.form.get("user_id", 1))
+            print(f"\n⏳ Registrando en historial (user_id: {user_id})...")
+            
+            nuevo_historial = SiteHistory(
+                id_site=site_id,
+                id_user=user_id,
+                #email=session.get("user", "unknown"),  # <-- tomamos el email desde la sesión
+                action_type="UPDATE",
+                action_detail=detalle_cambios
+            )
+            db.session.add(nuevo_historial)
+            
+            print(f"⏳ Ejecutando segundo commit (historial)...")
+            db.session.commit()
+            print(f"✓ Segundo commit exitoso")
+            
+            flash(f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).", "success")
+        else:
+            flash("Sitio guardado sin cambios detectados.", "info")
+        
+        print(f"\n{'='*60}")
+        print(f"✓ ACTUALIZACIÓN COMPLETADA CON ÉXITO")
+        print(f"{'='*60}\n")
+        
+        return redirect(url_for("issues.index"))
+        
+    except Exception as e:
+        print(f"\n{'='*60}")
+        print(f"❌ ERROR EN COMMIT:")
+        print(f"  {str(e)}")
+        print(f"{'='*60}\n")
+        
+        db.session.rollback()
+        flash(f"Error al actualizar el sitio: {str(e)}", "error")
+        return redirect(url_for("issues.editar", site_id=site_id))
 
 # =====================================================
 # ELIMINAR SITIO
 # =====================================================
 @bp.post("/<int:site_id>/eliminar")
 def eliminar(site_id):
-    if not USUARIO_ES_ADMIN:
-        flash("No tenés permisos para eliminar este sitio.", "error")
-        return redirect(url_for("issues.index"))
-
+    user_id = int(request.form.get("user_id", 1))
+    
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("issues.index"))
+    
+    nombre_sitio = sitio.name
+    ciudad_sitio = sitio.city
+    
+    try:
+        historial_eliminacion = SiteHistory(
+            id_site=site_id,
+            id_user=user_id,  # ← Usar el user_id del form
+            action_type="DELETE",
+            action_detail=f"Sitio '{nombre_sitio}' eliminado (estaba en {ciudad_sitio})"
+        )
+        db.session.add(historial_eliminacion)
+        db.session.commit()
+        
+        db.session.delete(sitio)
+        db.session.commit()
+        
+        flash("Sitio eliminado correctamente", "success")
+        return redirect(url_for("issues.index"))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al eliminar el sitio: {str(e)}", "error")
+        return redirect(url_for("issues.index"))
 
-    db.session.delete(sitio)
-    db.session.commit()
-    flash("Sitio eliminado correctamente", "success")
-    return redirect(url_for("issues.index"))
+# =====================================================
+# HISTORIAL DE CAMBIOS DE SITIO
+# =====================================================
+@bp.get("/<int:site_id>/historial")
+def historial(site_id):
+    """Muestra el historial de cambios de un sitio."""
+    
+    # Verificar que el sitio existe
+    sitio = db.session.get(Site, site_id)
+    if not sitio:
+        flash("Sitio no encontrado.", "error")
+        return redirect(url_for("issues.index"))
+    
+    # Obtener todos los cambios del sitio ordenados por fecha (más reciente primero)
+    cambios = (
+        db.session.query(SiteHistory)
+        .filter(SiteHistory.id_site == site_id)
+        .order_by(SiteHistory.date_action.desc())
+        .all()
+    )
+    
+    return render_template("sites/historial.html", sitio=sitio, cambios=cambios)
 
 # =====================================================
 # EXPORTAR CSV (TODOS LOS CAMPOS)
