@@ -15,12 +15,10 @@ def admin_maintenance_required(view):
         # SI no es usuario, no puede entrar.
         if not usuario:
             return redirect(url_for("auth.login"))
-
-        # Si el flag está activado, solo s_user puede entrar
+        if not usuario.s_user:
+            abort(403)
         if flag and flag.enabled:
-            if not usuario.s_user:
-                abort(403)
-        flash(flag.maintenance_message or "Mantenimiento", "warning")
+            flash(flag.maintenance_message, "warning")
         return view(*args, **kwargs)
 
     return wrapped_view
