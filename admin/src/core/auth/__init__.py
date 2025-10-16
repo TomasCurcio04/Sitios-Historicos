@@ -221,6 +221,13 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
     return flag
 
 
+def get_feature_flag_fresh(name):
+    """Función para obtener una feature flag fresca desde la base de datos."""
+    db.session.expire_all()
+    flag = db.session.query(FeatureFlag).filter_by(name=name).first()
+    return flag
+
+
 def update_feature_flags(flags_data, updated_by):
     """Función para actualizar múltiples feature flags."""
     flags = list_feature_flags()
@@ -239,6 +246,7 @@ def update_feature_flags(flags_data, updated_by):
 
     if has_changes:
         db.session.commit()
+        db.session.expire_all()
     return has_changes
 
 

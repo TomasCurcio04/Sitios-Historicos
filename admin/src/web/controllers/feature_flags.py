@@ -12,14 +12,13 @@ feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflag
 @admin_maintenance_required
 def feature_flags():
     """Vista del menu de feature flags."""
-    flags = auth.list_feature_flags()
     usuario = auth.buscar_usuario(session.get("user"))
     usuario_id = usuario.id_user if usuario else 1
-    print(f"usuario_id: {usuario_id}")
+
     if request.method == "POST":
+        flags = auth.list_feature_flags()
         flags_data = {}
         admin_maintenance_disabled = False
-
         for flag in flags:
             new_enabled = f"enabled_{flag.id}" in request.form
             new_message = request.form.get(f"mensaje_{flag.id}", "")
@@ -29,6 +28,8 @@ def feature_flags():
                 if flag.enabled and not new_enabled:
                     admin_maintenance_disabled = True
                     new_message = ""  # Borrar mensaje al desactivar
+                    # Limpiar mensajes flash existentes
+                    session.pop("_flashes", None)
                 elif not flag.enabled and new_enabled and not new_message.strip():
                     flash("El modo mantenimiento requiere un mensaje", "error")
                     return redirect(url_for("feature_flags.feature_flags"))
@@ -47,4 +48,6 @@ def feature_flags():
             flash("No se detectaron cambios", "info")
         return redirect(url_for("feature_flags.feature_flags"))
 
+    # Obtener flags frescos para GET
+    flags = auth.list_feature_flags()
     return render_template("feature_flags.html", flags=flags)
