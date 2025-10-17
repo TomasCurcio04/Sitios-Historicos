@@ -109,8 +109,15 @@
 {% endwith %}
 
 <form action="{% if sitio %}{{ url_for('issues.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('issues.crear') }}{% endif %}" method="post">
+    
+    <!-- Campo oculto para el ID del usuario -->
+    <input type="hidden" name="user_id" value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
+    
+    <!-- CORRECCIÓN: Este campo se llama "nombre" pero tenía id="short_description" -->
     <label for="nombre">Nombre*</label>
-    <input type="text" id="nombre" name="nombre" value="{{ sitio.nombre if sitio else '' }}" required>
+    <textarea id="nombre" name="nombre" rows="2">{{ sitio.nombre if sitio else '' }}</textarea>
+    <!--<input type="text" id="nombre" name="nombre" value="{{ sitio.name if sitio else '' }}" required>-->
+
 
     <label for="short_description">Descripción breve</label>
     <textarea id="short_description" name="short_description" rows="2">{{ sitio.short_description if sitio else '' }}</textarea>

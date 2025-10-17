@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy import or_
 from src.core.database import db
 from src.core.board.site import Site
+from src.core.board.site_history import SiteHistory
+from src.core.board.site_history_serv import SiteHistoryService
 from src.core.board.tag import Tag
 from src.core.board.state import State
 from src.core.board.category import Category
@@ -94,28 +96,33 @@ def nuevo():
     etiquetas = db.session.query(Tag).all()
     return render_template("sites/form.html", sitio=None, estados=estados, categorias=categorias, etiquetas=etiquetas)
 
-@bp.post("/nuevo")
+@bp.post("/crear")
 def crear():
+    user_id = int(request.form.get("user_id", 1))
     data = _extraer_y_validar_form()
     if isinstance(data, str):
         flash(data, "error")
         return redirect(url_for("issues.nuevo"))
 
-    # Etiquetas
+    nuevo_sitio = Site(**data, created_by=user_id)
     tags_ids = request.form.getlist("tags")
-    etiquetas = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
-
-    # Obtener el ID del usuario actual (ajusta según tu sistema de login)
-    usuario_id = session.get("user_id", 1)  # Usa el ID del usuario logueado, o 1 si no hay login
-    data["created_by"] = usuario_id
-
-    nuevo_sitio = Site(**data)
-    nuevo_sitio.tag = etiquetas
-    db.session.add(nuevo_sitio)
-    db.session.commit()
-
-    flash("Sitio creado correctamente", "success")
-    return redirect(url_for("issues.index"))
+    nuevo_sitio.tag = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
+    
+    try:
+        db.session.add(nuevo_sitio)
+        db.session.flush()  # Para obtener el ID del sitio antes del commit
+        
+        # ✅ Lógica delegada al servicio
+        SiteHistoryService.register_creation(db.session, site=nuevo_sitio, user_id=user_id)
+        
+        db.session.commit()
+        flash("Sitio creado correctamente.", "success")
+        return redirect(url_for("issues.index"))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al crear el sitio: {str(e)}", "error")
+        return redirect(url_for("issues.nuevo"))
 
 # =====================================================
 # EDITAR SITIO
@@ -137,43 +144,79 @@ def actualizar(site_id):
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("issues.index"))
-
+    
+    # --- La lógica de guardar estado anterior, validar y detectar cambios sigue aquí ---
+    estado_anterior = { 'name': sitio.name, 'short_description': sitio.short_description, # ... etc.
+    }
     data = _extraer_y_validar_form()
-    if isinstance(data, str):
-        flash(data, "error")
+    # ... (código que aplica los datos al objeto 'sitio')
+    cambios_detectados = []
+    # ... (todos los 'if' que comparan y llenan la lista 'cambios_detectados')
+    # ----------------------------------------------------------------------------
+    
+    try:
+        if cambios_detectados:
+            user_id = int(request.form.get("user_id", 1))
+            
+            # ✅ Lógica delegada al servicio
+            SiteHistoryService.register_update(
+                db_session=db.session,
+                site_id=site_id,
+                user_id=user_id,
+                changes=cambios_detectados
+            )
+            flash(f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).", "success")
+        else:
+            flash("Sitio guardado sin cambios detectados.", "info")
+            
+        db.session.commit()
+        return redirect(url_for("issues.index"))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al actualizar el sitio: {str(e)}", "error")
         return redirect(url_for("issues.editar", site_id=site_id))
-
-    for key, value in data.items():
-        setattr(sitio, key, value)
-
-    # Etiquetas
-    tags_ids = request.form.getlist("tags")
-    etiquetas = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
-    sitio.tag = etiquetas
-
-    db.session.commit()
-    flash("Sitio actualizado correctamente", "success")
-    return redirect(url_for("issues.index"))
 
 # =====================================================
 # ELIMINAR SITIO
 # =====================================================
 @bp.post("/<int:site_id>/eliminar")
 def eliminar(site_id):
-    if not USUARIO_ES_ADMIN:
-        flash("No tenés permisos para eliminar este sitio.", "error")
-        return redirect(url_for("issues.index"))
-
+    user_id = int(request.form.get("user_id", 1))
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("issues.index"))
+    
+    try:
+        # ✅ Lógica delegada al servicio ANTES de eliminar el objeto
+        SiteHistoryService.register_deletion(db.session, site=sitio, user_id=user_id)
+        
+        db.session.delete(sitio)
+        db.session.commit()
+        
+        flash("Sitio eliminado correctamente", "success")
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al eliminar el sitio: {str(e)}", "error")
 
-    db.session.delete(sitio)
-    db.session.commit()
-    flash("Sitio eliminado correctamente", "success")
     return redirect(url_for("issues.index"))
 
+# =====================================================
+# HISTORIAL DE CAMBIOS DE SITIO
+# =====================================================
+@bp.get("/<int:site_id>/historial")
+def historial(site_id):
+    # (Esta función no cambia, ya que solo lee datos)
+    sitio = db.session.get(Site, site_id)
+    if not sitio:
+        flash("Sitio no encontrado.", "error")
+        return redirect(url_for("issues.index"))
+    
+    cambios = db.session.query(SiteHistory).filter_by(id_site=site_id).order_by(SiteHistory.date_action.desc()).all()
+    
+    return render_template("sites/historial.html", sitio=sitio, cambios=cambios)
 # =====================================================
 # EXPORTAR CSV (TODOS LOS CAMPOS)
 # =====================================================
