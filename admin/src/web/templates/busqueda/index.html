@@ -19,7 +19,9 @@
 {% block content %}
 <h1>Búsqueda Avanzada de Sitios Históricos</h1>
 
-  <label>Provincia:
+<form method="get" action="{{ url_for('busqueda_avanzada.index') }}">
+    
+     <label>Provincia:
         <select name="provincia">
             <option value="" {% if provincia=="" %}selected{% endif %}>--Cualquiera--</option>
             {% for p in provincias %}
@@ -28,8 +30,7 @@
         </select>
     </label>
     <br>
-
-<form method="get" action="{{ url_for('busqueda_avanzada.index') }}">
+    
     <label>Ciudad:
         <input type="text" name="ciudad" value="{{ ciudad }}">
     </label>
@@ -132,10 +133,19 @@
 </table>
 
 <form id="pagination-form" method="get">
+
     <input type="hidden" name="ciudad" value="{{ ciudad }}">
+    <input type="hidden" name="provincia" value="{{ provincia }}">
     <input type="hidden" name="estado" value="{{ estado }}">
-    <input type="hidden" name="visibilidad" value="{{ visibilidad }}">
     <input type="hidden" name="busqueda_texto" value="{{ busqueda_texto }}">
+    <input type="hidden" name="fecha_desde" value="{{ fecha_desde }}">
+    <input type="hidden" name="fecha_hasta" value="{{ fecha_hasta }}">
+    <input type="hidden" name="visibilidad" value="{{ visibilidad }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="hidden" name="order" value="{{ order }}">
+    <input type="hidden" name="per_page" value="{{ per_page }}">
+
+
     {% for t in selected_tags %}
         <input type="hidden" name="tags" value="{{ t }}">
     {% endfor %}
