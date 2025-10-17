@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
-from core.tags.tags import buscar_tags, crear_tag, actualizar_tag, eliminar_tag
+from src.core.tags.tags import buscar_tags, crear_tag, actualizar_tag, eliminar_tag
 
 bp = Blueprint("tags", __name__, url_prefix="/etiquetas")
 
