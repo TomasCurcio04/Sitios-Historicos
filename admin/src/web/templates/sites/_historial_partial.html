@@ -1,0 +1,47 @@
+{% if cambios %}
+<div class="timeline">
+    {% for cambio in cambios %}
+    <div class="timeline-item">
+        <span class="action-badge action-{{ cambio.action_type }}">
+            {{ cambio.action_type }}
+        </span>
+        
+        <div class="cambio-info">
+            <div class="cambio-info-item">
+                <strong>👤 Usuario:</strong> 
+                {% if cambio.user_rel %}
+                    {{ cambio.user_rel.email }}
+                {% else %}
+                    ID: {{ cambio.id_user }}
+                {% endif %}
+            </div>
+            
+            <div class="cambio-info-item">
+                <strong>📅 Fecha:</strong>
+                {{ cambio.date_action.strftime('%d/%m/%Y %H:%M:%S') if cambio.date_action else 'N/A' }}
+            </div>
+            
+            {% if cambio.action_detail %}
+            <div class="cambio-detail">
+                <strong>Detalles del cambio:</strong><br>
+                {{ cambio.action_detail }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div style="text-align: center; margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+    <p style="color: #666; margin: 0;">
+        <strong>Total de cambios registrados:</strong> {{ cambios|length }}
+    </p>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <h2>No hay cambios registrados</h2>
+    <p>Este sitio aún no tiene historial de modificaciones.</p>
+</div>
+{% endif %}

@@ -150,7 +150,7 @@ def create_app(env="development", static_folder=None):
 
     # Registrar blueprints
     app.register_blueprint(web)
-    app.register_blueprint(issues_bp)
+    app.register_blueprint(issues_bp, url_prefix='/issues')
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(busqueda_avanzada_bp)

@@ -208,15 +208,17 @@ def eliminar(site_id):
 # =====================================================
 @bp.get("/<int:site_id>/historial")
 def historial(site_id):
-    # (Esta función no cambia, ya que solo lee datos)
     sitio = db.session.get(Site, site_id)
     if not sitio:
+        # En el contexto de una llamada fetch, un redirect no es ideal.
+        # Sería mejor devolver un error, pero por ahora esto funciona.
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("issues.index"))
     
     cambios = db.session.query(SiteHistory).filter_by(id_site=site_id).order_by(SiteHistory.date_action.desc()).all()
     
-    return render_template("sites/historial.html", sitio=sitio, cambios=cambios)
+    # Aquí está el cambio clave:
+    return render_template("sites/_historial_partial.html", sitio=sitio, cambios=cambios)
 # =====================================================
 # EXPORTAR CSV (TODOS LOS CAMPOS)
 # =====================================================

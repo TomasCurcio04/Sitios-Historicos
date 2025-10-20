@@ -136,9 +136,11 @@
                         <button type="submit" class="btn btn-edit">Editar</button>
                     </form>
                     {% if usuario_es_admin %}
-                    <form action="{{ url_for('issues.historial', site_id=sitio.id_site) }}" method="get">
-                         <button type="submit" class="btn btn-edit">Historial de cambios</button>
-                    </form>
+                    <button type="button" class="btn btn-edit" 
+                                     onclick="showHistoryModal('{{ sitio.id_site }}')">
+                                         Historial de cambios
+                    </button>
+                      
                     {% endif %}
                     {% if usuario_es_admin %}
                     <form action="{{ url_for('issues.eliminar', site_id=sitio.id_site) }}" method="post">
@@ -176,5 +178,73 @@
 {% else %}
 <p style="text-align:center; font-size:1.1rem; color:#666;">No hay sitios históricos registrados.</p>
 {% endif %}
+
+   <div id="historyModal" class="modal">
+                         <div class="modal-content">
+                           <span class="close-button">&times;</span>
+                              <h2>Historial de Modificaciones</h2>
+        
+                              <div id="historyContent">
+                              </div>
+                             </div>
+                          </div>
+
+<script>
+    // Se obtienen los elementos del DOM que vamos a necesitar
+    const modal = document.getElementById('historyModal');
+    const modalContent = document.getElementById('historyContent');
+    const closeButton = document.querySelector('.close-button');
+
+    /**
+     * Función para mostrar el modal y cargar el historial.
+     * Es llamada por el atributo 'onclick' del botón.
+     */
+    function showHistoryModal(siteId) {
+        // 1. Muestra "Cargando..." y hace visible el modal
+        modalContent.innerHTML = '<p>Cargando...</p>';
+        modal.style.display = 'block';
+
+        // 2. Usa 'fetch' para pedir el historial al servidor de forma asíncrona
+        fetch(`/issues/${siteId}/historial`)
+            .then(response => {
+                // Si la respuesta del servidor no es OK (ej: error 404 o 500)
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
+                }
+                // Se espera que el servidor devuelva texto (que será el HTML parcial)
+                return response.text();
+            })
+            .then(html => {
+                // 3. Inserta el HTML recibido dentro del div del modal
+                modalContent.innerHTML = html;
+            })
+            .catch(error => {
+                // 4. Si algo falla durante el 'fetch', muestra un mensaje de error
+                modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Error en fetch:', error);
+            });
+    }
+
+    /**
+     * Función para cerrar el modal.
+     */
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // --- Asignación de Eventos ---
+
+    // Evento para cerrar el modal al hacer clic en el botón (X)
+    if (closeButton) {
+        closeButton.onclick = closeModal;
+    }
+    
+    // Evento para cerrar el modal si se hace clic fuera del contenido de la ventana
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
 </body>
 </html>
