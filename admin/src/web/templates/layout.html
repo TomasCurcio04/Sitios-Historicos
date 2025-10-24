@@ -23,7 +23,7 @@
                     {% if 'user' in session %}
                     <div class="user-dropdown">
                         <button id="user-btn">
-                            {{ session['user'] }} &#9662;
+                            {{ session.get('user_name', session['user']) }} &#9662;
                         </button>
                         <div id="user-menu" class="user-dropdown-content">
                             <a href="javascript:void(0)">Ver perfil</a>
@@ -47,28 +47,26 @@
         <div class="container">
             <!-- Menú lateral -->
             <nav class="sidenav" id="sidenav">
-                <a href="{{ url_for('web.gestionsitioshistoricos') }}"
+                <a href="{{ url_for('issues.index') }}"
                     class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
-                    <a href="{{ url_for('issues.index') }}"
-                        class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
-                        Gestión de sitios históricos
-                    </a>
-                    <a href="{{ url_for('web.validacion_propuesta') }}"
-                        class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
-                        Validación de propuestas
-                    </a>
-                    <a href="{{ url_for('web.moderacion_resenias') }}"
-                        class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
-                        Moderación de reseñas
-                    </a>
-                    <a href="{{ url_for('users.user_index') }}"
-                        class="{% if request.path.startswith('/gestion_usuarios') %}active{% endif %}">
-                        Gestión de usuarios
-                    </a>
-                    <a href="{{ url_for('feature_flags.feature_flags') }}"
-                        class="{% if request.path == '/feature_flags' %}active{% endif %}">
-                        Feature Flags
-                    </a>
+                    Gestión de sitios históricos
+                </a>
+                <a href="{{ url_for('web.validacion_propuesta') }}"
+                    class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
+                    Validación de propuestas
+                </a>
+                <a href="{{ url_for('web.moderacion_resenias') }}"
+                    class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
+                    Moderación de reseñas
+                </a>
+                <a href="{{ url_for('users.user_index') }}"
+                    class="{% if request.path.startswith('/gestion_usuarios') %}active{% endif %}">
+                    Gestión de usuarios
+                </a>
+                <a href="{{ url_for('feature_flags.feature_flags') }}"
+                    class="{% if request.path == '/feature_flags' %}active{% endif %}">
+                    Feature Flags
+                </a>
             </nav>
 
             <!-- Contenido dinámico -->

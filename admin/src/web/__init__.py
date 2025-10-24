@@ -162,6 +162,12 @@ def create_app(env="development", static_folder=None):
 
     @app.before_request
     def check_admin_maintenance():
+        # Agregar user_name a sesiones existentes que no lo tengan
+        if 'user' in current_user and 'user_name' not in current_user:
+            usuario = auth.buscar_usuario(current_user.get("user"))
+            if usuario:
+                current_user['user_name'] = usuario.user_name
+        
         usuario = auth.buscar_usuario(current_user.get("user"))
         print(f"current_user: {current_user.get('user')}")
         flag = auth.get_feature_flag("admin_maintenance_mode")
