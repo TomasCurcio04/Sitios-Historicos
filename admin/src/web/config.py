@@ -1,7 +1,7 @@
 """Configuration classes for different environments."""
 
 # from os import environ
-
+from datetime import timedelta
 
 class BaseConfig:
     """Base configuration class."""
@@ -10,6 +10,10 @@ class BaseConfig:
     DEBUG = False
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "filesystem"
+    SESSION_FILE_DIR = "./flask_session_data"
+    SESSION_PERMANENT = True
+    SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
+    
 
 
 class ProductionConfig(BaseConfig):

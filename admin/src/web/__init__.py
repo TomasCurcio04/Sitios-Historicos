@@ -10,6 +10,9 @@ from flask import (
     url_for,
     flash,
 )
+import signal
+import sys
+import shutil
 from flask_session import Session
 import os
 from src.web.handlers import error
@@ -96,6 +99,8 @@ def test_flash():
 def bajo_mantenimiento():
     """Vista de mantenimiento administrativo."""
     return render_template("web.bajo_mantenimiento.html")
+
+
 
 
 def create_app(env="development", static_folder=None):
@@ -193,5 +198,24 @@ def create_app(env="development", static_folder=None):
             return redirect(destino)
 
         return render_template("feature_flags.html", message=flag.maintenance_message)
+
+    def cleanup_sessions(*args):
+        """Borra todas las sesiones activas cuando se detiene la app."""
+        session_dir = app.config.get("SESSION_FILE_DIR")
+        if session_dir:
+            if not os.path.isabs(session_dir):
+                session_dir = os.path.join(os.getcwd(), session_dir)
+            if os.path.exists(session_dir):
+                try:
+                    shutil.rmtree(session_dir)
+                    os.makedirs(session_dir, exist_ok=True)
+                    print("\n🧹 Se eliminaron todas las sesiones activas.")
+                except Exception as e:
+                    print(f"\n⚠️ Error al limpiar sesiones: {e}")
+        else:
+            print("\n⚠️ No se encontró SESSION_FILE_DIR en la configuración.")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, cleanup_sessions)
 
     return app

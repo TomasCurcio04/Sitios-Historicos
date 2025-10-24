@@ -125,8 +125,8 @@
                     </span>
                 </td>
                 <td>
-                    <a href="{{ url_for('users.user_edit', email=user.email) }}" class="btn btn-unified btn-sm me-2">Editar</a>
                     {% if user.active %}
+                    <a href="{{ url_for('users.user_edit', email=user.email) }}" class="btn btn-unified btn-sm me-2">Editar</a>
                     <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
                         <input type="hidden" name="email" value="{{ user.email }}">
                         <button type="submit" class="btn btn-unified btn-sm me-2"

@@ -59,23 +59,23 @@ class Users(Base):
         nullable=False,
     )
 
-    @validates("email")
-    def validate_email(self, key, email):
-        if not re.match(self.EMAIL_REGEX, email):
-            raise ValueError("El email no tiene un formato válido.")
-        return email.strip().lower()
+    # @validates("email")
+    # def validate_email(self, key, email):
+    #     if not re.match(self.EMAIL_REGEX, email):
+    #         raise ValueError("El email no tiene un formato válido.")
+    #     return email.strip().lower()
 
-    @validates("user_name")
-    def validate_user_name(self, key, user_name):
-        if not user_name or len(user_name.strip()) < 3:
-            raise ValueError("El nombre de usuario debe tener al menos 3 caracteres.")
-        return user_name.strip()
+    # @validates("user_name")
+    # def validate_user_name(self, key, user_name):
+    #     if not user_name or len(user_name.strip()) < 3:
+    #         raise ValueError("El nombre de usuario debe tener al menos 3 caracteres.")
+    #     return user_name.strip()
 
-    @validates("password")
-    def validate_password(self, key, password):
-        if len(password) < 6:
-            raise ValueError("La contraseña debe tener al menos 6 caracteres.")
-        return password
+    # @validates("password")
+    # def validate_password(self, key, password):
+    #     if len(password) < 6:
+    #         raise ValueError("La contraseña debe tener al menos 6 caracteres.")
+    #     return password
 
     def __repr__(self):
         return f"<Users(user_name='{self.user_name}', email='{self.email}', role={self.role})>"

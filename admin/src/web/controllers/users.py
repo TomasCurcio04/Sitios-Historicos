@@ -5,7 +5,7 @@ from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_use
 from src.core.auth.users import Users
 import re
 from src.web.handlers.auth import admin_required
-
+from src.core.auth.user_validador import UserValidator
 
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
@@ -77,65 +77,46 @@ def user_new():
 @user_bp.route("/create", methods=["POST"])
 @admin_required
 def user_create():
-    # Obtener los datos del formulario
-    email = request.form.get("email", "").strip().lower()
-    username = request.form.get("username", "").strip()
-    password = request.form.get("password", "")
-    confirm_password = request.form.get("confirm_password", "")
-    rol = request.form.get("rol", "")
 
-    # Validaciones
-    if not re.match(Users.EMAIL_REGEX, email):
-        flash("Email inválido", "error")
+    # 1. Ejecutar el Validador (Maneja Formato, Limpieza y Conversión)
+    validator = UserValidator(request.form)
+
+    if not validator.validate():
+        # Si la validación de formato falla:
+        for field, error_msg in validator.errors.items():
+            flash(error_msg, "error")
+        
+        # Devuelve el formulario con los datos brutos anteriores
         return render_template(
             "user_new.html",
-            email=email,
-            username=username,
-            rol=rol
+            email=request.form.get("email"),
+            username=request.form.get("username"),
+            rol=request.form.get("rol")
         )
 
-    if len(password) < 6:
-        flash("La contraseña debe tener al menos 6 caracteres", "error")
-        return render_template(
-            "user_new.html",
-            email=email,
-            username=username,
-            rol=rol
-        )
-
-    if password != confirm_password:
-        flash("Las contraseñas no coinciden", "error")
-        return render_template(
-            "user_new.html",
-            email=email,
-            username=username,
-            rol=rol
-        )
-
+   
+    clean_data = validator.data_cleaned 
     
-    try:
-        rol = int(rol)
-    except ValueError:
-        flash("Debes seleccionar un rol válido", "error")
-        return render_template(
-            "user_new.html",
-            email=email,
-            username=username
-        )
-
     
-    result = create_user(email=email, user_name=username, password=password, role=rol)
+    result = create_user(
+        email=clean_data["email"],
+        user_name=clean_data["username"],
+        password=clean_data["password"],
+        role=clean_data["rol"] 
+    )
 
+    #Manejo de Errores de Negocio/Persistencia
     if isinstance(result, str):
         flash(result, "error")
+        
+
         return render_template(
             "user_new.html",
-            email=email,
-            username=username,
-            rol=rol
+            email=clean_data["email"],
+            username=clean_data["username"],
+            rol=request.form.get("rol")
         )
 
-    
     flash("Usuario creado exitosamente", "success")
     return redirect(url_for("users.user_index"))
 
