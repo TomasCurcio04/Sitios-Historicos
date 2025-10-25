@@ -128,7 +128,6 @@ def create_app(env="development", static_folder=None):
         current_user.setdefault("user", None)
         # Agregar user_name a sesiones existentes que no lo tengan
         if "user" in current_user and "user_name" not in current_user:
-        if "user" in current_user and "user_name" not in current_user:
             usuario = auth.buscar_usuario(current_user.get("user"))
             if usuario:
                 current_user["user_name"] = usuario.user_name
