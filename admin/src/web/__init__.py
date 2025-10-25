@@ -26,9 +26,10 @@ from src.web.handlers.auth import is_authenticated
 from src.web.config import config
 from src.core import database
 from src.core import seeds
-from src.core.auth.utils import admin_maintenance_required
+from src.web.handlers.utils import admin_maintenance_required
 from src.core import auth
 from src.web.handlers.auth import login_required
+from src.web.handlers.utils import permissions_required
 
 # Creamos el blueprint principal
 web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
@@ -84,17 +85,6 @@ def create_app(env="development", static_folder=None):
     )
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
-    # Configuración de la app
-    # app.config.from_mapping(
-    #     DEBUG=True,
-    #     TESTING=False,
-    #     DB_HOST="nozomi.proxy.rlwy.net",
-    #     DB_NAME="railway",
-    #     DB_USER="postgres",
-    #     DB_PASSWORD="KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm",
-    #     DB_PORT="55215",
-    #     DB_SCHEME="postgresql+psycopg2",
-    # )
 
     # Configuración
     app.config.from_object(config[env])
@@ -120,6 +110,7 @@ def create_app(env="development", static_folder=None):
     # Registrar blueprints
     app.register_blueprint(web)
     app.register_blueprint(issues_bp, url_prefix="/issues")
+    app.register_blueprint(issues_bp, url_prefix="/issues")
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(busqueda_avanzada_bp)
@@ -133,10 +124,14 @@ def create_app(env="development", static_folder=None):
     def check_admin_maintenance():
         """Verifica si el usuario está en modo de mantenimiento administrativo."""
         current_user.setdefault("user", None)
+        """Verifica si el usuario está en modo de mantenimiento administrativo."""
+        current_user.setdefault("user", None)
         # Agregar user_name a sesiones existentes que no lo tengan
+        if "user" in current_user and "user_name" not in current_user:
         if "user" in current_user and "user_name" not in current_user:
             usuario = auth.buscar_usuario(current_user.get("user"))
             if usuario:
+                current_user["user_name"] = usuario.user_name
                 current_user["user_name"] = usuario.user_name
         usuario = auth.buscar_usuario(current_user.get("user"))
         print(f"current_user: {current_user.get('user')}")

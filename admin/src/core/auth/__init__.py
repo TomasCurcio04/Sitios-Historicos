@@ -5,11 +5,12 @@ import math
 from datetime import datetime, timezone
 from src.core.auth.users import Users
 from src.core.auth.feature_flag import FeatureFlag
-from sqlalchemy import desc
 from src.core.database import db
 from src.core.auth.role import Role
 from src.core.auth.permission import Permission
 from src.core.auth.bcrypt import bcrypt
+from sqlalchemy import desc
+
 
 ####Funciones de usuarios###
 def listar_usuarios(
@@ -112,6 +113,7 @@ def eliminar_usuario(email):
 
 
 def actualizar_usuario(email, **kwargs):
+    """Funcion para recibir un usuario y actualizarlo."""
     user = buscar_usuario(email)
 
     if not user:
@@ -127,7 +129,21 @@ def actualizar_usuario(email, **kwargs):
 
 
 def obtener_usuario_por_id(usuario_id):
+    """Funcion para recibir un id y obtener el usuario."""
     return db.session.query(Users).get(usuario_id)
+
+
+def usuario_actual():
+    """Obtiene el usuario actual desde la sesión."""
+    try:
+        from flask import session as current_user
+
+        if not current_user.get("user"):
+            return None
+        return buscar_usuario(current_user.get("user"))
+    except RuntimeError:
+        # Fuera del contexto de request
+        return None
 
 
 ####Fin de funciones de usuarios###
@@ -161,36 +177,6 @@ def assign_role(user_id, role_id):
 
 
 ####Fin de funciones de roles###
-
-
-####Funciones de permisos###
-def list_permissions():
-    """Función para listar todos los permisos."""
-    session = db.session
-    return session.query(Permission).all()
-
-
-def create_permission(**kwargs):
-    """Crea un nuevo permiso."""
-    session = db.session
-    perm = Permission(**kwargs)
-    session.add(perm)
-    session.commit()
-    session.refresh(perm)
-    return perm
-
-
-def assign_permission(role_id, permission_id):
-    """Asigna un permiso a un rol."""
-    session = db.session
-    role = session.query(Role).get(role_id)
-    perm = session.query(Permission).get(permission_id)
-    role.permission.append(perm)
-    session.commit()
-    return role
-
-
-####Fin de funciones de permisos###
 
 
 ####Funciones de feature flags###
