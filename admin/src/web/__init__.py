@@ -28,7 +28,8 @@ from src.web.config import config
 from src.core import database
 from src.core import seeds
 from src.web.handlers.utils import admin_maintenance_required
-from src.core.services import auth
+from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
+from src.core.services.auth.feature_flag_serv import get_feature_flag
 from src.web.handlers.auth import login_required
 from src.web.handlers.utils import permissions_required
 
@@ -94,13 +95,13 @@ def create_app(env="development", static_folder=None):
         current_user.setdefault("user", None)
         # Agregar user_name a sesiones existentes que no lo tengan
         if "user" in current_user and "user_name" not in current_user:
-            usuario = auth.buscar_usuario(current_user.get("user"))
+            usuario = buscar_usuario(current_user.get("user"))
             if usuario:
                 current_user["user_name"] = usuario.user_name
                 current_user["user_name"] = usuario.user_name
-        usuario = auth.buscar_usuario(current_user.get("user"))
+        usuario = buscar_usuario(current_user.get("user"))
         print(f"current_user: {current_user.get('user')}")
-        flag = auth.get_feature_flag("admin_maintenance_mode")
+        flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
             "auth.logout",

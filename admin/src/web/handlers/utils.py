@@ -2,7 +2,8 @@
 """Utilidades de autenticación y autorización."""
 
 from flask import flash, session as current_user, abort, redirect, url_for
-from src.core.services import auth
+from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
+from src.core.services.auth.feature_flag_serv import get_feature_flag
 
 # Obtener permisos del usuario
 from src.core.services.auth.permission_serv import get_permissions
@@ -13,8 +14,8 @@ def admin_maintenance_required(view):
     """Decorator para verificar el estado de mantenimiento de la administración."""
 
     def wrapped_view(*args, **kwargs):
-        flag = auth.get_feature_flag("admin_maintenance_mode")
-        usuario = auth.buscar_usuario(current_user.get("user"))
+        flag = get_feature_flag("admin_maintenance_mode")
+        usuario = buscar_usuario(current_user.get("user"))
         # SI no es usuario, no puede entrar.
         if not usuario:
             return redirect(url_for("auth.login"))
@@ -37,7 +38,7 @@ def check_permissions(section, permissions):
     Returns:
         bool: True si tiene permisos o es superusuario, False caso contrario
     """
-    usuario = auth.usuario_actual()
+    usuario = usuario_actual()
     if not usuario:
         return False
 
