@@ -5,7 +5,7 @@
 from src.core import board
 from src.core import auth
 
-# from src.core.auth import feature_flag
+# from src.core.services.auth import feature_flag
 
 
 def run():

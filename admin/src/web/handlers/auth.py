@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import session, redirect, url_for, flash
-from src.core.auth import buscar_usuario
+from src.core.services.auth import buscar_usuario
 
 def login_required(f):
     """Decorator para rutas que requieren autenticación."""

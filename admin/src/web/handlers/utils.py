@@ -5,7 +5,7 @@ from flask import flash, session as current_user, abort, redirect, url_for
 from src.core import auth
 
 # Obtener permisos del usuario
-from src.core.auth.permission_serv import get_permissions
+from src.core.services.auth.permission_serv import get_permissions
 
 
 # Middleware para modo mantenimiento de administración

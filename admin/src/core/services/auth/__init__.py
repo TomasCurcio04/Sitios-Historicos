@@ -8,7 +8,7 @@ from src.core.entity.feature_flag import FeatureFlag
 from src.core.database import db
 from src.core.entity.role import Role
 from src.core.entity.permission import Permission
-from src.core.auth.bcrypt import bcrypt
+from src.core.services.auth.bcrypt import bcrypt
 from sqlalchemy import desc
 
 
