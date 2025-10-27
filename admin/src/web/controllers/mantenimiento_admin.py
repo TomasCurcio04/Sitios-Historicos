@@ -11,7 +11,10 @@ mantenimiento_admin_bp = Blueprint(
 @mantenimiento_admin_bp.route("/", methods=["GET"])
 def mantenimiento_admin():
     """Vista de mantenimiento administrativo."""
-    from src.core import auth
+    from src.core.services import auth
+    from flask import abort
     flag = auth.get_feature_flag("admin_maintenance_mode")
+    if not flag or not flag.enabled:
+        abort(404)
     message = flag.maintenance_message if flag else None
     return render_template("mantenimiento_admin.html", message=message)

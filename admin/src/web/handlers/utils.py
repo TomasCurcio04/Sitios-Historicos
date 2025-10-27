@@ -2,7 +2,7 @@
 """Utilidades de autenticación y autorización."""
 
 from flask import flash, session as current_user, abort, redirect, url_for
-from src.core import auth
+from src.core.services import auth
 
 # Obtener permisos del usuario
 from src.core.services.auth.permission_serv import get_permissions

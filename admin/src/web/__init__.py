@@ -28,7 +28,7 @@ from src.web.config import config
 from src.core import database
 from src.core import seeds
 from src.web.handlers.utils import admin_maintenance_required
-from src.core import auth
+from src.core.services import auth
 from src.web.handlers.auth import login_required
 from src.web.handlers.utils import permissions_required
 

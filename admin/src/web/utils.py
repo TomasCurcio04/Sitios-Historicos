@@ -2,7 +2,7 @@
 """Utilidades para la aplicación web."""
 
 from flask import flash, session as current_user, abort, redirect, url_for
-from src.core import auth
+from src.core.services import auth
 
 
 # Middleware para modo mantenimiento de administración

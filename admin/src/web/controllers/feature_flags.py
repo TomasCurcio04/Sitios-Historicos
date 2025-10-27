@@ -3,7 +3,7 @@
 
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session
 from src.web.utils import admin_maintenance_required
-from src.core import auth
+from src.core.services import auth
 
 feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
 

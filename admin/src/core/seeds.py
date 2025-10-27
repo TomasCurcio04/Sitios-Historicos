@@ -2,8 +2,8 @@
 # pylint: disable=unused-variable
 """Script de semillas para la base de datos."""
 
-from src.core import board
-from src.core import auth
+from src.core.services import board
+from src.core.services import auth
 
 # from src.core.services.auth import feature_flag
 
