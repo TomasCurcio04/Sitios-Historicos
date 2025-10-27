@@ -1,13 +1,13 @@
-# src/core/board/site_history_serv.py
+# src/core/site_history_serv/__init__.py
 
 """
 Capa de Servicio para gestionar la lógica de negocio
 del historial de sitios (SiteHistory).
 """
 from src.core.database import db # O desde donde importes tu sesión de DB
-from src.core.board.site_history import SiteHistory
-from src.core.board.site import Site
-from src.core.board.state import State
+from src.core.entity.site_history import SiteHistory
+from src.core.entity.site import Site
+from src.core.entity.state import State
 
 
 class SiteHistoryService:

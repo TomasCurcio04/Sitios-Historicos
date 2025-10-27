@@ -7,11 +7,11 @@ import os
 import json
 from datetime import datetime
 from src.core.database import db
-from src.core.board.site import Site
-from src.core.board.category import Category
-from src.core.board.state import State
-from src.core.board.site_history import SiteHistory
-from src.core.board.tag import Tag
+from src.core.entity.site import Site
+from src.core.entity.category import Category
+from src.core.entity.state import State
+from src.core.entity.site_history import SiteHistory
+from src.core.entity.tag import Tag
 
 # -------------------------
 # Configuración de fuente de datos

@@ -3,11 +3,11 @@
 
 import math
 from datetime import datetime, timezone
-from src.core.auth.users import Users
-from src.core.auth.feature_flag import FeatureFlag
+from src.core.entity.users import Users
+from src.core.entity.feature_flag import FeatureFlag
 from src.core.database import db
-from src.core.auth.role import Role
-from src.core.auth.permission import Permission
+from src.core.entity.role import Role
+from src.core.entity.permission import Permission
 from src.core.auth.bcrypt import bcrypt
 from sqlalchemy import desc
 

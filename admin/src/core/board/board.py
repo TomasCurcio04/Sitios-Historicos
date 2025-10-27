@@ -1,12 +1,7 @@
-# src/core/board/__init__.py
+# src/core/board/board.py
 """Interfaz del módulo board que abstrae la fuente de datos."""
 
+from src.core.board import list_sites, get_site, create_site, update_site, delete_site
 
-from src.core.board import repository
-
-# API pública para sitios históricos
-list_sites = repository.list_sites
-get_site = repository.get_site
-create_site = repository.create_site
-update_site = repository.update_site
-delete_site = repository.delete_site
+# Re-exportar funciones
+__all__ = ['list_sites', 'get_site', 'create_site', 'update_site', 'delete_site']

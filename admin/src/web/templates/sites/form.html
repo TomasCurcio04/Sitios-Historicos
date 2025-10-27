@@ -108,7 +108,7 @@
   {% endif %}
 {% endwith %}
 
-<form action="{% if sitio %}{{ url_for('issues.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('issues.crear') }}{% endif %}" method="post">
+<form action="{% if sitio %}{{ url_for('sites.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('sites.crear') }}{% endif %}" method="post">
     
     <!-- Campo oculto para el ID del usuario -->
     <input type="hidden" name="user_id" value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
@@ -186,7 +186,7 @@
 </form>
 
 <div style="text-align:center;">
-    <a href="{{ url_for('issues.index') }}" class="btn-back">← Volver al listado</a>
+    <a href="{{ url_for('sites.index') }}" class="btn-back">← Volver al listado</a>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

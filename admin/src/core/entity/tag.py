@@ -5,11 +5,11 @@ from datetime import datetime, timezone
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from src.core.database import Base
-from src.core.board.site import site_tag
+# from src.core.entity.site import site_tag  # Se define en site.py
 import unicodedata
 
 if TYPE_CHECKING:
-    from src.core.board.site import Site
+    from src.core.entity.site import Site
 
 
 class Tag(Base):
@@ -27,7 +27,7 @@ class Tag(Base):
 
     sites: Mapped[list["Site"]] = relationship(
     "Site",
-    secondary=site_tag,
+    secondary="site_tag",
     back_populates="tag"
 )
 

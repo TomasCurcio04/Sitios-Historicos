@@ -1,8 +1,8 @@
 from src.core.database import db
-from src.core.board.site import Site
-from src.core.board.tag import Tag
+from src.core.entity.site import Site
+from src.core.entity.tag import Tag
 from sqlalchemy import or_, distinct
-from src.core.board.state import State
+from src.core.entity.state import State
 
 def buscar_sites(filtros):
     """Devuelve una query filtrada de sitios según los parámetros de búsqueda."""

@@ -2,7 +2,7 @@
 """Modelo de sitio histórico para la tabla 'site' en la base de datos."""
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
-from src.core.board.site_history import SiteHistory
+# from src.core.entity.site_history import SiteHistory  # Evitar importación circular
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
     String,
@@ -18,10 +18,10 @@ from sqlalchemy import (
 from src.core.database import Base
 
 if TYPE_CHECKING:
-    from src.core.auth.users import Users
-    from src.core.board.category import Category
-    from src.core.board.state import State
-    from src.core.board.tag import Tag
+    from src.core.entity.users import Users
+    from src.core.entity.category import Category
+    from src.core.entity.state import State
+    from src.core.entity.tag import Tag
 
 
 site_tag = Table(
@@ -29,6 +29,7 @@ site_tag = Table(
     Base.metadata,
     Column("id_site", ForeignKey("site.id_site"), nullable=False),
     Column("id_tag", ForeignKey("tag.id_tag"), nullable=False),
+    extend_existing=True
 )
 
 

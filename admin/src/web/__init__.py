@@ -13,7 +13,8 @@ from flask import (
 from flask_session import Session
 import os
 from src.web.handlers import error
-from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.web import web
+from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
 from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
@@ -31,41 +32,7 @@ from src.core import auth
 from src.web.handlers.auth import login_required
 from src.web.handlers.utils import permissions_required
 
-# Creamos el blueprint principal
-web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
-
 session = Session()
-
-
-# Rutas del blueprint
-@web.route("/", endpoint="home")
-@login_required
-def home():
-
-    print("Entré aca en es usuario autenticado")
-    return render_template("home.html")
-
-
-@web.route("/gestionsitioshistoricos")
-@login_required
-def gestionsitioshistoricos():
-    return render_template("gestionsitioshistoricos.html")
-
-
-@web.route("/validacion_propuesta")
-def validacion_propuesta():
-    return render_template("validacion_propuesta.html")
-
-
-@web.route("/moderacion_resenias")
-def moderacion_resenias():
-    return render_template("moderacion_resenias.html")
-
-
-@web.route("/bajo_mantenimiento", endpoint="bajo_mantenimiento")
-def bajo_mantenimiento():
-    """Vista de mantenimiento administrativo."""
-    return render_template("web.bajo_mantenimiento.html")
 
 
 def create_app(env="development", static_folder=None):
@@ -109,8 +76,7 @@ def create_app(env="development", static_folder=None):
 
     # Registrar blueprints
     app.register_blueprint(web)
-    app.register_blueprint(issues_bp, url_prefix="/issues")
-    app.register_blueprint(issues_bp, url_prefix="/issues")
+    app.register_blueprint(sites_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(busqueda_avanzada_bp)

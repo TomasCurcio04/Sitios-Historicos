@@ -1,19 +1,29 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, session
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    Response,
+    session,
+)
 from sqlalchemy import or_
 from src.core.database import db
-from src.core.board.site import Site
-from src.core.board.site_history import SiteHistory
-from src.core.board.site_history_serv import SiteHistoryService
-from src.core.board.tag import Tag
-from src.core.board.state import State
-from src.core.board.category import Category
+from src.core.entity.site import Site
+from src.core.entity.site_history import SiteHistory
+from src.core.site_history_serv import SiteHistoryService
+from src.core.entity.tag import Tag
+from src.core.entity.state import State
+from src.core.entity.category import Category
 import csv
 import io
 
-bp = Blueprint("issues", __name__, url_prefix="/sitios")
+bp = Blueprint("sites", __name__, url_prefix="/sitios")
 PER_PAGE = 25
 
 USUARIO_ES_ADMIN = True
+
 
 # =====================================================
 # LISTAR SITIOS CON FILTROS Y PAGINACIÓN
@@ -43,17 +53,25 @@ def index():
     if filtros["nombre"]:
         query = query.filter(Site.name.ilike(f"%{filtros['nombre']}%"))
     if filtros["short_description"]:
-        query = query.filter(Site.short_description.ilike(f"%{filtros['short_description']}%"))
+        query = query.filter(
+            Site.short_description.ilike(f"%{filtros['short_description']}%")
+        )
     if filtros["full_description"]:
-        query = query.filter(Site.full_description.ilike(f"%{filtros['full_description']}%"))
+        query = query.filter(
+            Site.full_description.ilike(f"%{filtros['full_description']}%")
+        )
     if filtros["city"]:
         query = query.filter(Site.city.ilike(f"%{filtros['city']}%"))
     if filtros["state"]:
         query = query.filter(Site.state == int(filtros["state"]))
     if filtros["conservation_state"]:
-        query = query.filter(Site.conservation_state.ilike(f"%{filtros['conservation_state']}%"))
+        query = query.filter(
+            Site.conservation_state.ilike(f"%{filtros['conservation_state']}%")
+        )
     if filtros["inauguration_year"].isdigit():
-        query = query.filter(Site.inauguration_year == int(filtros["inauguration_year"]))
+        query = query.filter(
+            Site.inauguration_year == int(filtros["inauguration_year"])
+        )
     if filtros["latitude"]:
         query = query.filter(Site.latitude == float(filtros["latitude"]))
     if filtros["longitude"]:
@@ -83,8 +101,9 @@ def index():
         usuario_es_admin=USUARIO_ES_ADMIN,
         estados=estados,
         categorias=categorias,
-        etiquetas=etiquetas
+        etiquetas=etiquetas,
     )
+
 
 # =====================================================
 # CREAR NUEVO SITIO
@@ -94,7 +113,14 @@ def nuevo():
     estados = db.session.query(State).all()
     categorias = db.session.query(Category).all()
     etiquetas = db.session.query(Tag).all()
-    return render_template("sites/form.html", sitio=None, estados=estados, categorias=categorias, etiquetas=etiquetas)
+    return render_template(
+        "sites/form.html",
+        sitio=None,
+        estados=estados,
+        categorias=categorias,
+        etiquetas=etiquetas,
+    )
+
 
 @bp.post("/crear")
 def crear():
@@ -102,27 +128,30 @@ def crear():
     data = _extraer_y_validar_form()
     if isinstance(data, str):
         flash(data, "error")
-        return redirect(url_for("issues.nuevo"))
+        return redirect(url_for("sites.nuevo"))
 
     nuevo_sitio = Site(**data, created_by=user_id)
     tags_ids = request.form.getlist("tags")
     nuevo_sitio.tag = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
-    
+
     try:
         db.session.add(nuevo_sitio)
         db.session.flush()  # Para obtener el ID del sitio antes del commit
-        
+
         # ✅ Lógica delegada al servicio
-        SiteHistoryService.register_creation(db.session, site=nuevo_sitio, user_id=user_id)
-        
+        SiteHistoryService.register_creation(
+            db.session, site=nuevo_sitio, user_id=user_id
+        )
+
         db.session.commit()
         flash("Sitio creado correctamente.", "success")
-        return redirect(url_for("issues.index"))
-        
+        return redirect(url_for("sites.index"))
+
     except Exception as e:
         db.session.rollback()
         flash(f"Error al crear el sitio: {str(e)}", "error")
-        return redirect(url_for("issues.nuevo"))
+        return redirect(url_for("sites.nuevo"))
+
 
 # =====================================================
 # EDITAR SITIO
@@ -132,50 +161,63 @@ def editar(site_id):
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
-        return redirect(url_for("issues.index"))
+        return redirect(url_for("sites.index"))
     estados = db.session.query(State).all()
     categorias = db.session.query(Category).all()
     etiquetas = db.session.query(Tag).all()
-    return render_template("sites/form.html", sitio=sitio, estados=estados, categorias=categorias, etiquetas=etiquetas)
+    return render_template(
+        "sites/form.html",
+        sitio=sitio,
+        estados=estados,
+        categorias=categorias,
+        etiquetas=etiquetas,
+    )
+
 
 @bp.post("/<int:site_id>/editar")
 def actualizar(site_id):
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
-        return redirect(url_for("issues.index"))
-    
+        return redirect(url_for("sites.index"))
+
     # --- La lógica de guardar estado anterior, validar y detectar cambios sigue aquí ---
-    estado_anterior = { 'name': sitio.name, 'short_description': sitio.short_description, # ... etc.
+    estado_anterior = {
+        "name": sitio.name,
+        "short_description": sitio.short_description,  # ... etc.
     }
     data = _extraer_y_validar_form()
     # ... (código que aplica los datos al objeto 'sitio')
     cambios_detectados = []
     # ... (todos los 'if' que comparan y llenan la lista 'cambios_detectados')
     # ----------------------------------------------------------------------------
-    
+
     try:
         if cambios_detectados:
             user_id = int(request.form.get("user_id", 1))
-            
+
             # ✅ Lógica delegada al servicio
             SiteHistoryService.register_update(
                 db_session=db.session,
                 site_id=site_id,
                 user_id=user_id,
-                changes=cambios_detectados
+                changes=cambios_detectados,
             )
-            flash(f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).", "success")
+            flash(
+                f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).",
+                "success",
+            )
         else:
             flash("Sitio guardado sin cambios detectados.", "info")
-            
+
         db.session.commit()
-        return redirect(url_for("issues.index"))
-        
+        return redirect(url_for("sites.index"))
+
     except Exception as e:
         db.session.rollback()
         flash(f"Error al actualizar el sitio: {str(e)}", "error")
-        return redirect(url_for("issues.editar", site_id=site_id))
+        return redirect(url_for("sites.editar", site_id=site_id))
+
 
 # =====================================================
 # ELIMINAR SITIO
@@ -186,22 +228,23 @@ def eliminar(site_id):
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
-        return redirect(url_for("issues.index"))
-    
+        return redirect(url_for("sites.index"))
+
     try:
         # ✅ Lógica delegada al servicio ANTES de eliminar el objeto
         SiteHistoryService.register_deletion(db.session, site=sitio, user_id=user_id)
-        
+
         db.session.delete(sitio)
         db.session.commit()
-        
+
         flash("Sitio eliminado correctamente", "success")
-        
+
     except Exception as e:
         db.session.rollback()
         flash(f"Error al eliminar el sitio: {str(e)}", "error")
 
-    return redirect(url_for("issues.index"))
+    return redirect(url_for("sites.index"))
+
 
 # =====================================================
 # HISTORIAL DE CAMBIOS DE SITIO
@@ -213,12 +256,21 @@ def historial(site_id):
         # En el contexto de una llamada fetch, un redirect no es ideal.
         # Sería mejor devolver un error, pero por ahora esto funciona.
         flash("Sitio no encontrado.", "error")
-        return redirect(url_for("issues.index"))
-    
-    cambios = db.session.query(SiteHistory).filter_by(id_site=site_id).order_by(SiteHistory.date_action.desc()).all()
-    
+        return redirect(url_for("sites.index"))
+
+    cambios = (
+        db.session.query(SiteHistory)
+        .filter_by(id_site=site_id)
+        .order_by(SiteHistory.date_action.desc())
+        .all()
+    )
+
     # Aquí está el cambio clave:
-    return render_template("sites/_historial_partial.html", sitio=sitio, cambios=cambios)
+    return render_template(
+        "sites/_historial_partial.html", sitio=sitio, cambios=cambios
+    )
+
+
 # =====================================================
 # EXPORTAR CSV (TODOS LOS CAMPOS)
 # =====================================================
@@ -226,7 +278,7 @@ def historial(site_id):
 def exportar():
     sitios = db.session.query(Site).all()
     output = io.StringIO()
-    output.write('\ufeff')  # BOM para Excel
+    output.write("\ufeff")  # BOM para Excel
     writer = csv.writer(output, quoting=csv.QUOTE_ALL)
 
     campos = [col.name for col in Site.__table__.columns]
@@ -243,8 +295,9 @@ def exportar():
     return Response(
         output,
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=sitios_historicos.csv"}
+        headers={"Content-Disposition": "attachment; filename=sitios_historicos.csv"},
     )
+
 
 # =====================================================
 # FUNCIÓN AUXILIAR DE VALIDACIÓN
@@ -280,7 +333,9 @@ def _extraer_y_validar_form():
             state = int(state)
             category = int(category)
         except ValueError:
-            return "Latitud, longitud, año, estado y categoría deben ser números válidos."
+            return (
+                "Latitud, longitud, año, estado y categoría deben ser números válidos."
+            )
 
         return {
             "name": nombre,
@@ -293,7 +348,7 @@ def _extraer_y_validar_form():
             "conservation_state": conservation_state,
             "inauguration_year": inauguration_year,
             "category": category,
-            "is_visible": is_visible
+            "is_visible": is_visible,
         }
     except Exception as e:
         return f"Error en el formulario: {str(e)}"

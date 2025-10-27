@@ -3,7 +3,8 @@
 """Modulo de servicios de Permisos"""
 
 from src.core.database import db
-from src.core.auth import Permission, Role
+from src.core.entity.permission import Permission
+from src.core.entity.role import Role
 
 
 ####Funciones de permisos###

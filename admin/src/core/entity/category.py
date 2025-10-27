@@ -7,7 +7,7 @@ from src.core.database import Base
 
 
 if TYPE_CHECKING:
-    from src.core.board.site import Site
+    from src.core.entity.site import Site
 
 
 class Category(Base):

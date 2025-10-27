@@ -1,5 +1,5 @@
 from src.core.database import db
-from src.core.board.tag import Tag
+from src.core.entity.tag import Tag
 from sqlalchemy.exc import IntegrityError
 
 # -------------------------------
