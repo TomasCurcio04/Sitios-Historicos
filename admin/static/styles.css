@@ -464,40 +464,52 @@ hr {
 
 .flashes {
     list-style: none; 
-    padding: 10px 20px;
-    margin: 15px 0;
-    border-radius: 4px;
-    font-weight: bold;
-    border: 1px solid transparent;
+    /* The padding is what creates the margin between the text and the border/color */
+    padding: 15px 25px; 
+    margin: 20px 0; 
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 500;
+    border: 1px solid; /* Solid border */
+    line-height: 1.4; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    /* Set a neutral default to prevent issues if a color class is missing */
+    background-color: #f8f8f8;
+    color: #333;
+    border-color: #ccc;
 }
 
 .flashes li {
     padding: 0;
-    margin: 5px 0;
+    margin: 0;
 }
 
-.success {
-    background-color: #d4edda;
-    color: #155724;
-    border-color: #c3e6cb;
+/* 🟢 SUCCESS: Combine .flashes and .success */
+.flashes.success {
+    background-color: #d4edda; /* Light Green background */
+    color: #155724; /* Dark Green text */
+    border-color: #c3e6cb; /* Medium Green border */
 }
 
-.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-color: #f5c6cb;
+/* 🔴 ERROR: Combine .flashes and .error */
+.flashes.error {
+    background-color: #f8d7da; /* Light Red background */
+    color: #721c24; /* Dark Red text */
+    border-color: #f5c6cb; /* Medium Red border */
 }
 
-.info {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    border-color: #bee5eb;
+/* 🔵 INFO: Combine .flashes and .info */
+.flashes.info {
+    background-color: #d1ecf1; /* Light Blue background */
+    color: #0c5460; /* Dark Blue text */
+    border-color: #bee5eb; /* Medium Blue border */
 }
 
-.warning {
-    background-color: #fff3cd;
-    color: #856404;
-    border-color: #ffeeba;
+/* 🟡 WARNING: Combine .flashes and .warning */
+.flashes.warning {
+    background-color: #fff3cd; /* Light Yellow background */
+    color: #856404; /* Dark Yellow text */
+    border-color: #ffeeba; /* Medium Yellow border */
 }
 
 .badge {
