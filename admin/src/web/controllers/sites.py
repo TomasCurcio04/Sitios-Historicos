@@ -12,7 +12,7 @@ from sqlalchemy import or_
 from src.core.database import db
 from src.core.entity.site import Site
 from src.core.entity.site_history import SiteHistory
-from src.core.site_history_serv import SiteHistoryService
+from src.core.board.site_history_serv import SiteHistoryService
 from src.core.entity.tag import Tag
 from src.core.entity.state import State
 from src.core.entity.category import Category

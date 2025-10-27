@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from datetime import datetime
-from src.core.busqueda_avanzada_serv import buscar_sites, obtener_provincias_con_sitios, get_page_items, get_total_results, ordenar_query, get_total_pages
-from src.core.tag_serv import obtener_todas_las_tags
+from src.core.board.busqueda_avanzada_serv import buscar_sites, obtener_provincias_con_sitios, get_page_items, get_total_results, ordenar_query, get_total_pages
+from src.core.board.tag_serv import obtener_todas_las_tags
 from src.core.entity.site import Site
 
 bp = Blueprint('busqueda_avanzada', __name__, url_prefix='/busqueda')
