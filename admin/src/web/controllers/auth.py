@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from src.core.auth.__init__ import verificar_usuario
+from src.core.services.auth.user_serv import verificar_usuario
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -28,6 +28,7 @@ def authenticate():
     
     session.permanent = True
     session["user"] = user.email
+    session["user_name"] = user.user_name
     session["role"] = int(user.role)
     flash("Inicio de sesión exitoso", "success")
     return redirect(url_for('users.user_index'))

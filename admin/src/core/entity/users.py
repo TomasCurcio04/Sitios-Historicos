@@ -10,10 +10,10 @@ from src.core.database import Base
 import re
 
 if TYPE_CHECKING:
-    from src.core.board.site import Site
-    from src.core.board.site_history import SiteHistory
-    from src.core.auth.role import Role
-    from src.core.auth.feature_flags import FeatureFlag
+    from src.core.entity.site import Site
+    from src.core.entity.site_history import SiteHistory
+    from src.core.entity.role import Role
+    from src.core.entity.feature_flag import FeatureFlag
 
 # Expresion regular para validar emails
 

@@ -148,10 +148,10 @@
 
 <!-- Botones de navegación -->
 <div class="btn-group">
-    <form action="{{ url_for('issues.index') }}" method="get">
+    <form action="{{ url_for('sites.index') }}" method="get">
         <button type="submit" class="btn btn-create">← Volver al listado</button>
     </form>
-    <form action="{{ url_for('issues.editar', site_id=sitio.id_site) }}" method="get">
+    <form action="{{ url_for('sites.editar', site_id=sitio.id_site) }}" method="get">
         <button type="submit" class="btn btn-edit">✏️ Editar sitio</button>
     </form>
 </div>

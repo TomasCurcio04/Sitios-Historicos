@@ -8,7 +8,7 @@ from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from src.core.database import Base
 
 if TYPE_CHECKING:
-    from src.core.auth.users import Users
+    from src.core.entity.users import Users
 
 
 class FeatureFlag(Base):

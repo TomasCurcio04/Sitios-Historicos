@@ -7,8 +7,8 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from src.core.database import Base
 
 if TYPE_CHECKING:
-    from src.core.auth.users import Users
-    from src.core.auth.permission import Permission
+    from src.core.entity.users import Users
+    from src.core.entity.permission import Permission
 
 permission_list = Table(
     "permission_list",

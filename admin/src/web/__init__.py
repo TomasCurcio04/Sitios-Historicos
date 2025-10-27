@@ -16,7 +16,8 @@ import shutil
 from flask_session import Session
 import os
 from src.web.handlers import error
-from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.web import web
+from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
 from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
@@ -24,83 +25,18 @@ from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 
-from src.core.auth.bcrypt import bcrypt
+from src.core.services.auth.bcrypt import bcrypt
 from src.web.handlers.auth import is_authenticated
 from src.web.config import config
 from src.core import database
 from src.core import seeds
-from src.web.utils import admin_maintenance_required
-from src.core import auth
+from src.web.handlers.utils import admin_maintenance_required
+from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
+from src.core.services.auth.feature_flag_serv import get_feature_flag
 from src.web.handlers.auth import login_required
-
-# Creamos el blueprint principal
-web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
+from src.web.handlers.utils import permissions_required
 
 session = Session()
-
-
-# Rutas del blueprint
-@web.route("/", endpoint="home")
-@login_required
-def home():
-
-    print("Entré aca en es usuario autenticado")
-    return render_template("home.html")
-
-
-@web.route("/gestionsitioshistoricos")
-@login_required
-def gestionsitioshistoricos():
-    return render_template("gestionsitioshistoricos.html")
-
-
-@web.route("/validacion_propuesta")
-def validacion_propuesta():
-    return render_template("validacion_propuesta.html")
-
-
-@web.route("/moderacion_resenias")
-def moderacion_resenias():
-    return render_template("moderacion_resenias.html")
-
-
-# @web.route("/feature_flags")
-# def feature_flags():
-#     return render_template("feature_flags.html")
-
-
-# @web.route("/feature_flags", methods=["GET", "POST"], endpoint="feature_flags")
-# @admin_maintenance_required
-# def feature_flags():
-#     """Vista del menu de feature flags."""
-#     flags = auth.list_feature_flags()
-#     usuario_id = current_user.get("user_id") or current_user.get("id") or 1
-
-#     if request.method == "POST":
-#         for flag in flags:
-#             flag.enabled = f"enabled_{flag.id}" in request.form
-#             flag.maintenance_message = request.form.get(f"mensaje_{flag.id}", "")
-#             flag.updated_by = usuario_id or 1
-#         database.db.session.commit()
-#         flash("Feature flags actualizados correctamente", "success")
-#         return redirect(url_for("web.feature_flags"))
-
-#     return render_template("feature_flags.html", flags=flags)
-
-
-@web.route("/test_flash")
-def test_flash():
-    flash("Mensaje de prueba", "success")
-    return redirect(url_for("web.bajo_mantenimiento"))
-
-
-# @admin_maintenance_required
-@web.route("/bajo_mantenimiento", endpoint="bajo_mantenimiento")
-def bajo_mantenimiento():
-    """Vista de mantenimiento administrativo."""
-    return render_template("web.bajo_mantenimiento.html")
-
-
 
 
 def create_app(env="development", static_folder=None):
@@ -120,17 +56,6 @@ def create_app(env="development", static_folder=None):
     )
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
-    # Configuración de la app
-    # app.config.from_mapping(
-    #     DEBUG=True,
-    #     TESTING=False,
-    #     DB_HOST="nozomi.proxy.rlwy.net",
-    #     DB_NAME="railway",
-    #     DB_USER="postgres",
-    #     DB_PASSWORD="KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm",
-    #     DB_PORT="55215",
-    #     DB_SCHEME="postgresql+psycopg2",
-    # )
 
     # Configuración
     app.config.from_object(config[env])
@@ -155,7 +80,7 @@ def create_app(env="development", static_folder=None):
 
     # Registrar blueprints
     app.register_blueprint(web)
-    app.register_blueprint(issues_bp, url_prefix='/issues')
+    app.register_blueprint(sites_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(busqueda_avanzada_bp)
@@ -167,9 +92,19 @@ def create_app(env="development", static_folder=None):
 
     @app.before_request
     def check_admin_maintenance():
-        usuario = auth.buscar_usuario(current_user.get("user"))
+        """Verifica si el usuario está en modo de mantenimiento administrativo."""
+        current_user.setdefault("user", None)
+        """Verifica si el usuario está en modo de mantenimiento administrativo."""
+        current_user.setdefault("user", None)
+        # Agregar user_name a sesiones existentes que no lo tengan
+        if "user" in current_user and "user_name" not in current_user:
+            usuario = buscar_usuario(current_user.get("user"))
+            if usuario:
+                current_user["user_name"] = usuario.user_name
+                current_user["user_name"] = usuario.user_name
+        usuario = buscar_usuario(current_user.get("user"))
         print(f"current_user: {current_user.get('user')}")
-        flag = auth.get_feature_flag("admin_maintenance_mode")
+        flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
             "auth.logout",
@@ -191,12 +126,10 @@ def create_app(env="development", static_folder=None):
         print(f"Usuario s_user: {usuario.s_user}")
         if not usuario.s_user:
             return redirect(url_for("mantenimiento_admin.mantenimiento_admin"))
-
         print(f"{usuario} Es sysadmin")
         destino = url_for("feature_flags.feature_flags")
         if request.path != destino:
             return redirect(destino)
-
         return render_template("feature_flags.html", message=flag.maintenance_message)
 
     def cleanup_sessions(*args):

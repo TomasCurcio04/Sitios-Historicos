@@ -1,9 +1,8 @@
 # pylint: disable=import-error
-"""Utilidades para la aplicación web."""
+"""Utilidades de autenticación y autorización."""
 
 from flask import flash, session as current_user, abort, redirect, url_for
-from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
-from src.core.services.auth.feature_flag_serv import get_feature_flag
+from src.core import auth
 
 
 # Middleware para modo mantenimiento de administración
@@ -11,8 +10,8 @@ def admin_maintenance_required(view):
     """Decorator para verificar el estado de mantenimiento de la administración."""
 
     def wrapped_view(*args, **kwargs):
-        flag = get_feature_flag("admin_maintenance_mode")
-        usuario = buscar_usuario(current_user.get("user"))
+        flag = auth.get_feature_flag("admin_maintenance_mode")
+        usuario = auth.buscar_usuario(current_user.get("user"))
         # SI no es usuario, no puede entrar.
         if not usuario:
             return redirect(url_for("auth.login"))
@@ -31,5 +30,5 @@ def usuario_actual():
         return None
     usuario_id = current_user.get("usuario_id")
     if usuario_id:
-        return obtener_usuario_por_id(usuario_id)
+        return auth.obtener_usuario_por_id(usuario_id)
     return None

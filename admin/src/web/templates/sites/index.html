@@ -1,250 +1,274 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Listado de Sitios Históricos</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='sitios.css') }}">
+{% extends "layout.html" %}
+
+{% block title %}Listado de Sitios Históricos</title>{% endblock %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
 
-<h1>Listado de Sitios Históricos</h1>
+    <h1>Listado de Sitios Históricos</h1>
 
-<!-- Flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
     <ul class="flash-messages">
-      {% for category, msg in messages %}
+        {% for category, msg in messages %}
         <li class="{{ category }}">{{ msg }}</li>
-      {% endfor %}
+        {% endfor %}
     </ul>
-  {% endif %}
-{% endwith %}
+    {% endif %}
+    {% endwith %}
 
-<!-- Búsqueda avanzada -->
-<div class="search-bar">
-    <form action="{{ url_for('issues.index') }}" method="get" class="search-form" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-        <input type="text" name="nombre" placeholder="Nombre" value="{{ request.args.get('nombre','') }}">
-        <input type="text" name="short_description" placeholder="Descripción breve" value="{{ request.args.get('short_description','') }}">
-        <input type="text" name="full_description" placeholder="Descripción completa" value="{{ request.args.get('full_description','') }}">
-        <input type="text" name="city" placeholder="Ciudad" value="{{ request.args.get('city','') }}">
-        <!-- Select de estado/provincia -->
-        <select name="state">
-            <option value="">Provincia/Estado</option>
-            {% for estado in estados %}
-                <option value="{{ estado.id_state }}"
-                    {% if request.args.get('state') == estado.id_state|string %}selected{% endif %}>
+    <!-- Búsqueda avanzada -->
+    <div class="search-bar">
+        <form action="{{ url_for('sites.index') }}" method="get" class="search-form"
+            style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+            <input type="text" name="nombre" placeholder="Nombre" value="{{ request.args.get('nombre','') }}">
+            <input type="text" name="short_description" placeholder="Descripción breve"
+                value="{{ request.args.get('short_description','') }}">
+            <input type="text" name="full_description" placeholder="Descripción completa"
+                value="{{ request.args.get('full_description','') }}">
+            <input type="text" name="city" placeholder="Ciudad" value="{{ request.args.get('city','') }}">
+            <!-- Select de estado/provincia -->
+            <select name="state">
+                <option value="">Provincia/Estado</option>
+                {% for estado in estados %}
+                <option value="{{ estado.id_state }}" {% if request.args.get('state')==estado.id_state|string
+                    %}selected{% endif %}>
                     {{ estado.name }}
                 </option>
-            {% endfor %}
-        </select>
-        <input type="text" name="conservation_state" placeholder="Estado de conservación" value="{{ request.args.get('conservation_state','') }}">
-        <input type="number" name="inauguration_year" placeholder="Año" value="{{ request.args.get('inauguration_year','') }}">
-        <input type="text" name="latitude" placeholder="Latitud" value="{{ request.args.get('latitude','') }}">
-        <input type="text" name="longitude" placeholder="Longitud" value="{{ request.args.get('longitude','') }}">
-        <input type="text" name="created_by" placeholder="Creado por (ID)" value="{{ request.args.get('created_by','') }}">
-        <input type="date" name="date_registered" placeholder="Fecha de registro" value="{{ request.args.get('date_registered','') }}">
-        <select name="is_visible">
-           <option value="">Todos (visible y ocultos)</option>  
-           <option value="1" {% if request.args.get('is_visible')=='1' %}selected{% endif %}>Solo visibles</option>
-           <option value="0" {% if request.args.get('is_visible')=='0' %}selected{% endif %}>Solo ocultos</option>
-        </select>
-        <button type="submit" class="btn btn-search">Buscar</button>
-    </form>
+                {% endfor %}
+            </select>
+            <input type="text" name="conservation_state" placeholder="Estado de conservación"
+                value="{{ request.args.get('conservation_state','') }}">
+            <input type="number" name="inauguration_year" placeholder="Año"
+                value="{{ request.args.get('inauguration_year','') }}">
+            <input type="text" name="latitude" placeholder="Latitud" value="{{ request.args.get('latitude','') }}">
+            <input type="text" name="longitude" placeholder="Longitud" value="{{ request.args.get('longitude','') }}">
+            <input type="text" name="created_by" placeholder="Creado por (ID)"
+                value="{{ request.args.get('created_by','') }}">
+            <input type="date" name="date_registered" placeholder="Fecha de registro"
+                value="{{ request.args.get('date_registered','') }}">
+            <select name="is_visible">
+                <option value="">Todos (visible y ocultos)</option>
+                <option value="1" {% if request.args.get('is_visible')=='1' %}selected{% endif %}>Solo visibles</option>
+                <option value="0" {% if request.args.get('is_visible')=='0' %}selected{% endif %}>Solo ocultos</option>
+            </select>
+            <button type="submit" class="btn btn-search">Buscar</button>
+        </form>
 
-    <div class="button-group">
-        <form action="{{ url_for('issues.index') }}" method="get">
-            <button type="submit" class="btn btn-create first">Mostrar todos</button>
-        </form>
-        <form action="{{ url_for('busqueda_avanzada.index') }}" method="get">
-            <button type="submit" class="btn btn-create middle">Búsqueda Avanzada</button>
-        </form>
-        <form action="{{ url_for('web.home') }}" method="get">
-            <button type="submit" class="btn btn-create middle">Volver al home</button>
-        </form>
-        <form action="{{ url_for('issues.exportar') }}" method="get">
-            {% for key in ['nombre','short_description','full_description','city','state','conservation_state','inauguration_year','latitude','longitude','created_by','date_registered','is_visible'] %}
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+            <form action="{{ url_for('sites.index') }}" method="get">
+                <button type="submit" class="btn-secondary-action">Mostrar todos</button>
+            </form>
+            <form action="{{ url_for('busqueda_avanzada.index') }}" method="get">
+                <button type="submit" class="btn-primary-action">Búsqueda Avanzada</button>
+            </form>
+            <form action="{{ url_for('web.home') }}" method="get">
+                <button type="submit" class="btn-primary-action">Volver al home</button>
+            </form>
+            <form action="{{ url_for('sites.exportar') }}" method="get">
+                {% for key in
+                ['nombre','short_description','full_description','city','state','conservation_state','inauguration_year','latitude','longitude','created_by','date_registered','is_visible']
+                %}
                 <input type="hidden" name="{{ key }}" value="{{ request.args.get(key,'') }}">
+                {% endfor %}
+                <button type="submit" class="btn-primary-action">Exportar CSV</button>
+            </form>
+        </div>
+    </div>
+    </br>
+    {% if sitios %}
+    <div class="table-scroll-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción breve</th>
+                    <th>Descripción completa</th>
+                    <th>Ciudad</th>
+                    <th>Provincia/Estado</th>
+                    <th>Estado de conservación</th>
+                    <th>Año</th>
+                    <th>Latitud</th>
+                    <th>Longitud</th>
+                    <th>Creado por</th>
+                    <th>Fecha de registro</th>
+                    <th>Visible</th>
+                    <th>Etiquetas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sitio in sitios %}
+                <tr>
+                    <td>{{ sitio.id_site }}</td>
+                    <td>{{ sitio.name }}</td>
+                    <td>{{ sitio.short_description or '' }}</td>
+                    <td>{{ sitio.full_description or '' }}</td>
+                    <td>{{ sitio.city }}</td>
+                    <td>{{ sitio.state_rel.name if sitio.state_rel else sitio.state }}</td>
+                    <td>{{ sitio.conservation_state or '' }}</td>
+                    <td>{{ sitio.inauguration_year or '' }}</td>
+                    <td>{{ sitio.latitude or '' }}</td>
+                    <td>{{ sitio.longitude or '' }}</td>
+                    <td>
+                        {% if sitio.user %}
+                        {{ sitio.user.nombre }}
+                        {% else %}
+                        {{ sitio.created_by }}
+                        {% endif %}
+                    </td>
+                    <td>{{ sitio.date_registered or '' }}</td>
+                    <td>{{ 'Sí' if sitio.is_visible else 'No' }}</td>
+                    <td>
+                        {% if sitio.tag %}
+                        {% for etiqueta in sitio.tag %}
+                        <span class="badge">{{ etiqueta.name }}</span>
+                        {% endfor %}
+                        {% else %}
+                        <span class="text-muted">Sin etiquetas</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="acciones">
+                            <form action="{{ url_for('sites.editar', site_id=sitio.id_site) }}" method="get">
+                                <button type="submit" class="btn btn-edit">Editar</button>
+                            </form>
+                            {% if usuario_es_admin %}
+                            <button type="button" class="btn btn-edit"
+                                onclick="showHistoryModal('{{ sitio.id_site }}')">
+                                Historial de cambios
+                            </button>
+
+                            {% endif %}
+                            {% if usuario_es_admin %}
+                            <form action="{{ url_for('sites.eliminar', site_id=sitio.id_site) }}" method="post">
+                                <input type="hidden" name="user_id"
+                                    value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
+                                <button type="submit" class="btn btn-delete"
+                                    onclick="return confirm('¿Seguro que querés eliminar este sitio?')">Eliminar</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Paginación de Sitios" class="mt-4">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- Botón Anterior -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                <a class="page-link"
+                    href="{{ url_for('sites.index', page=page - 1, nombre=request.args.get('nombre',''), short_description=request.args.get('short_description',''), full_description=request.args.get('full_description',''), city=request.args.get('city',''), state=request.args.get('state',''), conservation_state=request.args.get('conservation_state',''), inauguration_year=request.args.get('inauguration_year',''), latitude=request.args.get('latitude',''), longitude=request.args.get('longitude',''), created_by=request.args.get('created_by',''), date_registered=request.args.get('date_registered',''), is_visible=request.args.get('is_visible','')) if page > 1 else '#' }}"
+                    aria-label="Anterior">
+                    &laquo;
+                </a>
+            </li>
+
+            <!-- Páginas -->
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link"
+                    href="{{ url_for('sites.index', page=p, nombre=request.args.get('nombre',''), short_description=request.args.get('short_description',''), full_description=request.args.get('full_description',''), city=request.args.get('city',''), state=request.args.get('state',''), conservation_state=request.args.get('conservation_state',''), inauguration_year=request.args.get('inauguration_year',''), latitude=request.args.get('latitude',''), longitude=request.args.get('longitude',''), created_by=request.args.get('created_by',''), date_registered=request.args.get('date_registered',''), is_visible=request.args.get('is_visible','')) }}">
+                    {{ p }}
+                </a>
+            </li>
             {% endfor %}
-            <button type="submit" class="btn btn-create last">Exportar CSV</button>
+
+            <!-- Botón Siguiente -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                <a class="page-link"
+                    href="{{ url_for('sites.index', page=page + 1, nombre=request.args.get('nombre',''), short_description=request.args.get('short_description',''), full_description=request.args.get('full_description',''), city=request.args.get('city',''), state=request.args.get('state',''), conservation_state=request.args.get('conservation_state',''), inauguration_year=request.args.get('inauguration_year',''), latitude=request.args.get('latitude',''), longitude=request.args.get('longitude',''), created_by=request.args.get('created_by',''), date_registered=request.args.get('date_registered',''), is_visible=request.args.get('is_visible','')) if page < total_pages else '#' }}"
+                    aria-label="Siguiente">
+                    &raquo;
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div style="text-align:center; margin-top:2rem;">
+        <form action="{{ url_for('sites.nuevo') }}" method="get" style="display:inline;">
+            <button type="submit" class="btn-primary-action">+ Crear Nuevo Sitio</button>
         </form>
     </div>
-</div>
 
-<div style="text-align:center; margin-bottom:1rem;">
-    <form action="{{ url_for('issues.nuevo') }}" method="get" style="display:inline;">
-        <button type="submit" class="btn btn-create">+ Crear Nuevo Sitio</button>
-    </form>
-</div>
+    {% else %}
+    <p style="text-align:center; font-size:1.1rem; color:#666;">No hay sitios históricos registrados.</p>
+    {% endif %}
 
-{% if sitios %}
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción breve</th>
-            <th>Descripción completa</th>
-            <th>Ciudad</th>
-            <th>Provincia/Estado</th>
-            <th>Estado de conservación</th>
-            <th>Año</th>
-            <th>Latitud</th>
-            <th>Longitud</th>
-            <th>Creado por</th>
-            <th>Fecha de registro</th>
-            <th>Visible</th>
-            <th>Etiquetas</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for sitio in sitios %}
-        <tr>
-            <td>{{ sitio.id_site }}</td>
-            <td>{{ sitio.name }}</td>
-            <td>{{ sitio.short_description or '' }}</td>
-            <td>{{ sitio.full_description or '' }}</td>
-            <td>{{ sitio.city }}</td>
-            <td>{{ sitio.state_rel.name if sitio.state_rel else sitio.state }}</td>
-            <td>{{ sitio.conservation_state or '' }}</td>
-            <td>{{ sitio.inauguration_year or '' }}</td>
-            <td>{{ sitio.latitude or '' }}</td>
-            <td>{{ sitio.longitude or '' }}</td>
-            <td>
-                {% if sitio.user %}
-                    {{ sitio.user.nombre }}
-                {% else %}
-                    {{ sitio.created_by }}
-                {% endif %}
-            </td>
-            <td>{{ sitio.date_registered or '' }}</td>
-            <td>{{ 'Sí' if sitio.is_visible else 'No' }}</td>
-            <td>
-                {% if sitio.tag %}
-                    {% for etiqueta in sitio.tag %}
-                        <span class="badge">{{ etiqueta.name }}</span>
-                    {% endfor %}
-                {% else %}
-                    <span class="text-muted">Sin etiquetas</span>
-                {% endif %}
-            </td>
-            <td>
-                <div class="acciones">
-                    <form action="{{ url_for('issues.editar', site_id=sitio.id_site) }}" method="get">
-                        <button type="submit" class="btn btn-edit">Editar</button>
-                    </form>
-                    {% if usuario_es_admin %}
-                    <button type="button" class="btn btn-edit" 
-                                     onclick="showHistoryModal('{{ sitio.id_site }}')">
-                                         Historial de cambios
-                    </button>
-                      
-                    {% endif %}
-                    {% if usuario_es_admin %}
-                    <form action="{{ url_for('issues.eliminar', site_id=sitio.id_site) }}" method="post">
-                        <input type="hidden" name="user_id" value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
-                        <button type="submit" class="btn btn-delete" onclick="return confirm('¿Seguro que querés eliminar este sitio?')">Eliminar</button>
-                    </form>
-                    {% endif %}
-                </div>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Historial de Modificaciones</h2>
 
-<div class="pagination">
-{% for p in range(1,total_pages+1) %}
-<a href="{{ url_for('issues.index',
-    nombre=request.args.get('nombre',''),
-    short_description=request.args.get('short_description',''),
-    full_description=request.args.get('full_description',''),
-    city=request.args.get('city',''),
-    state=request.args.get('state',''),
-    conservation_state=request.args.get('conservation_state',''),
-    inauguration_year=request.args.get('inauguration_year',''),
-    latitude=request.args.get('latitude',''),
-    longitude=request.args.get('longitude',''),
-    created_by=request.args.get('created_by',''),
-    date_registered=request.args.get('date_registered',''),
-    is_visible=request.args.get('is_visible',''),
-    page=p
-) }}" class="{{ 'active' if p==page else '' }}">{{ p }}</a>
-{% endfor %}
-</div>
+            <div id="historyContent">
+            </div>
+        </div>
+    </div>
 
-{% else %}
-<p style="text-align:center; font-size:1.1rem; color:#666;">No hay sitios históricos registrados.</p>
-{% endif %}
+    <script>
+        // Se obtienen los elementos del DOM que vamos a necesitar
+        const modal = document.getElementById('historyModal');
+        const modalContent = document.getElementById('historyContent');
+        const closeButton = document.querySelector('.close-button');
 
-   <div id="historyModal" class="modal">
-                         <div class="modal-content">
-                           <span class="close-button">&times;</span>
-                              <h2>Historial de Modificaciones</h2>
-        
-                              <div id="historyContent">
-                              </div>
-                             </div>
-                          </div>
+        /**
+         * Función para mostrar el modal y cargar el historial.
+         * Es llamada por el atributo 'onclick' del botón.
+         */
+        function showHistoryModal(siteId) {
+            // 1. Muestra "Cargando..." y hace visible el modal
+            modalContent.innerHTML = '<p>Cargando...</p>';
+            modal.style.display = 'block';
 
-<script>
-    // Se obtienen los elementos del DOM que vamos a necesitar
-    const modal = document.getElementById('historyModal');
-    const modalContent = document.getElementById('historyContent');
-    const closeButton = document.querySelector('.close-button');
-
-    /**
-     * Función para mostrar el modal y cargar el historial.
-     * Es llamada por el atributo 'onclick' del botón.
-     */
-    function showHistoryModal(siteId) {
-        // 1. Muestra "Cargando..." y hace visible el modal
-        modalContent.innerHTML = '<p>Cargando...</p>';
-        modal.style.display = 'block';
-
-        // 2. Usa 'fetch' para pedir el historial al servidor de forma asíncrona
-        fetch(`/issues/${siteId}/historial`)
-            .then(response => {
-                // Si la respuesta del servidor no es OK (ej: error 404 o 500)
-                if (!response.ok) {
-                    throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
-                }
-                // Se espera que el servidor devuelva texto (que será el HTML parcial)
-                return response.text();
-            })
-            .then(html => {
-                // 3. Inserta el HTML recibido dentro del div del modal
-                modalContent.innerHTML = html;
-            })
-            .catch(error => {
-                // 4. Si algo falla durante el 'fetch', muestra un mensaje de error
-                modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-                console.error('Error en fetch:', error);
-            });
-    }
-
-    /**
-     * Función para cerrar el modal.
-     */
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    // --- Asignación de Eventos ---
-
-    // Evento para cerrar el modal al hacer clic en el botón (X)
-    if (closeButton) {
-        closeButton.onclick = closeModal;
-    }
-    
-    // Evento para cerrar el modal si se hace clic fuera del contenido de la ventana
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            closeModal();
+            // 2. Usa 'fetch' para pedir el historial al servidor de forma asíncrona
+            fetch(`/sitios/${siteId}/historial`)
+                .then(response => {
+                    // Si la respuesta del servidor no es OK (ej: error 404 o 500)
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
+                    }
+                    // Se espera que el servidor devuelva texto (que será el HTML parcial)
+                    return response.text();
+                })
+                .then(html => {
+                    // 3. Inserta el HTML recibido dentro del div del modal
+                    modalContent.innerHTML = html;
+                })
+                .catch(error => {
+                    // 4. Si algo falla durante el 'fetch', muestra un mensaje de error
+                    modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                    console.error('Error en fetch:', error);
+                });
         }
-    }
-</script>
+
+        /**
+         * Función para cerrar el modal.
+         */
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // --- Asignación de Eventos ---
+
+        // Evento para cerrar el modal al hacer clic en el botón (X)
+        if (closeButton) {
+            closeButton.onclick = closeModal;
+        }
+
+        // Evento para cerrar el modal si se hace clic fuera del contenido de la ventana
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
 </body>
-</html>
+{% endblock %}
