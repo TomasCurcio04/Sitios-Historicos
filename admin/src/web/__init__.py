@@ -35,7 +35,6 @@ from src.web.handlers.auth import login_required
 from src.web.handlers.utils import permissions_required
 
 
-
 session = Session()
 
 
@@ -66,9 +65,8 @@ def create_app(env="development", static_folder=None):
     session.init_app(app)
     # Inicializando Bcrypt
     bcrypt.init_app(app)
-    #inicializo storage
+    # inicializo storage
     storage.init_app(app)
-
 
     # Register commands
     @app.cli.command("reset-db")
@@ -95,18 +93,9 @@ def create_app(env="development", static_folder=None):
 
     @app.before_request
     def check_admin_maintenance():
-        """Verifica si el usuario está en modo de mantenimiento administrativo."""
+        """Verifica si el panel administratvo está en modo de mantenimiento"""
         current_user.setdefault("user", None)
-        """Verifica si el usuario está en modo de mantenimiento administrativo."""
-        current_user.setdefault("user", None)
-        # Agregar user_name a sesiones existentes que no lo tengan
-        if "user" in current_user and "user_name" not in current_user:
-            usuario = buscar_usuario(current_user.get("user"))
-            if usuario:
-                current_user["user_name"] = usuario.user_name
-                current_user["user_name"] = usuario.user_name
         usuario = buscar_usuario(current_user.get("user"))
-        print(f"current_user: {current_user.get('user')}")
         flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
@@ -117,19 +106,15 @@ def create_app(env="development", static_folder=None):
             "mantenimiento_admin.mantenimiento_admin",
         ]
         if request.endpoint in exempt_endpoints:
-            print("request")
             return
         if not flag or not flag.enabled:
             if not usuario:
-                print("no usuario")
                 return redirect(url_for("auth.login"))
             return
         if not usuario:
             return redirect(url_for("auth.login"))
-        print(f"Usuario s_user: {usuario.s_user}")
         if not usuario.s_user:
             return redirect(url_for("mantenimiento_admin.mantenimiento_admin"))
-        print(f"{usuario} Es sysadmin")
         destino = url_for("feature_flags.feature_flags")
         if request.path != destino:
             return redirect(destino)
