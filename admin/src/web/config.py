@@ -1,6 +1,6 @@
 """Configuration classes for different environments."""
 
-# from os import environ
+from os import environ
 
 
 class BaseConfig:
@@ -15,10 +15,8 @@ class BaseConfig:
 class ProductionConfig(BaseConfig):
     """Production configuration class."""
 
-    SQLALCHEMY_ENGINES = {
-        "default": "postgresql+psycopg2://grupo10:GtGouFR0ONveaoqQKi31@127.0.0.1:5432/grupo10?options=-c%20search_path=postgres"
-    }
-    # {"default": environ.get("DATABASE_URL")}
+    SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
+    # {"default": "postgresql+psycopg2://grupo10:GtGouFR0ONveaoqQKi31@127.0.0.1:5432/grupo10?options=-c%20search_path=postgres" }
 
 
 class DevelopmentConfig(BaseConfig):
