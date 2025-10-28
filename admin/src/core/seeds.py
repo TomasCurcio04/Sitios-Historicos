@@ -28,12 +28,32 @@ def run():
         permission_name="create_site", permission_description="Crear el Sitio"
     )
 
+    permissions5 = create_permission(
+        permission_name="view_tag", permission_description="Ver la Etiqueta"
+    )   
+
+    permissions6 = create_permission(
+        permission_name="edit_tag", permission_description="Editar la Etiqueta"
+    )
+
+    permissions7 = create_permission(
+        permission_name="delete_tag", permission_description="Eliminar la Etiqueta"
+    )
+
+    permissions8 = create_permission(
+        permission_name="create_tag", permission_description="Crear la Etiqueta"
+    )
+
+    permissions9 = create_permission(
+        permission_name="view_menu_tags", permission_description="Ver el menú de Etiquetas"
+    )
+
     role1 = create_role(name="admin", description="Administrador")
     role2 = create_role(name="editor", description="Editor")
     role3 = create_role(name="viewer", description="Visualizador")
 
-    role1.permission = [permissions1, permissions2, permissions3, permissions4]
-    role2.permission = [permissions1, permissions2, permissions4]
+    role1.permission = [permissions1, permissions2, permissions3, permissions4, permissions5, permissions6, permissions7, permissions8, permissions9]
+    role2.permission = [permissions1, permissions2, permissions4, permissions5, permissions6, permissions7, permissions8, permissions9]
     role3.permission = [permissions1]
 
     user1 = create_user(
