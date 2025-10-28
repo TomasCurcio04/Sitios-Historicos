@@ -4,7 +4,10 @@
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session
 from src.web.utils import admin_maintenance_required
 from src.core.services.auth.user_serv import buscar_usuario
-from src.core.services.auth.feature_flag_serv import list_feature_flags, update_feature_flags
+from src.core.services.auth.feature_flag_serv import (
+    list_feature_flags,
+    update_feature_flags,
+)
 
 feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
 
@@ -39,14 +42,17 @@ def feature_flags():
                 "enabled": new_enabled,
                 "maintenance_message": new_message,
             }
-        has_changes = update_feature_flags(flags_data, usuario_id)
-        if has_changes:
-            if admin_maintenance_disabled:
-                flash("Mantenimiento desactivado", "success")
+        try:
+            has_changes = update_feature_flags(flags_data, usuario_id)
+            if has_changes:
+                if admin_maintenance_disabled:
+                    flash("Mantenimiento desactivado", "success")
+                else:
+                    flash("Feature flags actualizados correctamente", "success")
             else:
-                flash("Feature flags actualizados correctamente", "success")
-        else:
-            flash("No se detectaron cambios", "info")
+                flash("No se detectaron cambios", "info")
+        except ValueError as e:
+            flash(str(e), "error")
         return redirect(url_for("feature_flags.feature_flags"))
 
     # Obtener flags frescos para GET
