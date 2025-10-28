@@ -38,7 +38,7 @@ def check_permissions(section, permissions):
     Returns:
         bool: True si tiene permisos o es superusuario, False caso contrario
     """
-    usuario = usuario_actual()
+    usuario = buscar_usuario(current_user.get("user"))
     if not usuario:
         return False
 
