@@ -1,3 +1,5 @@
+"""Controlador de gestión de usuarios para el panel administrativo."""
+
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
@@ -18,7 +20,11 @@ user_bp = Blueprint("users", __name__, url_prefix="/gestion_usuarios")
 @user_bp.route("/", methods=["GET"])
 @admin_required
 def user_index():
-    """Muestra la lista de todos los usuarios con filtros y ordenamiento."""
+    """Lista usuarios con filtros, paginación y ordenamiento.
+    
+    Permite filtrar por estado activo, rol y email, además de
+    ordenar por fecha de creación ascendente o descendente.
+    """
     
     page = request.args.get('page', 1, type=int)
     PER_PAGE = 25
@@ -70,13 +76,14 @@ def user_index():
 @user_bp.route("/new", methods=["GET"])
 @admin_required
 def user_new():
-    """Muestra el formulario para crear un nuevo usuario. Endpoint: users.user_new"""
+    """Muestra el formulario para crear un nuevo usuario."""
     # Aquí irá el formulario real de creación
     return render_template("user_new.html")
 
 @user_bp.route("/create", methods=["POST"])
 @admin_required
 def user_create():
+    """Procesa la creación de un nuevo usuario."""
     # Obtener los datos del formulario
     email = request.form.get("email", "").strip().lower()
     username = request.form.get("username", "").strip()
@@ -143,7 +150,7 @@ def user_create():
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
 @admin_required
 def user_delete(user_id):
-    """Elimina un usuario por su ID y redirige a la lista. Endpoint: users.user_delete"""
+    """Desactiva un usuario (eliminación lógica)."""
     email = request.form.get("email")
     if email:
         # Llama a la función para eliminar el usuario de la DB
@@ -155,6 +162,7 @@ def user_delete(user_id):
 @user_bp.route("/<string:email>/edit", methods=["GET"])
 @admin_required
 def user_edit(email):
+    """Muestra el formulario de edición de usuario."""
     user = buscar_usuario(email)
 
     if not user:
@@ -166,7 +174,7 @@ def user_edit(email):
 @user_bp.route("/<string:email>/update", methods=["POST"])
 @admin_required
 def user_update(email):
-    """Procesa los datos y actualiza el usuario."""
+    """Procesa la actualización de datos del usuario."""
 
     user = buscar_usuario(email)
     if not user:

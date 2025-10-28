@@ -15,8 +15,12 @@ class SiteHistoryService:
 
     @staticmethod
     def register_creation(db_session, *, site: Site, user_id: int):
-        """
-        Crea un registro de historial para la CREACIÓN de un sitio.
+        """Crea un registro de historial para la creación de un sitio.
+        
+        Args:
+            db_session: Sesión de base de datos
+            site: Sitio creado
+            user_id: ID del usuario que creó el sitio
         """
         # Esta lógica estaba antes en tu controlador
         estado = db_session.get(State, site.state)
@@ -32,8 +36,13 @@ class SiteHistoryService:
 
     @staticmethod
     def register_update(db_session, *, site_id: int, user_id: int, changes: list[str]):
-        """
-        Crea un registro de historial para la ACTUALIZACIÓN de un sitio.
+        """Crea un registro de historial para la actualización de un sitio.
+        
+        Args:
+            db_session: Sesión de base de datos
+            site_id: ID del sitio actualizado
+            user_id: ID del usuario que actualizó el sitio
+            changes: Lista de cambios realizados
         """
         if not changes:
             return # No hacer nada si no hay cambios
@@ -50,8 +59,12 @@ class SiteHistoryService:
 
     @staticmethod
     def register_deletion(db_session, *, site: Site, user_id: int):
-        """
-        Crea un registro de historial para la ELIMINACIÓN de un sitio.
+        """Crea un registro de historial para la eliminación de un sitio.
+        
+        Args:
+            db_session: Sesión de base de datos
+            site: Sitio a eliminar
+            user_id: ID del usuario que eliminó el sitio
         """
         # Esta lógica estaba antes en tu controlador
         detalle = f"Sitio '{site.name}' eliminado (estaba en {site.city})"

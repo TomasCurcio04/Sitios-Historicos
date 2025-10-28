@@ -61,18 +61,21 @@ class Users(Base):
 
     @validates("email")
     def validate_email(self, key, email):
+        """Valida el formato del email y lo normaliza."""
         if not re.match(self.EMAIL_REGEX, email):
             raise ValueError("El email no tiene un formato válido.")
         return email.strip().lower()
 
     @validates("user_name")
     def validate_user_name(self, key, user_name):
+        """Valida que el nombre de usuario tenga al menos 3 caracteres."""
         if not user_name or len(user_name.strip()) < 3:
             raise ValueError("El nombre de usuario debe tener al menos 3 caracteres.")
         return user_name.strip()
 
     @validates("password")
     def validate_password(self, key, password):
+        """Valida que la contraseña tenga al menos 6 caracteres."""
         if len(password) < 6:
             raise ValueError("La contraseña debe tener al menos 6 caracteres.")
         return password

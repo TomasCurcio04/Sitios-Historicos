@@ -23,6 +23,11 @@ DATA_FILE = os.path.join(os.path.dirname(__file__), "sites.json")
 # Funciones de JSON
 # -------------------------
 def load_sites():
+    """Carga sitios desde archivo JSON.
+    
+    Returns:
+        Lista de sitios o lista vacía si no existe el archivo
+    """
     if not os.path.exists(DATA_FILE):
         return []
     with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -32,19 +37,45 @@ def load_sites():
             return []
 
 def save_sites(sites):
+    """Guarda sitios en archivo JSON.
+    
+    Args:
+        sites: Lista de sitios a guardar
+    """
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(sites, f, ensure_ascii=False, indent=4)
 
 def get_all_sites_json():
+    """Obtiene todos los sitios desde JSON.
+    
+    Returns:
+        Lista de todos los sitios
+    """
     return load_sites()
 
 def get_site_json(site_id):
+    """Obtiene un sitio específico desde JSON.
+    
+    Args:
+        site_id: ID del sitio a buscar
+    
+    Returns:
+        Sitio encontrado o None
+    """
     for site in load_sites():
         if site["id"] == site_id:
             return site
     return None
 
 def create_site_json(data):
+    """Crea un nuevo sitio en JSON.
+    
+    Args:
+        data: Datos del sitio a crear
+    
+    Returns:
+        Sitio creado con ID asignado
+    """
     sites = load_sites()
     new_id = max([s["id"] for s in sites], default=0) + 1
     data["id"] = new_id
@@ -75,18 +106,39 @@ def delete_site_json(site_id):
 # Funciones de sitios usando DB
 # -------------------------
 def list_sites():
+    """Lista todos los sitios históricos.
+    
+    Returns:
+        Lista de sitios desde DB o JSON según configuración
+    """
     if USE_JSON:
         return get_all_sites_json()
     session = db.session
     return session.query(Site).all()
 
 def get_site(site_id):
+    """Obtiene un sitio por su ID.
+    
+    Args:
+        site_id: ID del sitio a buscar
+    
+    Returns:
+        Sitio encontrado o None
+    """
     if USE_JSON:
         return get_site_json(site_id)
     session = db.session
     return session.get(Site, site_id)
 
 def create_site(**kwargs):
+    """Crea un nuevo sitio histórico.
+    
+    Args:
+        **kwargs: Datos del sitio a crear
+    
+    Returns:
+        Sitio creado
+    """
     if USE_JSON:
         return create_site_json(kwargs)
     site = Site(**kwargs)
@@ -156,10 +208,23 @@ def assign_tag_to_site(tag, site):
 # Funciones de categorías
 # -------------------------
 def list_categories():
+    """Lista todas las categorías disponibles.
+    
+    Returns:
+        Lista de categorías
+    """
     session = db.session
     return session.query(Category).all()
 
 def create_category(**kwargs):
+    """Crea una nueva categoría.
+    
+    Args:
+        **kwargs: Datos de la categoría
+    
+    Returns:
+        Categoría creada
+    """
     category = Category(**kwargs)
     session = db.session
     session.add(category)
@@ -171,10 +236,23 @@ def create_category(**kwargs):
 # Funciones de estados/provincias
 # -------------------------
 def list_states():
+    """Lista todos los estados/provincias.
+    
+    Returns:
+        Lista de estados
+    """
     session = db.session
     return session.query(State).all()
 
 def create_state(**kwargs):
+    """Crea un nuevo estado/provincia.
+    
+    Args:
+        **kwargs: Datos del estado
+    
+    Returns:
+        Estado creado
+    """
     state = State(**kwargs)
     session = db.session
     session.add(state)
@@ -221,6 +299,14 @@ def list_tags():
     return session.query(Tag).all()
 
 def create_tag(**kwargs):
+    """Crea una nueva etiqueta.
+    
+    Args:
+        **kwargs: Datos de la etiqueta
+    
+    Returns:
+        Etiqueta creada
+    """
     tag = Tag(**kwargs)
     session = db.session
     session.add(tag)

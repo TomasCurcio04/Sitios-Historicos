@@ -71,12 +71,19 @@ def create_app(env="development", static_folder=None):
     # Register commands
     @app.cli.command("reset-db")
     def reset_db_command():
-        """Reinicia la base de datos."""
+        """Comando CLI para reiniciar la base de datos.
+        
+        Elimina todas las tablas y las vuelve a crear.
+        """
         database.reset_db()
 
     @app.cli.command("seed-db")
     def seed_db_command():
-        """Llena la base de datos con datos iniciales."""
+        """Comando CLI para llenar la base de datos con datos iniciales.
+        
+        Ejecuta el script de semillas para crear usuarios, roles,
+        sitios y otros datos de prueba.
+        """
         seeds.run()
 
     # Registrar blueprints
@@ -93,7 +100,11 @@ def create_app(env="development", static_folder=None):
 
     @app.before_request
     def check_admin_maintenance():
-        """Verifica si el panel administratvo está en modo de mantenimiento"""
+        """Verifica si el panel administrativo está en modo de mantenimiento.
+        
+        Redirige a los usuarios no autenticados al login y a los usuarios
+        no superusuarios a la página de mantenimiento cuando está activo.
+        """
         current_user.setdefault("user", None)
         usuario = buscar_usuario(current_user.get("user"))
         flag = get_feature_flag("admin_maintenance_mode")

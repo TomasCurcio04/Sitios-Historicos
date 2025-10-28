@@ -18,7 +18,19 @@ def listar_usuarios(
     search_email=None,
     sort_order="asc",
 ):
-    """Lista usuarios aplicando solo un criterio."""
+    """Lista usuarios con filtros y paginación.
+
+    Args:
+        page: Número de página
+        per_page: Usuarios por página
+        is_active: Filtro por estado activo
+        rol: Filtro por nombre de rol
+        search_email: Búsqueda por email
+        sort_order: Orden de clasificación (asc/desc)
+
+    Returns:
+        Diccionario con usuarios, total, páginas y metadatos
+    """
 
     query = db.session.query(Users)
 
@@ -57,12 +69,27 @@ def listar_usuarios(
 
 
 def buscar_usuario(email):
-    """Busca un usuario por su correo electrónico y contraseña."""
+    """Busca un usuario por su correo electrónico.
+
+    Args:
+        email: Correo electrónico del usuario
+
+    Returns:
+        Usuario encontrado o None
+    """
     return db.session.query(Users).filter_by(email=email).first()
 
 
 def verificar_usuario(email, password):
-    """Verifica las credenciales de un usuario."""
+    """Verifica las credenciales de un usuario.
+
+    Args:
+        email: Correo electrónico
+        password: Contraseña en texto plano
+
+    Returns:
+        Tupla (usuario, error) donde usuario es None si hay error
+    """
     user = buscar_usuario(email)
     if not user:
         return None, "Email o contraseña incorrectos"
@@ -81,7 +108,14 @@ def verificar_usuario(email, password):
 
 
 def create_user(**kwargs):
-    """Función para crear un nuevo usuario con contraseña hasheada."""
+    """Crea un nuevo usuario con contraseña hasheada.
+
+    Args:
+        **kwargs: Datos del usuario (email, password, user_name, etc.)
+
+    Returns:
+        Usuario creado o mensaje de error
+    """
     if "email" in kwargs and buscar_usuario(kwargs["email"]):
         return "El email ya está registrado"
     if "password" in kwargs:
@@ -100,7 +134,14 @@ def create_user(**kwargs):
 
 
 def eliminar_usuario(email):
-    """Funcion para recibir un usuario y eliminarlo."""
+    """Desactiva un usuario (eliminación lógica).
+
+    Args:
+        email: Correo electrónico del usuario
+
+    Returns:
+        Usuario desactivado o None si no existe
+    """
     user = buscar_usuario(email)
     if user:
         user.active = False
@@ -110,7 +151,15 @@ def eliminar_usuario(email):
 
 
 def actualizar_usuario(email, **kwargs):
-    """Funcion para recibir un usuario y actualizarlo."""
+    """Actualiza los datos de un usuario.
+
+    Args:
+        email: Correo electrónico del usuario
+        **kwargs: Campos a actualizar
+
+    Returns:
+        Tupla (exito, mensaje)
+    """
     user = buscar_usuario(email)
 
     if not user:
@@ -126,12 +175,23 @@ def actualizar_usuario(email, **kwargs):
 
 
 def obtener_usuario_por_id(usuario_id):
-    """Funcion para recibir un id y obtener el usuario."""
+    """Obtiene un usuario por su ID.
+
+    Args:
+        usuario_id: ID del usuario
+
+    Returns:
+        Usuario encontrado o None
+    """
     return db.session.query(Users).get(usuario_id)
 
 
 def usuario_actual():
-    """Obtiene el usuario actual desde la sesión."""
+    """Obtiene el usuario actual desde la sesión.
+
+    Returns:
+        Usuario actual o None si no hay sesión activa
+    """
     try:
         from flask import session as current_user
 

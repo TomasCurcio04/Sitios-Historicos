@@ -1,3 +1,5 @@
+"""Controlador de sitios históricos para el panel administrativo."""
+
 from flask import (
     Blueprint,
     render_template,
@@ -30,6 +32,7 @@ USUARIO_ES_ADMIN = True
 # =====================================================
 @bp.get("/")
 def index():
+    """Lista sitios históricos con filtros y paginación."""
     page = int(request.args.get("page", 1))
     per_page = PER_PAGE
 
@@ -110,6 +113,7 @@ def index():
 # =====================================================
 @bp.get("/nuevo")
 def nuevo():
+    """Muestra el formulario para crear un nuevo sitio."""
     estados = db.session.query(State).all()
     categorias = db.session.query(Category).all()
     etiquetas = db.session.query(Tag).all()
@@ -124,6 +128,7 @@ def nuevo():
 
 @bp.post("/crear")
 def crear():
+    """Crea un nuevo sitio histórico."""
     user_id = int(request.form.get("user_id", 1))
     data = _extraer_y_validar_form()
     if isinstance(data, str):
@@ -158,6 +163,7 @@ def crear():
 # =====================================================
 @bp.get("/<int:site_id>/editar")
 def editar(site_id):
+    """Muestra el formulario para editar un sitio existente."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -176,6 +182,7 @@ def editar(site_id):
 
 @bp.post("/<int:site_id>/editar")
 def actualizar(site_id):
+    """Actualiza los datos de un sitio existente."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -224,6 +231,7 @@ def actualizar(site_id):
 # =====================================================
 @bp.post("/<int:site_id>/eliminar")
 def eliminar(site_id):
+    """Elimina un sitio histórico."""
     user_id = int(request.form.get("user_id", 1))
     sitio = db.session.get(Site, site_id)
     if not sitio:
@@ -251,6 +259,7 @@ def eliminar(site_id):
 # =====================================================
 @bp.get("/<int:site_id>/historial")
 def historial(site_id):
+    """Muestra el historial de cambios de un sitio."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         # En el contexto de una llamada fetch, un redirect no es ideal.
@@ -276,6 +285,7 @@ def historial(site_id):
 # =====================================================
 @bp.get("/exportar")
 def exportar():
+    """Exporta todos los sitios a un archivo CSV."""
     sitios = db.session.query(Site).all()
     output = io.StringIO()
     output.write("\ufeff")  # BOM para Excel
@@ -303,6 +313,7 @@ def exportar():
 # FUNCIÓN AUXILIAR DE VALIDACIÓN
 # =====================================================
 def _extraer_y_validar_form():
+    """Extrae y valida los datos del formulario de sitio."""
     try:
         nombre = request.form.get("nombre", "").strip()
         short_description = request.form.get("short_description", "").strip()

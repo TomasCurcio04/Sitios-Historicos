@@ -37,8 +37,15 @@ class Tag(Base):
 
     @staticmethod
     def generate_slug(name: str) -> str:
+        """Genera un slug URL-friendly a partir del nombre.
+        
+        Args:
+            name: Nombre de la etiqueta
+        
+        Returns:
+            Slug sin acentos, en minúsculas y con guiones
+        """
         # Quita acentos
-
         slug = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
         # Convierte a minúsculas y reemplaza espacios por guiones
         slug = slug.lower().replace(" ", "-")
@@ -46,6 +53,18 @@ class Tag(Base):
     
     @validates('name')
     def validate_name(self, key, value):
+        """Valida que el nombre de la etiqueta sea válido.
+        
+        Args:
+            key: Nombre del campo
+            value: Valor a validar
+        
+        Returns:
+            Valor validado y normalizado
+        
+        Raises:
+            ValueError: Si el nombre no cumple los criterios
+        """
         if not value or not value.strip():
             raise ValueError("El nombre es obligatorio")
         value = value.strip()
