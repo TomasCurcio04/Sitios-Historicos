@@ -6,19 +6,43 @@ from src.core.database import db
 
 
 def list_feature_flags():
-    """Función para listar todas las feature flags."""
+    """Lista todas las feature flags del sistema.
+    
+    Returns:
+        Lista de feature flags ordenadas por ID
+    """
     flags = db.session.query(FeatureFlag).order_by(FeatureFlag.id).all()
     return flags
 
 
 def get_feature_flag(name):
-    """Función para obtener una feature flag por su nombre."""
+    """Obtiene una feature flag por su nombre.
+    
+    Args:
+        name: Nombre de la feature flag
+    
+    Returns:
+        Feature flag encontrada o None
+    """
     flag = db.session.query(FeatureFlag).filter_by(name=name).first()
     return flag
 
 
 def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
-    """Función para modificar una feature flag."""
+    """Modifica una feature flag existente.
+    
+    Args:
+        name: Nombre de la feature flag
+        enabled: Estado activo/inactivo
+        updated_by: ID del usuario que actualiza
+        maintenance_message: Mensaje de mantenimiento (opcional)
+    
+    Returns:
+        Feature flag modificada
+    
+    Raises:
+        ValueError: Si el mensaje supera los 50 caracteres
+    """
     flag = FeatureFlag.get_flag(name)
     if flag:
         flag.enabled = enabled
@@ -32,14 +56,32 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
 
 
 def get_feature_flag_fresh(name):
-    """Función para obtener una feature flag fresca desde la base de datos."""
+    """Obtiene una feature flag actualizada desde la base de datos.
+    
+    Args:
+        name: Nombre de la feature flag
+    
+    Returns:
+        Feature flag fresca desde la DB
+    """
     db.session.expire_all()
     flag = db.session.query(FeatureFlag).filter_by(name=name).first()
     return flag
 
 
 def update_feature_flags(flags_data, updated_by):
-    """Función para actualizar múltiples feature flags."""
+    """Actualiza múltiples feature flags en lote.
+    
+    Args:
+        flags_data: Dict con datos de las flags a actualizar
+        updated_by: ID del usuario que actualiza
+    
+    Returns:
+        True si hubo cambios, False en caso contrario
+    
+    Raises:
+        ValueError: Si algún mensaje supera los 50 caracteres
+    """
     flags = list_feature_flags()
     has_changes = False
     for flag in flags:

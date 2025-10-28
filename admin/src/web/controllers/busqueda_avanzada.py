@@ -1,3 +1,5 @@
+"""Controlador de búsqueda avanzada de sitios históricos."""
+
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from datetime import datetime
 from src.core.services.board.busqueda_avanzada_serv import buscar_sites, obtener_provincias_con_sitios, get_page_items, get_total_results, ordenar_query, get_total_pages
@@ -7,6 +9,14 @@ from src.core.entity.site import Site
 bp = Blueprint('busqueda_avanzada', __name__, url_prefix='/busqueda')
 
 def parse_date(s):
+    """Convierte string de fecha a objeto date.
+    
+    Args:
+        s: String de fecha en formato YYYY-MM-DD
+    
+    Returns:
+        Objeto date o None si es inválido
+    """
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
     except (ValueError, TypeError):
@@ -14,6 +24,7 @@ def parse_date(s):
 
 @bp.get('/')
 def index():
+    """Página principal de búsqueda avanzada con filtros múltiples."""
     ciudad = request.args.get("ciudad", "").strip()
     provincia = request.args.get("provincia", "").strip()
     estado = request.args.get("estado", "").strip()

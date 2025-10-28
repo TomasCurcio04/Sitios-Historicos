@@ -31,12 +31,12 @@ def admin_maintenance_required(view):
 def check_permissions(section, permissions):
     """Verifica si el usuario actual tiene permisos para una sección.
 
-    kwArgs:
-        section (str): Nombre de la sección (ej: 'users', 'sites')
-        permissions (list): Lista de permisos requeridos (ej: ['create', 'write'])
+    Args:
+        section: Nombre de la sección (ej: 'users', 'sites')
+        permissions: Lista de permisos requeridos (ej: ['create', 'write'])
 
     Returns:
-        bool: True si tiene permisos o es superusuario, False caso contrario
+        True si tiene permisos o es superusuario, False caso contrario
     """
     usuario = buscar_usuario(current_user.get("user"))
     if not usuario:
@@ -54,7 +54,15 @@ def check_permissions(section, permissions):
 
 
 def permissions_required(section, permissions):
-    """Decorador para verificar permisos en rutas."""
+    """Decorador que verifica permisos requeridos en rutas.
+    
+    Args:
+        section: Sección del sistema
+        permissions: Lista de permisos requeridos
+    
+    Returns:
+        Decorador que verifica permisos
+    """
 
     def decorator(view):
         def wrapped_view(*args, **kwargs):

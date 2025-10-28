@@ -1,3 +1,5 @@
+"""Servicio de búsqueda avanzada de sitios históricos."""
+
 from src.core.database import db
 from src.core.entity.site import Site
 from src.core.entity.tag import Tag
@@ -5,7 +7,14 @@ from sqlalchemy import or_, distinct
 from src.core.entity.state import State
 
 def buscar_sites(filtros):
-    """Devuelve una query filtrada de sitios según los parámetros de búsqueda."""
+    """Construye query filtrada de sitios según criterios de búsqueda.
+    
+    Args:
+        filtros: Dict con criterios de búsqueda
+    
+    Returns:
+        Query de SQLAlchemy filtrada
+    """
     query = db.session.query(Site)
 
     if filtros.get("ciudad"):
@@ -33,7 +42,11 @@ def buscar_sites(filtros):
     return query
 
 def obtener_provincias_con_sitios():
-    """Devuelve una lista de provincias que tienen al menos un sitio."""
+    """Obtiene provincias que tienen al menos un sitio registrado.
+    
+    Returns:
+        Lista de nombres de provincias
+    """
     resultados = (
         db.session.query(distinct(State.name))
         .join(Site, Site.state == State.id_state)
@@ -44,6 +57,16 @@ def obtener_provincias_con_sitios():
 
     # Ordenamiento
 def ordenar_query(query, sort, order):
+    """Aplica ordenamiento a la query.
+    
+    Args:
+        query: Query de SQLAlchemy
+        sort: Campo por el cual ordenar
+        order: Dirección del ordenamiento (asc/desc)
+    
+    Returns:
+        Query ordenada
+    """
     if sort in ["name", "date_registered", "city"]:
         col = getattr(Site, sort)
         if order == "desc":
@@ -53,13 +76,39 @@ def ordenar_query(query, sort, order):
 
     # Conteo total
 def get_total_results(query):
+    """Cuenta el total de resultados de la query.
+    
+    Args:
+        query: Query de SQLAlchemy
+    
+    Returns:
+        Número total de resultados
+    """
     return query.count()
 
 def get_total_pages(query, per_page):
+    """Calcula el número total de páginas.
+    
+    Args:
+        query: Query de SQLAlchemy
+        per_page: Elementos por página
+    
+    Returns:
+        Número total de páginas
+    """
     return (get_total_results(query) + per_page - 1) // per_page
 
-    # Paginación
 def get_page_items(query, page, per_page):
+    """Obtiene los elementos de una página específica.
+    
+    Args:
+        query: Query de SQLAlchemy
+        page: Número de página
+        per_page: Elementos por página
+    
+    Returns:
+        Lista de sitios de la página
+    """
     return query.offset((page - 1) * per_page).limit(per_page).all()
 
     return page_items

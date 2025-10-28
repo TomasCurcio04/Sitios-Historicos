@@ -1,3 +1,5 @@
+"""Manejadores de errores HTTP para la aplicación."""
+
 from dataclasses import dataclass
 from flask import Flask
 from flask import render_template
@@ -5,12 +7,14 @@ from flask import render_template
 
 @dataclass
 class Error:
+    """Clase para representar errores HTTP."""
     code: int
     message: str
     description: str
 
 
 def not_found(error):
+    """Manejador para errores 404 - Página no encontrada."""
     err = Error(
         code=404,
         message="Página no encontrada",
@@ -20,6 +24,7 @@ def not_found(error):
 
 
 def not_authorized(error):
+    """Manejador para errores 401 - No autorizado."""
     err = Error(
         code=401,
         message="No autorizado",
@@ -29,6 +34,7 @@ def not_authorized(error):
 
 
 def internal_server_error(error):
+    """Manejador para errores 500 - Error interno del servidor."""
     err = Error(
         code=500,
         message="Error interno del servidor",

@@ -1,5 +1,5 @@
 # pylint: disable=import-error
-"""Módulo controlador de feature flags"""
+"""Controlador de feature flags para configuración del sistema."""
 
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session
 from src.web.utils import admin_maintenance_required
@@ -15,7 +15,11 @@ feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflag
 @feature_flags_bp.route("/", methods=["GET", "POST"], endpoint="feature_flags")
 @admin_maintenance_required
 def feature_flags():
-    """Vista del menu de feature flags."""
+    """Gestiona la configuración de feature flags del sistema.
+    
+    GET: Muestra el formulario de configuración
+    POST: Actualiza las configuraciones de feature flags
+    """
     usuario = buscar_usuario(session.get("user"))
     usuario_id = usuario.id_user if usuario else 1
 
