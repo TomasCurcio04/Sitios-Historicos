@@ -4,6 +4,7 @@
 from flask import flash, session as current_user, abort, redirect, url_for
 from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
 from src.core.services.auth.feature_flag_serv import get_feature_flag
+from functools import wraps
 
 # Obtener permisos del usuario
 from src.core.services.auth.permission_serv import get_permissions
@@ -65,6 +66,7 @@ def permissions_required(section, permissions):
     """
 
     def decorator(view):
+        @wraps(view)
         def wrapped_view(*args, **kwargs):
             if not check_permissions(section, permissions):
                 abort(403)
