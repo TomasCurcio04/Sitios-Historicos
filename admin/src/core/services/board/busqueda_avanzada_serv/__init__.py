@@ -7,14 +7,7 @@ from sqlalchemy import or_, distinct
 from src.core.entity.state import State
 
 def buscar_sites(filtros):
-    """Construye query filtrada de sitios según criterios de búsqueda.
-    
-    Args:
-        filtros: Dict con criterios de búsqueda
-    
-    Returns:
-        Query de SQLAlchemy filtrada
-    """
+    """Devuelve una lista de sitios filtrados según los parámetros de búsqueda."""
     query = db.session.query(Site)
 
     if filtros.get("ciudad"):
@@ -39,7 +32,20 @@ def buscar_sites(filtros):
     if filtros.get("tags"):
         query = query.join(Site.tag).filter(Tag.id_tag.in_(filtros["tags"])).distinct()
 
-    return query
+    # Ejecutar la query y devolver lista de diccionarios
+    resultados = []
+    for site in query.all():
+        resultados.append({
+            "id": site.id_site,
+            "name": site.name,
+            "city": site.city,
+            "state": site.state_rel.name if site.state_rel else None,
+            "conservation_state": site.conservation_state,
+            "is_visible": site.is_visible,
+            "date_registered": site.date_registered.isoformat() if site.date_registered else None,
+            "tags": [t.id_tag for t in site.tag]
+        })
+    return resultados
 
 def obtener_provincias_con_sitios():
     """Obtiene provincias que tienen al menos un sitio registrado.
@@ -55,60 +61,17 @@ def obtener_provincias_con_sitios():
     )
     return [r[0] for r in resultados]
 
-    # Ordenamiento
-def ordenar_query(query, sort, order):
-    """Aplica ordenamiento a la query.
-    
-    Args:
-        query: Query de SQLAlchemy
-        sort: Campo por el cual ordenar
-        order: Dirección del ordenamiento (asc/desc)
-    
-    Returns:
-        Query ordenada
-    """
+def ordenar_lista(results, sort, order):
+    """Ordena una lista de diccionarios según un campo."""
     if sort in ["name", "date_registered", "city"]:
-        col = getattr(Site, sort)
-        if order == "desc":
-            col = col.desc()
-        query = query.order_by(col)
-    return query
+        results.sort(key=lambda r: r.get(sort), reverse=(order=="desc"))
+    return results
 
-    # Conteo total
-def get_total_results(query):
-    """Cuenta el total de resultados de la query.
-    
-    Args:
-        query: Query de SQLAlchemy
-    
-    Returns:
-        Número total de resultados
-    """
-    return query.count()
-
-def get_total_pages(query, per_page):
-    """Calcula el número total de páginas.
-    
-    Args:
-        query: Query de SQLAlchemy
-        per_page: Elementos por página
-    
-    Returns:
-        Número total de páginas
-    """
-    return (get_total_results(query) + per_page - 1) // per_page
-
-def get_page_items(query, page, per_page):
-    """Obtiene los elementos de una página específica.
-    
-    Args:
-        query: Query de SQLAlchemy
-        page: Número de página
-        per_page: Elementos por página
-    
-    Returns:
-        Lista de sitios de la página
-    """
-    return query.offset((page - 1) * per_page).limit(per_page).all()
-
-    return page_items
+def paginar_lista(results, page, per_page):
+    """Devuelve los items de la página indicada y total de páginas."""
+    total_results = len(results)
+    total_pages = (total_results + per_page - 1) // per_page
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_items = results[start:end]
+    return page_items, total_pages, total_results

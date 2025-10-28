@@ -2,14 +2,23 @@
 {% block title %}Menú de Etiquetas{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 <h1>Menú de Etiquetas</h1>
 
-<ul>
-    <li><a href="{{ url_for('tags.create_tag_form') }}">Crear nueva etiqueta</a></li>
-    <li><a href="{{ url_for('tags.list_tags') }}">Listar todas las etiquetas</a></li>
-    <li><a href="{{ url_for('tags.edit_all_tags') }}">Actualizar etiquetas</a></li>
-     <li><a href="{{ url_for('tags.delete_all_tags') }}">Eliminar etiquetas</a></li> 
-  </ul>
+<form action="">
+    <button href="{{ url_for('tags.create_tag_form') }}">Crear nueva etiqueta</button> <br> <br>
+    <button href="{{ url_for('tags.list_tags') }}">Listar todas las etiquetas</button> <br> <br>
+    <button href="{{ url_for('tags.edit_all_tags') }}">Actualizar etiquetas</button> <br> <br>
+    <button href="{{ url_for('tags.delete_all_tags') }}">Eliminar etiquetas</button> <br> <br>
+</form>
+  <br>
+  <br>
+
+  <form action="">
+    <button type="submit" formaction="{{ url_for('web.home') }}">Volver al home</button>
+    <button type="submit" formaction="{{ url_for('sites.index') }}">Volver al listado de sitios</button>
+  </form>
 {% endblock %}
 
 

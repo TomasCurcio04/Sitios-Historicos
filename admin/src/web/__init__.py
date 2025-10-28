@@ -16,7 +16,6 @@ from src.web.handlers import error
 from src.web.controllers.web import web
 from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
-from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
@@ -91,7 +90,6 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(sites_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
-    app.register_blueprint(busqueda_avanzada_bp)
     app.register_blueprint(tags_bp)
     app.register_blueprint(feature_flags_bp)
     app.register_blueprint(mantenimiento_admin_bp)
