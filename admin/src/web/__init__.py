@@ -25,6 +25,7 @@ from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 from src.core.services.auth.bcrypt import bcrypt
 from src.web.handlers.auth import is_authenticated
 from src.web.config import config
+from src.web.storage import storage
 from src.core import database
 from src.core import seeds
 from src.web.handlers.utils import admin_maintenance_required
@@ -32,6 +33,8 @@ from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from src.web.handlers.auth import login_required
 from src.web.handlers.utils import permissions_required
+
+
 
 session = Session()
 
@@ -63,6 +66,9 @@ def create_app(env="development", static_folder=None):
     session.init_app(app)
     # Inicializando Bcrypt
     bcrypt.init_app(app)
+    #inicializo storage
+    storage.init_app(app)
+
 
     # Register commands
     @app.cli.command("reset-db")
