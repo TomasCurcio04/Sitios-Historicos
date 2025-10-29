@@ -64,7 +64,7 @@
                     Gestión de usuarios
                 </a>
                 <a href="{{ url_for('feature_flags.feature_flags') }}"
-                    class="{% if request.path == '/feature_flags' %}active{% endif %}">
+                    class="{% if request.path.startswith('/feature_flags') %}active{% endif %}">
                     Feature Flags
                 </a>
             </nav>
