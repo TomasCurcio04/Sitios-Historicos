@@ -199,3 +199,20 @@ def user_update(email):
         # Esto captura errores como problemas de DB o lógica del Core
         flash(f"Error al actualizar el usuario: {message}", "error")
         return redirect(url_for("users.user_edit", email=email))
+
+@user_bp.route("/perfil", methods=["GET"])
+@admin_required
+def user_profile():
+    """Muestra el perfil del usuario actual."""
+    from flask import session
+    
+    if not session.get('user'):
+        flash("Debes iniciar sesión para ver tu perfil", "error")
+        return redirect(url_for("auth.login"))
+    
+    user = buscar_usuario(session.get('user'))
+    if not user:
+        flash("Usuario no encontrado", "error")
+        return redirect(url_for("auth.login"))
+    
+    return render_template("user_profile.html", user=user)

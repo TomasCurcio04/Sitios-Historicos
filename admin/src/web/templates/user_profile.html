@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Mi Perfil</h2>
+
+    <div class="table-responsive">
+        <table class="admin-table" style="table-layout: auto; width: auto; max-width: 600px;">
+            <tbody>
+                <tr>
+                    <td style="white-space: nowrap; width: 10%;"><strong>Nombre de usuario:</strong></td>
+                    <td>{{ user.user_name }}</td>
+                </tr>
+                <tr>
+                    <td style="white-space: nowrap; width: 10%;"><strong>Email:</strong></td>
+                    <td>{{ user.email }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Rol:</strong></td>
+                    <td><span class="badge bg-info">{{ user.rol_rel.name }}</span></td>
+                </tr>
+
+                {% if user.s_user %}
+                <tr>
+                    <td><strong>Privilegios:</strong></td>
+                    <td><span class="badge bg-warning">Superusuario</span></td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td><strong>Fecha de registro:</strong></td>
+                    <td>{{ user.date_create.strftime('%d/%m/%Y %H:%M') }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Última modificación:</strong></td>
+                    <td>{{ user.modify.strftime('%d/%m/%Y %H:%M') }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('web.home') }}" class="btn btn-secondary">Volver al inicio</a>
+    </div>
+</div>
+{% endblock %}

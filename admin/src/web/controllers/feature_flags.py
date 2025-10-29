@@ -2,7 +2,7 @@
 """Controlador de feature flags para configuración del sistema."""
 
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session
-from src.web.utils import admin_maintenance_required
+from src.web.handlers.utils import admin_maintenance_required
 from src.core.services.auth.user_serv import buscar_usuario
 from src.core.services.auth.feature_flag_serv import (
     list_feature_flags,
