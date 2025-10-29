@@ -9,7 +9,7 @@ from src.core.services.auth.feature_flag_serv import (
     update_feature_flags,
 )
 
-feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
+feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/feature_flags")
 
 
 @feature_flags_bp.route("/", methods=["GET", "POST"], endpoint="feature_flags")
