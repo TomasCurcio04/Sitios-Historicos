@@ -11,9 +11,9 @@
     <form method="get" action="{{ url_for('sites.index') }}">
         <label>Provincia:
             <select name="provincia">
-                <option value="" {% if provincia == "" %}selected{% endif %}>--Cualquiera--</option>
+                <option value="" {% if provincia=="" %}selected{% endif %}>--Cualquiera--</option>
                 {% for p in provincias %}
-                <option value="{{ p }}" {% if provincia == p %}selected{% endif %}>{{ p }}</option>
+                <option value="{{ p }}" {% if provincia==p %}selected{% endif %}>{{ p }}</option>
                 {% endfor %}
             </select>
         </label>
@@ -30,8 +30,8 @@
         <br>
         <select id="tags" name="tags" multiple>
             {% for etiqueta in tags %}
-            <option value="{{ etiqueta.id_tag }}"
-                {% if selected_tags and etiqueta.id_tag in selected_tags %}selected{% endif %}>
+            <option value="{{ etiqueta.id_tag }}" {% if selected_tags and etiqueta.id_tag in selected_tags %}selected{%
+                endif %}>
                 {{ etiqueta.name }}
             </option>
             {% endfor %}
@@ -40,10 +40,10 @@
         <br>
         <label>Estado de conservación:
             <select name="estado">
-                <option value="" {% if estado == "" %}selected{% endif %}>--Cualquiera--</option>
-                <option value="Bueno" {% if estado == "Bueno" %}selected{% endif %}>Bueno</option>
-                <option value="Regular" {% if estado == "Regular" %}selected{% endif %}>Regular</option>
-                <option value="Malo" {% if estado == "Malo" %}selected{% endif %}>Malo</option>
+                <option value="" {% if estado=="" %}selected{% endif %}>--Cualquiera--</option>
+                <option value="Bueno" {% if estado=="Bueno" %}selected{% endif %}>Bueno</option>
+                <option value="Regular" {% if estado=="Regular" %}selected{% endif %}>Regular</option>
+                <option value="Malo" {% if estado=="Malo" %}selected{% endif %}>Malo</option>
             </select>
         </label>
         <br><br>
@@ -56,7 +56,7 @@
         <br><br>
 
         <label>Visibilidad:
-            <input type="checkbox" name="visibilidad" value="true" {% if visibilidad == "true" %}checked{% endif %}>
+            <input type="checkbox" name="visibilidad" value="true" {% if visibilidad=="true" %}checked{% endif %}>
             Mostrar solo visibles
         </label>
         <br><br>
@@ -68,15 +68,16 @@
 
         <label>Ordenar por:</label>
         <select name="sort">
-            <option value="name" {% if sort == "name" %}selected{% endif %}>Nombre</option>
-            <option value="date_registered" {% if sort == "date_registered" %}selected{% endif %}>Fecha de registro</option>
-            <option value="city" {% if sort == "city" %}selected{% endif %}>Ciudad</option>
+            <option value="name" {% if sort=="name" %}selected{% endif %}>Nombre</option>
+            <option value="date_registered" {% if sort=="date_registered" %}selected{% endif %}>Fecha de registro
+            </option>
+            <option value="city" {% if sort=="city" %}selected{% endif %}>Ciudad</option>
         </select>
 
         <label>Orden:</label>
         <select name="order">
-            <option value="asc" {% if order == "asc" %}selected{% endif %}>Ascendente</option>
-            <option value="desc" {% if order == "desc" %}selected{% endif %}>Descendente</option>
+            <option value="asc" {% if order=="asc" %}selected{% endif %}>Ascendente</option>
+            <option value="desc" {% if order=="desc" %}selected{% endif %}>Descendente</option>
         </select>
         <br><br>
 
@@ -98,9 +99,9 @@
 
         <form action="{{ url_for('sites.exportar') }}" method="get">
             {% for key in [
-                'nombre','short_description','full_description','city','state',
-                'conservation_state','inauguration_year','latitude','longitude',
-                'created_by','date_registered','is_visible'
+            'nombre','short_description','full_description','city','state',
+            'conservation_state','inauguration_year','latitude','longitude',
+            'created_by','date_registered','is_visible'
             ] %}
             <input type="hidden" name="{{ key }}" value="{{ request.args.get(key, '') }}">
             {% endfor %}
@@ -144,8 +145,7 @@
                         </form>
 
                         {% if usuario_es_admin %}
-                        <button type="button" class="btn btn-edit"
-                            onclick="showHistoryModal('{{ r.id }}')">
+                        <button type="button" class="btn btn-edit" onclick="showHistoryModal('{{ r.id }}')">
                             Historial de cambios
                         </button>
                         {% endif %}
@@ -155,7 +155,7 @@
                             <input type="hidden" name="user_id"
                                 value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
                             <button type="submit" class="btn btn-delete"
-                                onclick="return confirm('¿Seguro que querés eliminar este sitio?')">
+                                onclick="return confirm('¿Seguro que querés ar este sitio?')">
                                 Eliminar
                             </button>
                         </form>
@@ -207,9 +207,8 @@
 
         <span>Página {{ page }} de {{ total_pages }}</span>
 
-        {% if page < total_pages %}
-        <button type="submit" name="page" value="{{ page+1 }}">Siguiente</button>
-        {% endif %}
+        {% if page < total_pages %} <button type="submit" name="page" value="{{ page+1 }}">Siguiente</button>
+            {% endif %}
     </div>
 </form>
 
