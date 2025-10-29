@@ -200,16 +200,29 @@
     <input type="hidden" name="tags" value="{{ t }}">
     {% endfor %}
 
-    <div class="pagination">
-        {% if page > 1 %}
-        <button type="submit" name="page" value="{{ page-1 }}">Anterior</button>
-        {% endif %}
-
-        <span>Página {{ page }} de {{ total_pages }}</span>
-
-        {% if page < total_pages %} <button type="submit" name="page" value="{{ page+1 }}">Siguiente</button>
+    {% if total_pages > 1 %}
+    <nav aria-label="Paginación de Sitios" class="mt-4">
+        <ul class="pagination">
+            {% if page > 1 %}
+            <li class="page-item">
+                <button type="submit" name="page" value="{{ page-1 }}" class="page-link">&laquo;</button>
+            </li>
             {% endif %}
-    </div>
+
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <button type="submit" name="page" value="{{ p }}" class="page-link">{{ p }}</button>
+            </li>
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <li class="page-item">
+                <button type="submit" name="page" value="{{ page+1 }}" class="page-link">&raquo;</button>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </form>
 
 <!-- Botón volver -->
