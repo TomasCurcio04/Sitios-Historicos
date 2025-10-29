@@ -35,4 +35,4 @@ def authenticate():
     session["user_name"] = user.user_name
     session["role"] = int(user.role)
     flash("Inicio de sesión exitoso", "success")
-    return redirect(url_for('users.user_profile'))
+    return redirect(url_for('mi_perfil.perfil'))

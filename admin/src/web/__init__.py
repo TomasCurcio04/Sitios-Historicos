@@ -20,6 +20,7 @@ from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
+from src.web.controllers.mi_perfil import mi_perfil_bp
 
 from src.core.services.auth.bcrypt import bcrypt
 from src.web.handlers.auth import is_authenticated
@@ -93,6 +94,12 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(tags_bp)
     app.register_blueprint(feature_flags_bp)
     app.register_blueprint(mantenimiento_admin_bp)
+    app.register_blueprint(mi_perfil_bp)
+
+    # Registrar manejadores de errores
+    app.register_error_handler(404, error.not_found)
+    app.register_error_handler(401, error.not_authorized)
+    app.register_error_handler(500, error.internal_server_error)
 
     app.jinja_env.globals["is_authenticated"] = is_authenticated
 

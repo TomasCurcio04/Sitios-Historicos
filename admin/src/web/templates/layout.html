@@ -26,7 +26,7 @@
                             {{ session.get('user_name') or session.get('user') }} &#9662;
                         </button>
                         <div id="user-menu" class="user-dropdown-content">
-                            <a href="{{ url_for('users.user_profile') }}">Ver perfil</a>
+                            <a href="{{ url_for('mi_perfil.perfil') }}">Ver perfil</a>
                             <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
                         </div>
                     </div>
