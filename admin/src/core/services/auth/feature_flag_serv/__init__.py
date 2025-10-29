@@ -48,8 +48,8 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
         flag.enabled = enabled
         flag.updated_by = updated_by
         if maintenance_message is not None:
-            if len(maintenance_message) > 50:
-                raise ValueError("El mensaje de mantenimiento no puede superar los 50 caracteres")
+            if len(maintenance_message) > 100:
+                raise ValueError("El mensaje de mantenimiento no puede superar los 100 caracteres")
             flag.maintenance_message = maintenance_message
         db.session.commit()
     return flag
@@ -90,8 +90,8 @@ def update_feature_flags(flags_data, updated_by):
             new_enabled = flags_data[flag_id].get("enabled", False)
             new_message = flags_data[flag_id].get("maintenance_message", "")
             
-            if new_message and len(new_message) > 50:
-                raise ValueError(f"El mensaje de mantenimiento para '{flag.name}' no puede superar los 50 caracteres")
+            if new_message and len(new_message) > 100:
+                raise ValueError(f"El mensaje de mantenimiento para '{flag.name}' no puede superar los 100 caracteres")
 
             if flag.enabled != new_enabled or flag.maintenance_message != new_message:
                 flag.enabled = new_enabled
