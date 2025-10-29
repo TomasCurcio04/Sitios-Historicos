@@ -8,6 +8,7 @@ from flask import render_template
 @dataclass
 class Error:
     """Clase para representar errores HTTP."""
+
     code: int
     message: str
     description: str
@@ -41,3 +42,13 @@ def internal_server_error(error):
         description="Ocurrió un error inesperado en el servidor.",
     )
     return render_template("error.html", error=err), 500
+
+
+def forbidden(error):
+    """Manejador para errores 403 - Prohibido."""
+    err = Error(
+        code=403,
+        message="Prohibido",
+        description="No tienes permiso para acceder a esta página.",
+    )
+    return render_template("error.html", error=err), 403
