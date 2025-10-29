@@ -161,8 +161,9 @@
         </table>
     </div>
 
+    {% if total_pages > 1 %}
     <nav aria-label="Paginación de Sitios" class="mt-4">
-        <ul class="pagination justify-content-center flex-wrap">
+        <ul class="pagination">
             <!-- Botón Anterior -->
             <li class="page-item {% if page <= 1 %}disabled{% endif %}">
                 <a class="page-link"
@@ -192,6 +193,7 @@
             </li>
         </ul>
     </nav>
+    {% endif %}
 
     <div style="text-align:center; margin-top:2rem;">
         <form action="{{ url_for('sites.nuevo') }}" method="get" style="display:inline;">
