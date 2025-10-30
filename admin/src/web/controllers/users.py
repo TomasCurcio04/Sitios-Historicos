@@ -5,7 +5,7 @@ from src.core.services.auth.user_serv import listar_usuarios, eliminar_usuario, 
 from src.core.entity.users import Users
 import re
 from src.web.handlers.auth import admin_required
-from src.core.auth.user_validador import UserValidator
+from src.core.entity.user_validador import UserValidator
 
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
