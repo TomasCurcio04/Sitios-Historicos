@@ -8,7 +8,7 @@
         <h2>{{ error.message }}</h2>
         <p class="description">{{ error.description }}</p>
         <p>Lo sentimos, ha ocurrido un problema inesperado.</p>
-        <a href="/" class="back-link">Volver a la página de inicio</a>
+        <a href="{{ url_for('web.home') }}" class="btn-secondary-action">Volver al inicio</a>
     </div>
 {% endblock %}
 

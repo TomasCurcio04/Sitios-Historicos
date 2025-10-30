@@ -4,6 +4,7 @@
 from flask import flash, session as current_user, abort, redirect, url_for
 from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
 from src.core.services.auth.feature_flag_serv import get_feature_flag
+from functools import wraps
 
 # Obtener permisos del usuario
 from src.core.services.auth.permission_serv import get_permissions
@@ -31,14 +32,14 @@ def admin_maintenance_required(view):
 def check_permissions(section, permissions):
     """Verifica si el usuario actual tiene permisos para una sección.
 
-    kwArgs:
-        section (str): Nombre de la sección (ej: 'users', 'sites')
-        permissions (list): Lista de permisos requeridos (ej: ['create', 'write'])
+    Args:
+        section: Nombre de la sección (ej: 'users', 'sites')
+        permissions: Lista de permisos requeridos (ej: ['create', 'write'])
 
     Returns:
-        bool: True si tiene permisos o es superusuario, False caso contrario
+        True si tiene permisos o es superusuario, False caso contrario
     """
-    usuario = usuario_actual()
+    usuario = buscar_usuario(current_user.get("user"))
     if not usuario:
         return False
 
@@ -54,9 +55,18 @@ def check_permissions(section, permissions):
 
 
 def permissions_required(section, permissions):
-    """Decorador para verificar permisos en rutas."""
+    """Decorador que verifica permisos requeridos en rutas.
+    
+    Args:
+        section: Sección del sistema
+        permissions: Lista de permisos requeridos
+    
+    Returns:
+        Decorador que verifica permisos
+    """
 
     def decorator(view):
+        @wraps(view)
         def wrapped_view(*args, **kwargs):
             if not check_permissions(section, permissions):
                 abort(403)

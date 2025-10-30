@@ -45,7 +45,13 @@
             </tbody>
         </table>
     </div>
-    <button type="submit" class="btn-primary-action">Guardar cambios</button>
+    <button type="submit" class="btn-primary-action" onclick="return confirmarCambios()">Guardar cambios</button>
     <a href="{{ url_for('web.home') }}" class="btn-secondary-action">Volver al Inicio</a>
 </form>
+
+<script>
+function confirmarCambios() {
+    return confirm('¿Estás seguro de que deseas guardar los cambios en los Feature Flags?');
+}
+</script>
 {% endblock %}

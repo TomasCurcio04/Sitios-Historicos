@@ -372,32 +372,28 @@ hr {
         display: none; /* se mostrará con JS */
     }
 
-    .login-button {
-        /* Mismos estilos de margen que el .user-dropdown */
-        margin-right: 40px; 
-    }
+/* Botón de login con el mismo estilo que user-dropdown */
+.login-button {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px; 
+    padding: 6px 10px; 
+    transition: background 0.3s ease; 
+    position: relative;
+    margin-right: 40px;
+}
 
-    .login-button .btn-login {
-        /* Copia los estilos de .user-dropdown */
-        background: rgba(255, 255, 255, 0.15); /* Fondo semitransparente */
-        border-radius: 6px; 
-        padding: 6px 10px; 
-        transition: background 0.3s ease; 
-        
-        /* Estilos del texto */
-        color: #fff; 
-        text-decoration: none; /* Quita el subrayado */
-        font-size: 1em; /* Asegura el tamaño de fuente */
-        cursor: pointer;
-        
-        /* Hace que el enlace se comporte como un bloque para que el padding funcione */
-        display: inline-block; 
-    }
+.login-button:hover {
+    background: rgba(255,255,255,0.3); 
+}
 
-    .login-button .btn-login:hover {
-        /* Copia el estilo de hover de .user-dropdown:hover */
-        background: rgba(255, 255, 255, 0.3);
-    }
+.login-button a {
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 1em;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
 
     /* --- Ajuste para el botón de usuario actual --- */
 
@@ -809,8 +805,8 @@ hr {
 
 /* --- SOBRESCRIBIR BOOTSTRAP GLOBALMENTE --- */
 
-/* Todos los botones */
-.btn, button, input[type="submit"], input[type="button"] {
+/* Todos los botones EXCEPTO el de login */
+.btn:not(.btn-login), button:not(.btn-login), input[type="submit"]:not(.btn-login), input[type="button"]:not(.btn-login) {
     background-color: #2d47a1 !important;
     border-color: #2d47a1 !important;
     color: white !important;

@@ -1,9 +1,18 @@
+"""Manejadores de autenticación y autorización para la aplicación."""
+
 from functools import wraps
 from flask import session, redirect, url_for, flash
 from src.core.services.auth.user_serv import buscar_usuario
 
 def login_required(f):
-    """Decorator para rutas que requieren autenticación."""
+    """Decorator que requiere autenticación para acceder a una ruta.
+    
+    Args:
+        f: Función de vista a decorar
+    
+    Returns:
+        Función decorada que verifica autenticación
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated(session):
@@ -13,15 +22,36 @@ def login_required(f):
     return decorated_function
 
 def is_authenticated(session):
-    """Verifica que el usuario este autenticado."""
+    """Verifica si el usuario está autenticado.
+    
+    Args:
+        session: Sesión de Flask
+    
+    Returns:
+        True si el usuario está autenticado, False en caso contrario
+    """
     return session.get("user") is not None
 
 def is_admin(session):
-    """Devuelve True si el usuario logueado tiene rol de administrador."""
+    """Verifica si el usuario tiene rol de administrador.
+    
+    Args:
+        session: Sesión de Flask
+    
+    Returns:
+        True si el usuario es administrador, False en caso contrario
+    """
     return int(session.get("role", 0)) == 1
 
 def admin_required(f):
-    """Decorator para rutas que requieren rol administrador."""
+    """Decorator que requiere rol de administrador para acceder a una ruta.
+    
+    Args:
+        f: Función de vista a decorar
+    
+    Returns:
+        Función decorada que verifica rol de administrador
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated(session):

@@ -7,13 +7,24 @@ from src.core.entity.users import Users
 
 
 def list_roles():
-    """Función para listar todos los roles."""
+    """Lista todos los roles del sistema.
+    
+    Returns:
+        Lista de roles
+    """
     session = db.session
     return session.query(Role).all()
 
 
 def create_role(**kwargs):
-    """Crea un nuevo rol."""
+    """Crea un nuevo rol.
+    
+    Args:
+        **kwargs: Datos del rol
+    
+    Returns:
+        Rol creado
+    """
     session = db.session
     new_role = Role(**kwargs)
     session.add(new_role)
@@ -23,7 +34,15 @@ def create_role(**kwargs):
 
 
 def assign_role(user_id, role_id):
-    """Asigna un rol a un usuario."""
+    """Asigna un rol a un usuario.
+    
+    Args:
+        user_id: ID del usuario
+        role_id: ID del rol
+    
+    Returns:
+        Usuario con rol asignado
+    """
     session = db.session
     user = session.query(Users).get(user_id)
     role = session.query(Role).get(role_id)

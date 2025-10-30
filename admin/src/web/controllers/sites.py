@@ -1,13 +1,3 @@
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    Response,
-    session,
-)
 from sqlalchemy import or_
 from src.core.database import db
 from src.core.entity.site import Site
@@ -18,9 +8,13 @@ from src.core.entity.state import State
 from src.core.entity.category import Category
 import csv
 import io
+from flask import Blueprint, request, render_template, flash, redirect, url_for, Response, session
+from datetime import datetime
+from src.core.services.board.busqueda_avanzada_serv import buscar_sites, obtener_provincias_con_sitios, ordenar_lista, paginar_lista
+from src.core.services.board.tag_serv import obtener_todas_las_tags
+from src.core.entity.site import Site
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
-PER_PAGE = 25
 
 USUARIO_ES_ADMIN = True
 
@@ -28,81 +22,79 @@ USUARIO_ES_ADMIN = True
 # =====================================================
 # LISTAR SITIOS CON FILTROS Y PAGINACIÓN
 # =====================================================
-@bp.get("/")
+
+
+bp = Blueprint('sites', __name__, url_prefix='/sitios')
+
+def parse_date(s):
+    try:
+        return datetime.strptime(s, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return None
+
+@bp.get('/')
 def index():
+    ciudad = request.args.get("ciudad", "").strip()
+    provincia = request.args.get("provincia", "").strip()
+    estado = request.args.get("estado", "").strip()
+    visibilidad = request.args.get("visibilidad")
+    busqueda_texto = request.args.get("busqueda_texto", "").strip()
+    tags = [int(t) for t in request.args.getlist("tags") if t.isdigit()]
+    fecha_desde = parse_date(request.args.get("fecha_desde"))
+    fecha_hasta = parse_date(request.args.get("fecha_hasta"))
+
+    sort = request.args.get("sort", "date_registered")
+    order = request.args.get("order", "desc")
+    per_page = int(request.args.get("per_page", 25))
     page = int(request.args.get("page", 1))
-    per_page = PER_PAGE
 
-    filtros = {
-        "nombre": request.args.get("nombre", "").strip(),
-        "short_description": request.args.get("short_description", "").strip(),
-        "full_description": request.args.get("full_description", "").strip(),
-        "city": request.args.get("city", "").strip(),
-        "state": request.args.get("state", ""),  # id_state
-        "conservation_state": request.args.get("conservation_state", "").strip(),
-        "inauguration_year": request.args.get("inauguration_year", "").strip(),
-        "latitude": request.args.get("latitude", "").strip(),
-        "longitude": request.args.get("longitude", "").strip(),
-        "category": request.args.get("category", ""),  # id_category
-        "is_visible": request.args.get("is_visible", ""),
-        "tags": request.args.getlist("tags"),  # lista de id_tag
-    }
+    if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
+        flash("El rango de fechas es inválido: 'Desde' no puede ser mayor que 'Hasta'.", "error")
+    
 
-    query = db.session.query(Site)
+    results = buscar_sites({
+        "ciudad": ciudad,
+        "provincia": provincia,
+        "estado": estado,
+        "visibilidad": visibilidad,
+        "busqueda_texto": busqueda_texto,
+        "tags": tags,
+        "fecha_desde": fecha_desde,
+        "fecha_hasta": fecha_hasta
+    })  
+    
+     # Ordenar la lista en Python
+    results = ordenar_lista(results, sort, order)
 
-    if filtros["nombre"]:
-        query = query.filter(Site.name.ilike(f"%{filtros['nombre']}%"))
-    if filtros["short_description"]:
-        query = query.filter(
-            Site.short_description.ilike(f"%{filtros['short_description']}%")
-        )
-    if filtros["full_description"]:
-        query = query.filter(
-            Site.full_description.ilike(f"%{filtros['full_description']}%")
-        )
-    if filtros["city"]:
-        query = query.filter(Site.city.ilike(f"%{filtros['city']}%"))
-    if filtros["state"]:
-        query = query.filter(Site.state == int(filtros["state"]))
-    if filtros["conservation_state"]:
-        query = query.filter(
-            Site.conservation_state.ilike(f"%{filtros['conservation_state']}%")
-        )
-    if filtros["inauguration_year"].isdigit():
-        query = query.filter(
-            Site.inauguration_year == int(filtros["inauguration_year"])
-        )
-    if filtros["latitude"]:
-        query = query.filter(Site.latitude == float(filtros["latitude"]))
-    if filtros["longitude"]:
-        query = query.filter(Site.longitude == float(filtros["longitude"]))
-    if filtros["category"]:
-        query = query.filter(Site.category == int(filtros["category"]))
-    if filtros["is_visible"]:
-        query = query.filter(Site.is_visible.is_(filtros["is_visible"] == "1"))
-    if filtros["tags"]:
-        for tag_id in filtros["tags"]:
-            query = query.filter(Site.tag.any(id_tag=int(tag_id)))
-
-    total_sites = query.count()
-    total_pages = (total_sites + per_page - 1) // per_page
-    sitios = query.offset((page - 1) * per_page).limit(per_page).all()
-
-    # Cargar listas para los selects
-    estados = db.session.query(State).all()
-    categorias = db.session.query(Category).all()
-    etiquetas = db.session.query(Tag).all()
+    # Paginación
+    page_items, total_pages, total_results = paginar_lista(results, page, per_page)
+    total_pages = max(1, total_pages)
+    all_tags = obtener_todas_las_tags()
+    provincias = obtener_provincias_con_sitios()
 
     return render_template(
         "sites/index.html",
-        sitios=sitios,
+        results=page_items,
+        tags=all_tags,
+        provincias=provincias,
+        ciudad=ciudad,
+        provincia=provincia,
+        estado=estado,
+        selected_tags=tags,
+        visibilidad=visibilidad,
+        fecha_desde=fecha_desde,
+        fecha_hasta=fecha_hasta,
+        busqueda_texto=busqueda_texto,
         page=page,
+        per_page=per_page,
         total_pages=total_pages,
-        usuario_es_admin=USUARIO_ES_ADMIN,
-        estados=estados,
-        categorias=categorias,
-        etiquetas=etiquetas,
+        sort=sort,
+        order=order,
+        total_results=total_results,
+        request=request,
+        usuario_es_admin=USUARIO_ES_ADMIN
     )
+
 
 
 # =====================================================
@@ -110,6 +102,7 @@ def index():
 # =====================================================
 @bp.get("/nuevo")
 def nuevo():
+    """Muestra el formulario para crear un nuevo sitio."""
     estados = db.session.query(State).all()
     categorias = db.session.query(Category).all()
     etiquetas = db.session.query(Tag).all()
@@ -124,6 +117,7 @@ def nuevo():
 
 @bp.post("/crear")
 def crear():
+    """Crea un nuevo sitio histórico."""
     user_id = int(request.form.get("user_id", 1))
     data = _extraer_y_validar_form()
     if isinstance(data, str):
@@ -158,6 +152,7 @@ def crear():
 # =====================================================
 @bp.get("/<int:site_id>/editar")
 def editar(site_id):
+    """Muestra el formulario para editar un sitio existente."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -176,6 +171,7 @@ def editar(site_id):
 
 @bp.post("/<int:site_id>/editar")
 def actualizar(site_id):
+    """Actualiza los datos de un sitio existente."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -224,6 +220,7 @@ def actualizar(site_id):
 # =====================================================
 @bp.post("/<int:site_id>/eliminar")
 def eliminar(site_id):
+    """Elimina un sitio histórico."""
     user_id = int(request.form.get("user_id", 1))
     sitio = db.session.get(Site, site_id)
     if not sitio:
@@ -251,6 +248,7 @@ def eliminar(site_id):
 # =====================================================
 @bp.get("/<int:site_id>/historial")
 def historial(site_id):
+    """Muestra el historial de cambios de un sitio."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         # En el contexto de una llamada fetch, un redirect no es ideal.
@@ -276,6 +274,7 @@ def historial(site_id):
 # =====================================================
 @bp.get("/exportar")
 def exportar():
+    """Exporta todos los sitios a un archivo CSV."""
     sitios = db.session.query(Site).all()
     output = io.StringIO()
     output.write("\ufeff")  # BOM para Excel
@@ -303,6 +302,7 @@ def exportar():
 # FUNCIÓN AUXILIAR DE VALIDACIÓN
 # =====================================================
 def _extraer_y_validar_form():
+    """Extrae y valida los datos del formulario de sitio."""
     try:
         nombre = request.form.get("nombre", "").strip()
         short_description = request.form.get("short_description", "").strip()

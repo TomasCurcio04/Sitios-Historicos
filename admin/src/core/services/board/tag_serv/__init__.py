@@ -1,3 +1,5 @@
+"""Servicio para la gestión de etiquetas de sitios históricos."""
+
 from src.core.database import db
 from src.core.entity.tag import Tag
 from sqlalchemy.exc import IntegrityError
@@ -6,15 +8,28 @@ from sqlalchemy.exc import IntegrityError
 # Consultas y operaciones con tags
 # -------------------------------
 
+
 def obtener_todas_las_tags():
-    """Devuelve una lista con todas las etiquetas disponibles."""
+    """Obtiene todas las etiquetas disponibles.
+
+    Returns:
+        Lista de todas las etiquetas en la base de datos
+    """
     session = db.session
     query = session.query(Tag)
     all_tags = session.query(Tag).all()
     return all_tags
 
+
 def buscar_tags(filtros):
-    """Devuelve lista de tags filtrados, ordenados y paginados."""
+    """Busca etiquetas con filtros, ordenamiento y paginación.
+
+    Args:
+        filtros: Diccionario con criterios de búsqueda
+
+    Returns:
+        Diccionario con etiquetas encontradas y metadatos de paginación
+    """
     texto = filtros.get("texto", "").strip()
     page = int(filtros.get("page", 1))
     per_page = filtros.get("per_page", 25)
@@ -31,7 +46,9 @@ def buscar_tags(filtros):
     if sort == "name":
         query = query.order_by(Tag.name.desc() if order == "desc" else Tag.name.asc())
     elif sort == "date_created":
-        query = query.order_by(Tag.date_created.desc() if order == "desc" else Tag.date_created.asc())
+        query = query.order_by(
+            Tag.date_created.desc() if order == "desc" else Tag.date_created.asc()
+        )
 
     total_results = query.count()
     total_pages = (total_results + per_page - 1) // per_page
@@ -45,12 +62,19 @@ def buscar_tags(filtros):
         "total_pages": total_pages,
         "sort": sort,
         "order": order,
-        "total_results": total_results
+        "total_results": total_results,
     }
 
 
 def crear_tag(name):
-    """Crea una nueva etiqueta."""
+    """Crea una nueva etiqueta.
+
+    Args:
+        name: Nombre de la etiqueta
+
+    Returns:
+        Tupla (etiqueta, error) donde error es None si fue exitoso
+    """
     session = db.session
     tag = Tag(name=name)
     session.add(tag)
@@ -63,7 +87,15 @@ def crear_tag(name):
 
 
 def actualizar_tag(tag_id, name):
-    """Actualiza una etiqueta existente."""
+    """Actualiza una etiqueta existente.
+
+    Args:
+        tag_id: ID de la etiqueta a actualizar
+        name: Nuevo nombre para la etiqueta
+
+    Returns:
+        Tupla (etiqueta, error) donde error es None si fue exitoso
+    """
     session = db.session
     tag = session.get(Tag, tag_id)
     if not tag:
@@ -80,7 +112,14 @@ def actualizar_tag(tag_id, name):
 
 
 def eliminar_tag(tag_id):
-    """Elimina una etiqueta si no está asociada a sitios."""
+    """Elimina una etiqueta si no está asociada a sitios.
+
+    Args:
+        tag_id: ID de la etiqueta a eliminar
+
+    Returns:
+        Tupla (etiqueta, error) donde error es None si fue exitoso
+    """
     session = db.session
     tag = session.get(Tag, tag_id)
     if not tag:

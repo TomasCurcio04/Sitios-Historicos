@@ -1,3 +1,5 @@
+"""Punto de entrada alternativo para desarrollo."""
+
 from src.web import create_app
 
 if __name__ == "__main__":

@@ -1,28 +1,33 @@
-<form method="get" action="{{ url_for(endpoint) }}">
-    <input type="text" name="texto" placeholder="Buscar..." value="{{ texto }}">
+<form method="get" action="{{ url_for(endpoint) }}"> 
+    <!-- Campo de búsqueda -->
+    <input type="text" name="texto" placeholder="Buscar..." value="{{ request.args.get('texto', '') }}">
 
+    <!-- Ordenar por -->
     <label>Ordenar por:</label>
     <select name="sort">
-        <option value="name" {% if sort=="name" %}selected{% endif %}>Nombre</option>
-        <option value="date_created" {% if sort=="date_created" %}selected{% endif %}>Fecha de creación</option>
+        <option value="name" {% if request.args.get('sort', 'name') == 'name' %}selected{% endif %}>Nombre</option>
+        <option value="date_created" {% if request.args.get('sort') == 'date_created' %}selected{% endif %}>Fecha de creación</option>
     </select>
 
+    <!-- Orden -->
     <label>Orden:</label>
     <select name="order">
-        <option value="asc" {% if order=="asc" %}selected{% endif %}>Ascendente</option>
-        <option value="desc" {% if order=="desc" %}selected{% endif %}>Descendente</option>
+        <option value="asc" {% if request.args.get('order', 'asc') == 'asc' %}selected{% endif %}>Ascendente</option>
+        <option value="desc" {% if request.args.get('order') == 'desc' %}selected{% endif %}>Descendente</option>
     </select>
 
+    <!-- Botones -->
     <button type="submit">Aplicar</button>
+    <a href="{{ url_for(endpoint) }}" class="btn">Limpiar filtros</a>
 </form>
 
 <!-- Paginación -->
-<div>
+<div class="pagination">
     {% if page > 1 %}
-        <a href="{{ url_for(endpoint, page=page-1, sort=sort, order=order, texto=texto) }}">« Anterior</a>
+        <a href="{{ url_for(endpoint, page=page-1, sort=request.args.get('sort', 'name'), order=request.args.get('order', 'asc'), texto=request.args.get('texto', '')) }}">« Anterior</a>
     {% endif %}
     Página {{ page }} de {{ total_pages }}
     {% if page < total_pages %}
-        <a href="{{ url_for(endpoint, page=page+1, sort=sort, order=order, texto=texto) }}">Siguiente »</a>
+        <a href="{{ url_for(endpoint, page=page+1, sort=request.args.get('sort', 'name'), order=request.args.get('order', 'asc'), texto=request.args.get('texto', '')) }}">Siguiente »</a>
     {% endif %}
 </div>

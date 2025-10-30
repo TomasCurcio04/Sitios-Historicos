@@ -19,15 +19,16 @@ from src.web.handlers import error
 from src.web.controllers.web import web
 from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
-from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
+from src.web.controllers.mi_perfil import mi_perfil_bp
 
 from src.core.services.auth.bcrypt import bcrypt
 from src.web.handlers.auth import is_authenticated
 from src.web.config import config
+from src.web.storage import storage
 from src.core import database
 from src.core import seeds
 from src.web.handlers.utils import admin_maintenance_required
@@ -35,6 +36,7 @@ from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from src.web.handlers.auth import login_required
 from src.web.handlers.utils import permissions_required
+
 
 session = Session()
 
@@ -66,16 +68,25 @@ def create_app(env="development", static_folder=None):
     session.init_app(app)
     # Inicializando Bcrypt
     bcrypt.init_app(app)
+    # inicializo storage
+    storage.init_app(app)
 
     # Register commands
     @app.cli.command("reset-db")
     def reset_db_command():
-        """Reinicia la base de datos."""
+        """Comando CLI para reiniciar la base de datos.
+
+        Elimina todas las tablas y las vuelve a crear.
+        """
         database.reset_db()
 
     @app.cli.command("seed-db")
     def seed_db_command():
-        """Llena la base de datos con datos iniciales."""
+        """Comando CLI para llenar la base de datos con datos iniciales.
+
+        Ejecuta el script de semillas para crear usuarios, roles,
+        sitios y otros datos de prueba.
+        """
         seeds.run()
 
     # Registrar blueprints
@@ -83,27 +94,28 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(sites_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
-    app.register_blueprint(busqueda_avanzada_bp)
     app.register_blueprint(tags_bp)
     app.register_blueprint(feature_flags_bp)
     app.register_blueprint(mantenimiento_admin_bp)
+    app.register_blueprint(mi_perfil_bp)
+
+    # Registrar manejadores de errores
+    app.register_error_handler(404, error.not_found)
+    app.register_error_handler(401, error.not_authorized)
+    app.register_error_handler(500, error.internal_server_error)
+    app.register_error_handler(403, error.forbidden)
 
     app.jinja_env.globals["is_authenticated"] = is_authenticated
 
     @app.before_request
     def check_admin_maintenance():
-        """Verifica si el usuario está en modo de mantenimiento administrativo."""
+        """Verifica si el panel administrativo está en modo de mantenimiento.
+
+        Redirige a los usuarios no autenticados al login y a los usuarios
+        no superusuarios a la página de mantenimiento cuando está activo.
+        """
         current_user.setdefault("user", None)
-        """Verifica si el usuario está en modo de mantenimiento administrativo."""
-        current_user.setdefault("user", None)
-        # Agregar user_name a sesiones existentes que no lo tengan
-        if "user" in current_user and "user_name" not in current_user:
-            usuario = buscar_usuario(current_user.get("user"))
-            if usuario:
-                current_user["user_name"] = usuario.user_name
-                current_user["user_name"] = usuario.user_name
         usuario = buscar_usuario(current_user.get("user"))
-        print(f"current_user: {current_user.get('user')}")
         flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
@@ -114,19 +126,15 @@ def create_app(env="development", static_folder=None):
             "mantenimiento_admin.mantenimiento_admin",
         ]
         if request.endpoint in exempt_endpoints:
-            print("request")
             return
         if not flag or not flag.enabled:
             if not usuario:
-                print("no usuario")
                 return redirect(url_for("auth.login"))
             return
         if not usuario:
             return redirect(url_for("auth.login"))
-        print(f"Usuario s_user: {usuario.s_user}")
         if not usuario.s_user:
             return redirect(url_for("mantenimiento_admin.mantenimiento_admin"))
-        print(f"{usuario} Es sysadmin")
         destino = url_for("feature_flags.feature_flags")
         if request.path != destino:
             return redirect(destino)
