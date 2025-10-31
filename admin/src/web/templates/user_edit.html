@@ -16,20 +16,21 @@
     
     <h1 class="mb-4">Editar Usuario: {{ user.email }}</h1>
 
-    <form action="{{ url_for('users.user_update', email=user.email) }}" method="POST">
+    <form action="{{ url_for('users.user_update', user_id=user.id_user) }}" method="POST">
 
         <div class="mb-3">
             <label for="username" class="form-label">Nombre de Usuario</label>
             <input type="text" class="form-control" id="username" name="user_name" value="{{ user.user_name }}" required>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3">  
             <label for="rol" class="form-label">Rol:</label>
             <select class="form-select" id="rol" name="role" required>
-                <option value="1" {% if user.rol == 'admin' or user.rol == 1 %}selected{% endif %}>Administrador</option>
-                <option value="2" {% if user.rol == 'editor' or user.rol == 2 %}selected{% endif %}>Editor</option>
-                <option value="3" {% if user.rol == 'viewer' or user.rol == 3 %}selected{% endif %}>Visualizador</option>
-            </select>
+            {% for rol in roles %}
+                <option value="{{ rol.id_role }}" {% if user.role == rol.id_role %}selected{% endif %}>
+                    {{ rol.name }}
+                </option>
+            {% endfor %}
         </div>
 
         <div class="form-check mb-3">
