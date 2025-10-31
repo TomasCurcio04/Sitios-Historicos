@@ -230,4 +230,64 @@
     <button type="submit" class="btn-primary-action">Volver al home</button>
 </form>
 
+
+<script>
+        // Se obtienen los elementos del DOM que vamos a necesitar
+        const modal = document.getElementById('historyModal');
+        const modalContent = document.getElementById('historyContent');
+        const closeButton = document.querySelector('.close-button');
+
+        /**
+         * Función para mostrar el modal y cargar el historial.
+         * Es llamada por el atributo 'onclick' del botón.
+         */
+        function showHistoryModal(siteId) {
+            // 1. Muestra "Cargando..." y hace visible el modal
+            modalContent.innerHTML = '<p>Cargando...</p>';
+            modal.style.display = 'block';
+
+            // 2. Usa 'fetch' para pedir el historial al servidor de forma asíncrona
+            fetch(`/sitios/${siteId}/historial`)
+                .then(response => {
+                    // Si la respuesta del servidor no es OK (ej: error 404 o 500)
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
+                    }
+                    // Se espera que el servidor devuelva texto (que será el HTML parcial)
+                    return response.text();
+                })
+                .then(html => {
+                    // 3. Inserta el HTML recibido dentro del div del modal
+                    modalContent.innerHTML = html;
+                })
+                .catch(error => {
+                    // 4. Si algo falla durante el 'fetch', muestra un mensaje de error
+                    modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                    console.error('Error en fetch:', error);
+                });
+        }
+
+        /**
+         * Función para cerrar el modal.
+         */
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // --- Asignación de Eventos ---
+
+        // Evento para cerrar el modal al hacer clic en el botón (X)
+        if (closeButton) {
+            closeButton.onclick = closeModal;
+        }
+
+        // Evento para cerrar el modal si se hace clic fuera del contenido de la ventana
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+
+
 {% endblock %}
