@@ -16,6 +16,7 @@ import shutil
 from flask_session import Session
 import os
 from src.web.handlers import error
+from sqlalchemy.exc import OperationalError
 from src.web.controllers.web import web
 from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
@@ -104,6 +105,7 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(401, error.not_authorized)
     app.register_error_handler(500, error.internal_server_error)
     app.register_error_handler(403, error.forbidden)
+    app.register_error_handler(OperationalError, error.database_connection_error)
 
     app.jinja_env.globals["is_authenticated"] = is_authenticated
 
