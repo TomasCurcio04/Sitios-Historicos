@@ -171,42 +171,56 @@ def editar(site_id):
 
 @bp.post("/<int:site_id>/editar")
 def actualizar(site_id):
-    """Actualiza los datos de un sitio existente."""
+    """Actualiza los datos de un sitio existente y registra los cambios detectados."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
 
-    # --- La lógica de guardar estado anterior, validar y detectar cambios sigue aquí ---
-    estado_anterior = {
-        "name": sitio.name,
-        "short_description": sitio.short_description,  # ... etc.
-    }
+    # Extraer y validar datos del formulario
     data = _extraer_y_validar_form()
-    # ... (código que aplica los datos al objeto 'sitio')
-    cambios_detectados = []
-    # ... (todos los 'if' que comparan y llenan la lista 'cambios_detectados')
-    # ----------------------------------------------------------------------------
+    if isinstance(data, str):
+        flash(data, "error")
+        return redirect(url_for("sites.editar", site_id=site_id))
+
+    # Recuperar etiquetas seleccionadas del formulario
+    tags_ids = request.form.getlist("tags")
+    nuevas_etiquetas = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
+
+    user_id = int(request.form.get("user_id", 1))
 
     try:
-        if cambios_detectados:
-            user_id = int(request.form.get("user_id", 1))
+        # ✅ Primero: detectar los cambios (comparar el estado actual con los nuevos valores)
+        cambios_detectados = SiteHistoryService.detect_changes(
+            db_session=db.session,
+            site_actual=sitio,
+            nuevos_datos=data,
+            nuevas_tags=nuevas_etiquetas,
+        )
 
-            # ✅ Lógica delegada al servicio
+        # ✅ Si hay cambios, registrar en el historial ANTES del commit
+        if cambios_detectados:
             SiteHistoryService.register_update(
                 db_session=db.session,
-                site_id=site_id,
+                site_id=sitio.id_site,
                 user_id=user_id,
                 changes=cambios_detectados,
             )
-            flash(
-                f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).",
-                "success",
-            )
+
+        # ✅ Luego aplicar los cambios al objeto `sitio`
+        for key, value in data.items():
+            setattr(sitio, key, value)
+
+        sitio.tag = nuevas_etiquetas
+
+        # ✅ Finalmente, commit de todo
+        db.session.commit()
+
+        if cambios_detectados:
+            flash(f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).", "success")
         else:
             flash("Sitio guardado sin cambios detectados.", "info")
 
-        db.session.commit()
         return redirect(url_for("sites.index"))
 
     except Exception as e:
