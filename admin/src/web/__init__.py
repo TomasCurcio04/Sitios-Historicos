@@ -27,7 +27,7 @@ from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 from src.web.controllers.mi_perfil import mi_perfil_bp
 
 from src.core.services.auth.bcrypt import bcrypt
-from src.web.handlers.auth import is_authenticated
+from src.web.handlers.auth import is_authenticated, template_is_authenticated
 from src.web.config import config
 from src.web.storage import storage
 from src.core import database
@@ -107,10 +107,6 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(403, error.forbidden)
     app.register_error_handler(OperationalError, error.database_connection_error)
 
-    # Función wrapper para templates
-    def template_is_authenticated():
-        return is_authenticated(current_user)
-    
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
 
     @app.before_request

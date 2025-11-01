@@ -32,6 +32,15 @@ def is_authenticated(session):
     """
     return session.get("user") is not None
 
+def template_is_authenticated():
+    """Función wrapper para usar is_authenticated en templates sin parámetros.
+    
+    Returns:
+        True si el usuario está autenticado, False en caso contrario
+    """
+    from flask import session
+    return is_authenticated(session)
+
 def is_admin(session):
     """Verifica si el usuario tiene rol de administrador.
     
