@@ -107,7 +107,11 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(403, error.forbidden)
     app.register_error_handler(OperationalError, error.database_connection_error)
 
-    app.jinja_env.globals["is_authenticated"] = is_authenticated
+    # Función wrapper para templates
+    def template_is_authenticated():
+        return is_authenticated(current_user)
+    
+    app.jinja_env.globals["is_authenticated"] = template_is_authenticated
 
     @app.before_request
     def check_admin_maintenance():
