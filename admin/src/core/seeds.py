@@ -8,6 +8,7 @@ from src.core.services.auth.user_serv import create_user
 from src.core.services.auth.permission_serv import create_permission
 from src.core.entity.feature_flag import FeatureFlag
 from src.core.database import db
+from src.core.entity.site_image import SiteImage
 
 # from src.core.auth import feature_flag
 

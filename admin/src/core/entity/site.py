@@ -2,6 +2,7 @@
 """Modelo de sitio histórico para la tabla 'site' en la base de datos."""
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
+
 # from src.core.entity.site_history import SiteHistory  # Evitar importación circular
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import (
@@ -22,6 +23,9 @@ if TYPE_CHECKING:
     from src.core.entity.category import Category
     from src.core.entity.state import State
     from src.core.entity.tag import Tag
+    from src.core.entity.site_image import SiteImage
+    from src.core.entity.site_history import SiteHistory
+    from src.core.entity.site_tag import SiteTag
 
 
 site_tag = Table(
@@ -29,7 +33,7 @@ site_tag = Table(
     Base.metadata,
     Column("id_site", ForeignKey("site.id_site"), nullable=False),
     Column("id_tag", ForeignKey("tag.id_tag"), nullable=False),
-    extend_existing=True
+    extend_existing=True,
 )
 
 
@@ -64,6 +68,7 @@ class Site(Base):
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
     user: Mapped["Users"] = relationship(back_populates="sites")
     history: Mapped[list["SiteHistory"]] = relationship(back_populates="site_rel")
+    images: Mapped[list["SiteImage"]] = relationship(back_populates="site_rel")
 
     def __repr__(self):
         return f"<Site(name='{self.name}', state='{self.state}', is_visible={self.is_visible})>"

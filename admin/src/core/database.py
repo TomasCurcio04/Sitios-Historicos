@@ -21,10 +21,16 @@ def init_db(app):
 def reset_db():
     """Reinicia la base de datos eliminando todas las tablas y volviéndolas a crear."""
 
-    # from src.core.services.auth.users import Users  # noqa: F401
-    # from src.core.services.board.site import Site  # noqa: F401
-    # from src.core.services.board.category import Category  # noqa: F401
-    # from src.core.services.board.state import State  # noqa: F401
+    from src.core.entity.users import Users  # noqa: F401
+    from src.core.entity.site import Site  # noqa: F401
+    from src.core.entity.category import Category  # noqa: F401
+    from src.core.entity.state import State  # noqa: F401
+    from src.core.entity.site_image import SiteImage  # noqa: F401
+    from src.core.entity.site_history import SiteHistory  # noqa: F401
+    from src.core.entity.tag import Tag  # noqa: F401
+    from src.core.entity.role import Role  # noqa: F401
+    from src.core.entity.permission import Permission  # noqa: F401
+    from src.core.entity.feature_flag import FeatureFlag  # noqa: F401
 
     print("Reiniciando la base de datos...")
     Base.metadata.drop_all(bind=db.engine)

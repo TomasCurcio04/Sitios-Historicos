@@ -4,10 +4,11 @@
 {% block content %}
 
 <h1 class="mb-4">Gestión de Usuarios</h1>
-<p>Acá podés administrar los usuarios del sistema (ver y eliminar). Haz clic en los encabezados "Activo" y "Rol" para filtrar.</p>
+<p>Acá podés administrar los usuarios del sistema (ver y eliminar). Haz clic en los encabezados "Activo" y "Rol" para
+    filtrar.</p>
 
 
-{% if is_authenticated(session) %}
+{% if is_authenticated() %}
 
 <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex mb-3">
     <input type="text"
@@ -63,15 +64,15 @@
                 {# --- BLOQUE DE ORDENAMIENTO POR FECHA --- #}
                 {% set safe_filters = filters.copy() %}
                 {% if 'sort' in safe_filters %}
-                    {% set _ = safe_filters.pop('sort') %}
+                {% set _ = safe_filters.pop('sort') %}
                 {% endif %}
                 {% if 'page' in safe_filters %}
-                    {% set _ = safe_filters.pop('page') %}
+                {% set _ = safe_filters.pop('page') %}
                 {% endif %}
 
                 <th>
                     <a href="{{ url_for('users.user_index', sort='desc' if sort_order == 'asc' else 'asc', **safe_filters) }}"
-                       style="text-decoration: none; color: #333;">
+                        style="text-decoration: none; color: #333;">
                         Fecha de Creación
                         {% if sort_order == 'asc' %} 🔼 {% else %} 🔽 {% endif %}
                     </a>
@@ -107,7 +108,7 @@
                     <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
                         {% if not user.rol_rel.name == 'admin' %}
                         <button type="submit" class="btn btn-unified btn-sm me-2"
-                                onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
+                            onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
                             Eliminar
                         </button>
                         {% endif %}
@@ -124,7 +125,7 @@
 {% if pagination["pages"] > 1 %}
 {% set safe_filters = filters.copy() %}
 {% if 'page' in safe_filters %}
-    {% set _ = safe_filters.pop('page') %}
+{% set _ = safe_filters.pop('page') %}
 {% endif %}
 
 <nav aria-label="Paginación de Usuarios" class="mt-4">
@@ -136,54 +137,54 @@
         {# Botón Anterior #}
         <li class="page-item {% if page <= 1 %}disabled{% endif %}">
             <a class="page-link btn-unified px-3 py-1"
-               href="{{ url_for('users.user_index', page=page - 1, **safe_filters) if page > 1 else '#' }}"
-               aria-label="Anterior">
+                href="{{ url_for('users.user_index', page=page - 1, **safe_filters) if page > 1 else '#' }}"
+                aria-label="Anterior">
                 &laquo;
             </a>
         </li>
 
         {# Calcular el rango visible #}
-        {% set start_page = 1 if page - 2 < 1 else page - 2 %}
-        {% set end_page = pages if page + 2 > pages else page + 2 %}
+        {% set start_page = 1 if page - 2 < 1 else page - 2 %} {% set end_page=pages if page + 2> pages else page + 2 %}
 
-        {# Primeras páginas #}
-        {% if start_page > 1 %}
+            {# Primeras páginas #}
+            {% if start_page > 1 %}
             <li class="page-item">
-                <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=1, **safe_filters) }}">1</a>
+                <a class="page-link btn-unified px-3 py-1"
+                    href="{{ url_for('users.user_index', page=1, **safe_filters) }}">1</a>
             </li>
             {% if start_page > 2 %}
-                <li class="page-item disabled"><span class="page-link">…</span></li>
+            <li class="page-item disabled"><span class="page-link">…</span></li>
             {% endif %}
-        {% endif %}
+            {% endif %}
 
-        {# Páginas visibles #}
-        {% for num in range(start_page, end_page + 1) %}
+            {# Páginas visibles #}
+            {% for num in range(start_page, end_page + 1) %}
             <li class="page-item {% if num == page %}active{% endif %}">
                 <a class="page-link btn-unified px-3 py-1 {% if num == page %}fw-bold{% endif %}"
-                   href="{{ url_for('users.user_index', page=num, **safe_filters) }}">
+                    href="{{ url_for('users.user_index', page=num, **safe_filters) }}">
                     {{ num }}
                 </a>
             </li>
-        {% endfor %}
+            {% endfor %}
 
-        {# Últimas páginas #}
-        {% if end_page < pages %}
-            {% if end_page < pages - 1 %}
-                <li class="page-item disabled"><span class="page-link">…</span></li>
-            {% endif %}
-            <li class="page-item">
-                <a class="page-link btn-unified px-3 py-1" href="{{ url_for('users.user_index', page=pages, **safe_filters) }}">{{ pages }}</a>
-            </li>
-        {% endif %}
+            {# Últimas páginas #}
+            {% if end_page < pages %} {% if end_page < pages - 1 %} <li class="page-item disabled"><span
+                    class="page-link">…</span></li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link btn-unified px-3 py-1"
+                        href="{{ url_for('users.user_index', page=pages, **safe_filters) }}">{{ pages }}</a>
+                </li>
+                {% endif %}
 
-        {# Botón Siguiente #}
-        <li class="page-item {% if page >= pages %}disabled{% endif %}">
-            <a class="page-link btn-unified px-3 py-1"
-               href="{{ url_for('users.user_index', page=page + 1, **safe_filters) if page < pages else '#' }}"
-               aria-label="Siguiente">
-                &raquo;
-            </a>
-        </li>
+                {# Botón Siguiente #}
+                <li class="page-item {% if page >= pages %}disabled{% endif %}">
+                    <a class="page-link btn-unified px-3 py-1"
+                        href="{{ url_for('users.user_index', page=page + 1, **safe_filters) if page < pages else '#' }}"
+                        aria-label="Siguiente">
+                        &raquo;
+                    </a>
+                </li>
     </ul>
 </nav>
 {% endif %}

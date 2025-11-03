@@ -47,6 +47,7 @@
         <div class="container">
             <!-- Menú lateral -->
             <nav class="sidenav" id="sidenav">
+                {% if is_authenticated() %}
                 <a href="{{ url_for('sites.index') }}"
                     class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
                     Gestión de sitios históricos
@@ -61,12 +62,13 @@
                 </a>
                 <a href="{{ url_for('users.user_index') }}"
                     class="{% if request.path.startswith('/gestion_usuarios') and not request.path.endswith('/perfil') %}active{% endif %}">
-                    Gestión de usuarios
+                    Gestión de<br>usuarios
                 </a>
                 <a href="{{ url_for('feature_flags.feature_flags') }}"
                     class="{% if request.path.startswith('/feature_flags') %}active{% endif %}">
                     Feature Flags
                 </a>
+                {% endif %}
             </nav>
 
             <!-- Contenido dinámico -->
