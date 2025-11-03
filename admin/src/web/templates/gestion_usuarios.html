@@ -95,23 +95,8 @@
                         {{ 'Sí' if user.active else 'No' }}
                     </span>
                 </td>
-<<<<<<< HEAD
-                <td>
-                    {% if user.role == 1 %}
-                        Administrador
-                    {% elif user.role == 2 %}
-                        Editor
-                    {% elif user.role == 3 %}
-                        Visualizador
-                    {% else %}
-                        Desconocido
-                    {% endif %}
-                </td>
-                <td class="text-center">
-=======
                 <td>{{ user.rol_rel.name if user.rol_rel else 'Sin rol' }}</td>
                 <td>
->>>>>>> 7364c1fe5f4df3ed53ab90ad57931e2a22608e96
                     <span class="badge bg-{{ 'primary' if user.s_user else 'secondary' }}">
                         {{ 'Sí' if user.s_user else 'No' }}
                     </span>

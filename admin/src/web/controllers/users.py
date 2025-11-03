@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
 from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario, list_roles
-from src.core.auth.users import Users
+from src.core.entity.users import Users
 import re
 from src.web.handlers.auth import admin_required
 from src.core.entity.user_validador import UserValidator
