@@ -44,22 +44,26 @@
         <label for="password">Contraseña:</label>
         <input type="password" id="password" name="password" required>
 
-        <label for="confirm_password">Repetir contraseña:</label>
-        <input type="password" id="confirm_password" name="confirm_password" required>
+            <div class="mb-3">  
+                <label for="rol" class="form-label">Rol:</label>
+                <select class="form-select" id="rol" name="rol" required>
+                    <option value="">Selecciona un rol</option>
+                    {% for rol in roles %}
+                        <option value="{{ rol.id_role }}"
+                            {% if request.form.get('rol')|int == rol.id_role %}selected{% endif %}>
+                            {{ rol.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <label for="rol">Rol:</label>
-        <select id="rol" name="rol" required>
-            <option value="">Selecciona un rol</option>
-            <option value="1" {% if request.form.get('rol') == '1' %}selected{% endif %}>Administrador</option>
-            <option value="2" {% if request.form.get('rol') == '2' %}selected{% endif %}>Editor</option>
-            <option value="3" {% if request.form.get('rol') == '3' %}selected{% endif %}>Visualizador</option>
-        </select>
 
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <button type="submit" class="btn-primary-action">Crear Usuario</button>
-            <a href="{{ url_for('users.user_index') }}" class="btn-secondary-action">Cancelar</a>
-        </div>
-    </form>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-unified">Crear Usuario</button>
+                <a href="{{ url_for('users.user_index') }}" class="btn btn-unified">Cancelar</a>
+            </div>
+        </form>
+    </div>
 </div>
 <script>
 document.querySelector("form").addEventListener("submit", function (event) {

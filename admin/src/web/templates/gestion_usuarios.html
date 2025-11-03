@@ -9,8 +9,8 @@
 
 {% if is_authenticated(session) %}
 
-<form action="{{ url_for('users.user_index') }}" method="GET" style="display: flex; margin-bottom: 20px; gap: 10px;">
-    <input type="email"
+<form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex mb-3">
+    <input type="text"
            name="email"
            style="flex: 1; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;"
            placeholder="Buscar usuario por email"
@@ -20,30 +20,34 @@
     </button>
 </form>
 
-<div class="mb-4 d-flex justify-content-between align-items-center">
-    <div class="d-flex gap-4">
-        <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center">
-            <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
-            <label for="active-filter" class="form-label me-2 mb-0 fw-bold">Estado:</label>
-            <select name="is_active" id="active-filter" class="form-select" onchange="this.form.submit()">
-                <option value="" {% if current_is_active == None or current_is_active == "" %}selected{% endif %}>Todos</option>
-                <option value="True" {% if current_is_active == 'True' %}selected{% endif %}>Activo (Sí)</option>
-                <option value="False" {% if current_is_active == 'False' %}selected{% endif %}>Inactivo (No)</option>
-            </select>
-        </form>
+<form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center gap-4 mb-4">
+    <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
 
-        <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex align-items-center">
-            <input type="hidden" name="email" value="{{ request.args.get('email', '') }}">
-            <label for="rol-filter" class="form-label me-2 mb-0 fw-bold">Rol:</label>
-            <select name="rol" id="rol-filter" class="form-select" onchange="this.form.submit()">
-                <option value="" {% if current_rol == None or current_rol == "" %}selected{% endif %}>Todos los Roles</option>
-                <option value="admin" {% if current_rol == 'admin' %}selected{% endif %}>Administrador</option>
-                <option value="editor" {% if current_rol == 'editor' %}selected{% endif %}>Editor</option>
-                <option value="viewer" {% if current_rol == 'viewer' %}selected{% endif %}>Visualizador</option>
-            </select>
-        </form>
+    <input type="hidden" name="sort" value="{{ sort_order }}">
+
+    <div class="d-flex align-items-center">
+        <label for="active-filter" class="form-label me-2 mb-0 fw-bold">Estado:</label>
+        <select name="is_active" id="active-filter" class="form-select" onchange="this.form.submit()">
+            <option value="" {% if not current_is_active %}selected{% endif %}>Todos</option>
+            <option value="true" {% if current_is_active | lower == 'true' %}selected{% endif %}>Activo (Sí)</option>
+            <option value="false" {% if current_is_active | lower == 'false' %}selected{% endif %}>Inactivo (No)</option>
+        </select>
     </div>
-</div>
+
+    <div class="d-flex align-items-center">
+        <label for="rol-filter" class="form-label me-2 mb-0 fw-bold">Rol:</label>
+        <select name="rol" id="rol-filter" class="form-select" onchange="this.form.submit()">   
+            <option value="" {% if not current_rol %}selected{% endif %}>Todos los Roles</option>
+            {% for rol in roles %}
+                <option value="{{ rol.name }}" {% if current_rol == rol.name %}selected{% endif %}>
+                    {{ rol.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+</form>
+
 
 <hr>
 <h2>Lista de Usuarios</h2>
@@ -91,6 +95,7 @@
                         {{ 'Sí' if user.active else 'No' }}
                     </span>
                 </td>
+<<<<<<< HEAD
                 <td>
                     {% if user.role == 1 %}
                         Administrador
@@ -103,19 +108,24 @@
                     {% endif %}
                 </td>
                 <td class="text-center">
+=======
+                <td>{{ user.rol_rel.name if user.rol_rel else 'Sin rol' }}</td>
+                <td>
+>>>>>>> 7364c1fe5f4df3ed53ab90ad57931e2a22608e96
                     <span class="badge bg-{{ 'primary' if user.s_user else 'secondary' }}">
                         {{ 'Sí' if user.s_user else 'No' }}
                     </span>
                 </td>
                 <td>
                     {% if user.active %}
-                    <a href="{{ url_for('users.user_edit', email=user.email) }}" class="btn btn-unified btn-sm me-2">Editar</a>
+                    <a href="{{ url_for('users.user_edit', user_id=user.id_user) }}" class="btn btn-unified btn-sm me-2">Editar</a>
                     <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
-                        <input type="hidden" name="email" value="{{ user.email }}">
+                        {% if not user.rol_rel.name == 'admin' %}
                         <button type="submit" class="btn btn-unified btn-sm me-2"
                                 onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
                             Eliminar
                         </button>
+                        {% endif %}
                     </form>
                     {% endif %}
                 </td>

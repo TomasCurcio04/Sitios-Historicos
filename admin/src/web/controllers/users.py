@@ -3,14 +3,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
-from src.core.services.auth.user_serv import (
-    listar_usuarios,
-    eliminar_usuario,
-    create_user,
-    buscar_usuario,
-    actualizar_usuario,
-)
-from src.core.entity.users import Users
+from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario, list_roles
+from src.core.auth.users import Users
 import re
 from src.web.handlers.auth import admin_required
 from src.core.entity.user_validador import UserValidator
@@ -57,6 +51,8 @@ def user_index():
         search_email=search_email_param,
         sort_order=sort_order,
     )
+    
+    roles = list_roles()
 
     start = ((pagination["page"] - 1) * pagination["per_page"]) + 1
     end = min(pagination["page"] * pagination["per_page"], pagination["total"])
@@ -65,6 +61,7 @@ def user_index():
         "gestion_usuarios.html",
         pagination=pagination,
         users=pagination["items"],
+        roles = roles,
         # Usamos la versión string para el filtro 'Activo' en la plantilla
         current_is_active=is_active_param,
         current_rol=rol_param,
@@ -82,7 +79,10 @@ def user_index():
 def user_new():
     """Muestra el formulario para crear un nuevo usuario."""
     # Aquí irá el formulario real de creación
-    return render_template("user_new.html")
+
+    roles = list_roles()
+
+    return render_template("user_new.html", roles=roles)
 
 
 @user_bp.route("/create", methods=["POST"])
@@ -102,30 +102,28 @@ def user_create():
             "user_new.html",
             email=request.form.get("email"),
             username=request.form.get("username"),
-            rol=request.form.get("rol")
+            rol=request.form.get("rol"),
+            roles=list_roles()
         )
 
    
-    clean_data = validator.data_cleaned 
-    
-    
+    clean_data = validator.data_cleaned
+    print("Valor rol", clean_data["rol"])
     result = create_user(
         email=clean_data["email"],
         user_name=clean_data["username"],
         password=clean_data["password"],
-        role=clean_data["rol"] 
+        rol=clean_data["rol"] 
     )
 
-    #Manejo de Errores de Negocio/Persistencia
     if isinstance(result, str):
         flash(result, "error")
-        
-
         return render_template(
             "user_new.html",
             email=clean_data["email"],
             username=clean_data["username"],
-            rol=request.form.get("rol")
+            rol=request.form.get("role"),
+            roles=list_roles()
         )
 
     flash("Usuario creado exitosamente", "success")
@@ -146,11 +144,10 @@ def user_delete(user_id):
     return redirect(url_for("users.user_index"))
 
 
-@user_bp.route("/<string:email>/edit", methods=["GET"])
+@user_bp.route("/<int:user_id>/edit", methods=["GET"])
 @admin_required
-def user_edit(email):
-    """Muestra el formulario de edición de usuario."""
-    user = buscar_usuario(email)
+def user_edit(user_id):
+    user = obtener_usuario_por_id(user_id)
 
     if not user:
         flash("Usuario no encontrado", "error")
@@ -158,27 +155,29 @@ def user_edit(email):
 
     return render_template("user_edit.html", user=user)
 
-
-@user_bp.route("/<string:email>/update", methods=["POST"])
+@user_bp.route("/<int:user_id>/update", methods=["POST"])
 @admin_required
-def user_update(email):
-    """Procesa la actualización de datos del usuario."""
+def user_update(user_id):
+    """Procesa los datos y actualiza el usuario."""
 
-    user = buscar_usuario(email)
+    user = obtener_usuario_por_id(user_id)
     if not user:
         flash("Usuario no encontrado", "error")
         return redirect(url_for("users.user_index"))
 
-    rol_str = request.form.get("role")
-
-    rol_value = int(rol_str)
+    try:
+        rol_id = int(request.form.get("role"))
+    except (TypeError, ValueError):
+        flash("Rol inválido.", "error")
+        return redirect(url_for("users.user_edit", user_id=user_id))
+    
     data = {
         "user_name": request.form.get("user_name"),
-        "role": rol_value,
-        "s_user": "s_user" in request.form,
+        "role": rol_id,
+        "s_user": "s_user" in request.form
     }
 
-    success, message = actualizar_usuario(email, **data)
+    success, message = actualizar_usuario(user_id, **data)
 
     if success:
         flash(f"Usuario {data['user_name']} actualizado exitosamente.", "success")
@@ -186,7 +185,4 @@ def user_update(email):
     else:
         # Esto captura errores como problemas de DB o lógica del Core
         flash(f"Error al actualizar el usuario: {message}", "error")
-        return redirect(url_for("users.user_edit", email=email))
-
-
-
+        return redirect(url_for("users.user_edit", user_id=user_id))    
