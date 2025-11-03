@@ -26,7 +26,7 @@
 {% if is_authenticated(session) %}
 
 <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex mb-3">
-    <input type="email"
+    <input type="text"
            name="email"
            class="form-control me-2"
            placeholder="Buscar usuario por email"
