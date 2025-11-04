@@ -10,92 +10,36 @@ from flask import (
     url_for,
     flash,
 )
+import signal
+import sys
+import shutil
 from flask_session import Session
 import os
 from src.web.handlers import error
-from src.web.controllers.issues import bp as issues_bp
+from sqlalchemy.exc import OperationalError
+from src.web.controllers.web import web
+from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
-from src.web.controllers.busqueda_avanzada import bp as busqueda_avanzada_bp
 from src.web.controllers.auth import bp as auth_bp
 from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
+from src.web.controllers.mi_perfil import mi_perfil_bp
 
-from src.core.auth.bcrypt import bcrypt
-from src.web.handlers.auth import is_authenticated
+from src.core.services.auth.bcrypt import bcrypt
+from src.web.handlers.auth import is_authenticated, template_is_authenticated
 from src.web.config import config
+from src.web.storage import storage
 from src.core import database
 from src.core import seeds
-from src.web.utils import admin_maintenance_required
-from src.core import auth
+from src.web.handlers.utils import admin_maintenance_required
+from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
+from src.core.services.auth.feature_flag_serv import get_feature_flag
 from src.web.handlers.auth import login_required
+from src.web.handlers.utils import permissions_required
 
-# Creamos el blueprint principal
-web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
 
 session = Session()
-
-
-# Rutas del blueprint
-@web.route("/", endpoint="home")
-@login_required
-def home():
-
-    print("Entré aca en es usuario autenticado")
-    return render_template("home.html")
-
-
-@web.route("/gestionsitioshistoricos")
-@login_required
-def gestionsitioshistoricos():
-    return render_template("gestionsitioshistoricos.html")
-
-
-@web.route("/validacion_propuesta")
-def validacion_propuesta():
-    return render_template("validacion_propuesta.html")
-
-
-@web.route("/moderacion_resenias")
-def moderacion_resenias():
-    return render_template("moderacion_resenias.html")
-
-
-# @web.route("/feature_flags")
-# def feature_flags():
-#     return render_template("feature_flags.html")
-
-
-# @web.route("/feature_flags", methods=["GET", "POST"], endpoint="feature_flags")
-# @admin_maintenance_required
-# def feature_flags():
-#     """Vista del menu de feature flags."""
-#     flags = auth.list_feature_flags()
-#     usuario_id = current_user.get("user_id") or current_user.get("id") or 1
-
-#     if request.method == "POST":
-#         for flag in flags:
-#             flag.enabled = f"enabled_{flag.id}" in request.form
-#             flag.maintenance_message = request.form.get(f"mensaje_{flag.id}", "")
-#             flag.updated_by = usuario_id or 1
-#         database.db.session.commit()
-#         flash("Feature flags actualizados correctamente", "success")
-#         return redirect(url_for("web.feature_flags"))
-
-#     return render_template("feature_flags.html", flags=flags)
-
-
-@web.route("/test_flash")
-def test_flash():
-    flash("Mensaje de prueba", "success")
-    return redirect(url_for("web.bajo_mantenimiento"))
-
-
-# @admin_maintenance_required
-@web.route("/bajo_mantenimiento", endpoint="bajo_mantenimiento")
-def bajo_mantenimiento():
-    """Vista de mantenimiento administrativo."""
-    return render_template("web.bajo_mantenimiento.html")
 
 
 def create_app(env="development", static_folder=None):
@@ -115,17 +59,6 @@ def create_app(env="development", static_folder=None):
     )
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
-    # Configuración de la app
-    # app.config.from_mapping(
-    #     DEBUG=True,
-    #     TESTING=False,
-    #     DB_HOST="nozomi.proxy.rlwy.net",
-    #     DB_NAME="railway",
-    #     DB_USER="postgres",
-    #     DB_PASSWORD="KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm",
-    #     DB_PORT="55215",
-    #     DB_SCHEME="postgresql+psycopg2",
-    # )
 
     # Configuración
     app.config.from_object(config[env])
@@ -136,35 +69,56 @@ def create_app(env="development", static_folder=None):
     session.init_app(app)
     # Inicializando Bcrypt
     bcrypt.init_app(app)
+    # inicializo storage
+    storage.init_app(app)
 
     # Register commands
     @app.cli.command("reset-db")
     def reset_db_command():
-        """Reinicia la base de datos."""
+        """Comando CLI para reiniciar la base de datos.
+
+        Elimina todas las tablas y las vuelve a crear.
+        """
         database.reset_db()
 
     @app.cli.command("seed-db")
     def seed_db_command():
-        """Llena la base de datos con datos iniciales."""
+        """Comando CLI para llenar la base de datos con datos iniciales.
+
+        Ejecuta el script de semillas para crear usuarios, roles,
+        sitios y otros datos de prueba.
+        """
         seeds.run()
 
     # Registrar blueprints
     app.register_blueprint(web)
-    app.register_blueprint(issues_bp)
+    app.register_blueprint(sites_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
-    app.register_blueprint(busqueda_avanzada_bp)
     app.register_blueprint(tags_bp)
     app.register_blueprint(feature_flags_bp)
     app.register_blueprint(mantenimiento_admin_bp)
+    app.register_blueprint(mi_perfil_bp)
 
-    app.jinja_env.globals["is_authenticated"] = is_authenticated
+    # Registrar manejadores de errores
+    app.register_error_handler(404, error.not_found)
+    app.register_error_handler(401, error.not_authorized)
+    app.register_error_handler(500, error.internal_server_error)
+    app.register_error_handler(403, error.forbidden)
+    app.register_error_handler(OperationalError, error.database_connection_error)
+
+    app.jinja_env.globals["is_authenticated"] = template_is_authenticated
 
     @app.before_request
     def check_admin_maintenance():
-        usuario = auth.buscar_usuario(current_user.get("user"))
-        print(f"current_user: {current_user.get('user')}")
-        flag = auth.get_feature_flag("admin_maintenance_mode")
+        """Verifica si el panel administrativo está en modo de mantenimiento.
+
+        Redirige a los usuarios no autenticados al login y a los usuarios
+        no superusuarios a la página de mantenimiento cuando está activo.
+        """
+        current_user.setdefault("user", None)
+        usuario = buscar_usuario(current_user.get("user"))
+        flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
             "auth.logout",
@@ -174,24 +128,37 @@ def create_app(env="development", static_folder=None):
             "mantenimiento_admin.mantenimiento_admin",
         ]
         if request.endpoint in exempt_endpoints:
-            print("request")
             return
         if not flag or not flag.enabled:
             if not usuario:
-                print("no usuario")
                 return redirect(url_for("auth.login"))
             return
         if not usuario:
             return redirect(url_for("auth.login"))
-        print(f"Usuario s_user: {usuario.s_user}")
         if not usuario.s_user:
             return redirect(url_for("mantenimiento_admin.mantenimiento_admin"))
-
-        print(f"{usuario} Es sysadmin")
         destino = url_for("feature_flags.feature_flags")
         if request.path != destino:
             return redirect(destino)
-
         return render_template("feature_flags.html", message=flag.maintenance_message)
+
+    def cleanup_sessions(*args):
+        """Borra todas las sesiones activas cuando se detiene la app."""
+        session_dir = app.config.get("SESSION_FILE_DIR")
+        if session_dir:
+            if not os.path.isabs(session_dir):
+                session_dir = os.path.join(os.getcwd(), session_dir)
+            if os.path.exists(session_dir):
+                try:
+                    shutil.rmtree(session_dir)
+                    os.makedirs(session_dir, exist_ok=True)
+                    print("\n🧹 Se eliminaron todas las sesiones activas.")
+                except Exception as e:
+                    print(f"\n⚠️ Error al limpiar sesiones: {e}")
+        else:
+            print("\n⚠️ No se encontró SESSION_FILE_DIR en la configuración.")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, cleanup_sessions)
 
     return app

@@ -1,14 +1,18 @@
+"""Controlador de autenticación para login y logout de usuarios."""
+
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from src.core.auth.__init__ import verificar_usuario
+from src.core.services.auth.user_serv import verificar_usuario
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @bp.get("/")
 def login():
+    """Muestra la página de login."""
     return render_template("login.html")
 
 @bp.get("/logout") 
 def logout():
+    """Cierra la sesión del usuario actual."""
     if session.get("user"):
         session.pop("user")
         session.clear()
@@ -19,6 +23,7 @@ def logout():
 
 @bp.post("/authenticate")
 def authenticate():
+    """Autentica las credenciales del usuario e inicia sesión."""
     params = request.form
 
     user,error = verificar_usuario(params["email"], params["password"])
@@ -26,7 +31,9 @@ def authenticate():
         flash(error, "error")    
         return redirect(url_for('auth.login'))
     
+    session.permanent = True
     session["user"] = user.email
+    session["user_name"] = user.user_name
     session["role"] = int(user.role)
     flash("Inicio de sesión exitoso", "success")
-    return redirect(url_for('users.user_index'))
+    return redirect(url_for('mi_perfil.perfil'))

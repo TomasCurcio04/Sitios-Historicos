@@ -1,145 +1,99 @@
+"""Controlador de gestión de etiquetas para sitios históricos."""
+
 from flask import Blueprint, request, render_template, redirect, url_for, flash
-from sqlalchemy.exc import IntegrityError
-from src.core.board.tag import Tag
-from src.core.database import db
+from src.core.services.board.tag_serv import buscar_tags, crear_tag, actualizar_tag, eliminar_tag
+from src.web.handlers.utils import permissions_required
 
 bp = Blueprint("tags", __name__, url_prefix="/etiquetas")
 
 
-# Función auxiliar para filtros, orden y paginación
-def get_tags_with_filters():
-    texto = request.args.get("texto", "").strip()
-    page = int(request.args.get("page", 1))
-    per_page = 25
-    sort = request.args.get("sort", "name")
-    order = request.args.get("order", "asc")
-
-    session = db.session
-    query = session.query(Tag)
-    if texto:
-        query = query.filter(Tag.name.ilike(f"%{texto}%"))
-
-    tags = query.all()
-
-    # Ordenamiento
-    if sort == "name":
-        tags.sort(key=lambda t: t.name.lower(), reverse=(order=="desc"))
-    elif sort == "fecha_creacion":
-        tags.sort(key=lambda t: t.date_created, reverse=(order=="desc"))
-
-    total_results = len(tags)
-    total_pages = (total_results + per_page - 1) // per_page
-    start = (page - 1) * per_page
-    end = start + per_page
-    page_items = tags[start:end]
-
-    return {
-        "tags": page_items,
-        "texto": texto,
-        "page": page,
-        "per_page": per_page,
-        "total_pages": total_pages,
-        "sort": sort,
-        "order": order,
-        "total_results": total_results
-    }
-
-
-# Menú principal
 @bp.get("/")
+@permissions_required("tags", ["view_menu_tags"])
 def menu_tags():
+
+    """Muestra el menú principal de gestión de etiquetas."""
     return render_template("tags/menu.html")
 
-
-# Listar etiquetas
+    
 @bp.get("/listar")
+@permissions_required("tags", ["view_tag"])
 def list_tags():
-    context = get_tags_with_filters()
+    """Lista todas las etiquetas con filtros aplicados."""
+    filtros = request.args.to_dict()
+    context = buscar_tags(filtros)
     context["endpoint"] = "tags.list_tags"
     return render_template("tags/listar.html", **context)
 
 
-# Crear etiqueta
 @bp.get("/crear")
+@permissions_required("tags", ["create_tag"])
 def create_tag_form():
+    """Muestra el formulario para crear una nueva etiqueta."""
     return render_template("tags/crear.html")
 
 
 @bp.post("/crear")
+@permissions_required("tags", ["create_tag"])
 def create_tag():
+    """Procesa la creación de una nueva etiqueta."""
     name = request.form.get("name", "").strip()
     if not name:
         flash("El nombre es obligatorio", "error")
         return redirect(url_for("tags.create_tag_form"))
 
-    session = db.session
-    tag = Tag(name=name)
-    session.add(tag)
-    try:
-        session.commit()
+    tag, error = crear_tag(name)
+    if error:
+        flash(error, "error")
+    else:
         flash("Etiqueta creada correctamente", "success")
-    except IntegrityError:
-        session.rollback()
-        flash("Ya existe una etiqueta con ese nombre", "error")
 
     return redirect(url_for("tags.create_tag_form"))
 
 
-# Editar etiqueta individual (POST)
 @bp.post("/editar/<int:tag_id>")
+@permissions_required("tags", ["edit_tag"])
 def edit_tag(tag_id):
+    """Procesa la actualización de una etiqueta existente."""
     name = request.form.get("name", "").strip()
     if not name:
         flash("El nombre es obligatorio", "error")
         return redirect(url_for("tags.edit_all_tags"))
 
-    session = db.session
-    tag = session.query(Tag).get(tag_id)
-    if not tag:
-        flash("Etiqueta no encontrada", "error")
-        return redirect(url_for("tags.edit_all_tags"))
-
-    tag.name = name
-    tag.slug = Tag.generate_slug(name)
-    try:
-        session.commit()
+    tag, error = actualizar_tag(tag_id, name)
+    if error:
+        flash(error, "error")
+    else:
         flash("Etiqueta actualizada correctamente", "success")
-    except IntegrityError:
-        session.rollback()
-        flash("Ya existe una etiqueta con ese nombre", "error")
     return redirect(url_for("tags.edit_all_tags"))
 
 
-# Página de edición de todas las etiquetas
 @bp.get("/editar")
+@permissions_required("tags", ["edit_tag"])
 def edit_all_tags():
-    context = get_tags_with_filters()
+    """Muestra la lista de etiquetas para edición."""
+    filtros = request.args.to_dict()
+    context = buscar_tags(filtros)
     context["endpoint"] = "tags.edit_all_tags"
-    return render_template("tags/actualizar.html", **context)
+    return render_template("tags/editar.html", **context)
 
 
-# Página de eliminación de todas las etiquetas
 @bp.get("/eliminar")
+@permissions_required("tags", ["delete_tag"])
 def delete_all_tags():
-    context = get_tags_with_filters()
+    """Muestra la lista de etiquetas para eliminación."""
+    filtros = request.args.to_dict()
+    context = buscar_tags(filtros)
     context["endpoint"] = "tags.delete_all_tags"
     return render_template("tags/eliminar.html", **context)
 
 
-# Eliminar etiqueta individual
 @bp.post("/eliminar/<int:tag_id>")
+@permissions_required("tags", ["delete_tag"])
 def delete_tag(tag_id):
-    session = db.session
-    tag = session.query(Tag).get(tag_id)
-    if not tag:
-        flash("Etiqueta no encontrada", "error")
-        return redirect(url_for("tags.delete_all_tags"))
-
-    if tag.sites:
-        flash("No se puede eliminar un tag asignado a sitios", "error")
-        return redirect(url_for("tags.delete_all_tags"))
-
-    session.delete(tag)
-    session.commit()
-    flash("Etiqueta eliminada correctamente", "success")
+    """Procesa la eliminación de una etiqueta."""
+    tag, error = eliminar_tag(tag_id)
+    if error:
+        flash(error, "error")
+    else:
+        flash("Etiqueta eliminada correctamente", "success")
     return redirect(url_for("tags.delete_all_tags"))

@@ -1,6 +1,8 @@
 """Configuration classes for different environments."""
 
 # from os import environ
+from datetime import timedelta
+from os import environ
 
 
 class BaseConfig:
@@ -10,20 +12,31 @@ class BaseConfig:
     DEBUG = False
     SECRET_KEY = "your_secret_key"
     SESSION_TYPE = "filesystem"
+    SESSION_FILE_DIR = "./flask_session_data"
+    SESSION_PERMANENT = True
+    SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
+    
 
 
 class ProductionConfig(BaseConfig):
     """Production configuration class."""
+    MINIO_SERVER = environ.get("MINIO_SERVER", "minio:9000")
+    MINIO_ACCESS_KEY = environ.get("MINIO_ACCESS_KEY", "VutZt4djr4TvVvU6e9ai")
+    MINIO_SECRET_KEY = environ.get("MINIO_SECRET_KEY", "uCNf8TFkB6kAxMEBGPIJI9GoOXNLU2D7pFvigvM0")
+    MINIO_SECURE = True
+    MINIO_BUCKET = "grupo10"
 
-    SQLALCHEMY_ENGINES = {
-        "default": "postgresql+psycopg2://grupo10:GtGouFR0ONveaoqQKi31@127.0.0.1:5432/grupo10?options=-c%20search_path=postgres"
-    }
-    # {"default": environ.get("DATABASE_URL")}
+    SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
+    # {"default": "postgresql+psycopg2://grupo10:GtGouFR0ONveaoqQKi31@127.0.0.1:5432/grupo10?options=-c%20search_path=postgres" }
 
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration class."""
-
+    MINIO_SERVER = "minio:9000"
+    MINIO_ACCESS_KEY = "VutZt4djr4TvVvU6e9ai"
+    MINIO_SECRET_KEY = "uCNf8TFkB6kAxMEBGPIJI9GoOXNLU2D7pFvigvM0"
+    MINIO_SECURE = False
+    MINIO_BUCKET = "grupo10"
     # SECRET_KEY = "your_dev_secret_key"
     # DB_USER = "postgres"
     # DB_PASSWORD = "KcooNtcHPuxNsQSXpQfMuUiVpmEFaeYm"

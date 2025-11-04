@@ -2,8 +2,13 @@
 # pylint: disable=unused-variable
 """Script de semillas para la base de datos."""
 
-from src.core import board
-from src.core import auth
+from src.core.services import board
+from src.core.services.auth.role_serv import create_role
+from src.core.services.auth.user_serv import create_user
+from src.core.services.auth.permission_serv import create_permission
+from src.core.entity.feature_flag import FeatureFlag
+from src.core.database import db
+from src.core.entity.site_image import SiteImage
 
 # from src.core.auth import feature_flag
 
@@ -11,66 +16,66 @@ from src.core import auth
 def run():
     """Función para ejecutar el script de semillas."""
 
-    permissions1 = auth.create_permission(
+    permissions1 = create_permission(
         permission_name="site_view", permission_description="Ver el Sitio"
     )
-    permissions2 = auth.create_permission(
+    permissions2 = create_permission(
         permission_name="site_edit", permission_description="Editar el Sitio"
     )
-    permissions3 = auth.create_permission(
+    permissions3 = create_permission(
         permission_name="site_delete", permission_description="Eliminar el Sitio"
     )
-    permissions4 = auth.create_permission(
+    permissions4 = create_permission(
         permission_name="site_create", permission_description="Crear el Sitio"
     )
-    permissions5 = auth.create_permission(
+    permissions5 = create_permission(
         permission_name="site_export_CSV", permission_description="Exportar CSV"
     )
-    permissions6 = auth.create_permission(
+    permissions6 = create_permission(
         permission_name="site_list", permission_description="Listar sitios"
     )
-    permissions7 = auth.create_permission(
+    permissions7 = create_permission(
         permission_name="user_view", permission_description="Ver Usuario"
     )
-    permissions8 = auth.create_permission(
+    permissions8 = create_permission(
         permission_name="user_list", permission_description="Listar Usuarios"
     )
-    permissions9 = auth.create_permission(
+    permissions9 = create_permission(
         permission_name="user_edit", permission_description="Editar Usuario"
     )
-    permissions10 = auth.create_permission(
+    permissions10 = create_permission(
         permission_name="user_delete", permission_description="Eliminar Usuario"
     )
-    permissions11 = auth.create_permission(
+    permissions11 = create_permission(
         permission_name="user_create", permission_description="Crear Usuario"
     )
-    permission12 = auth.create_permission(
+    permission12 = create_permission(
         permission_name="site_history_view",
         permission_description="Ver un Historico de Sitio",
     )
-    permission13 = auth.create_permission(
+    permission13 = create_permission(
         permission_name="site_history_list",
         permission_description="Listar Historicos de Sitio",
     )
-    permission14 = auth.create_permission(
+    permission14 = create_permission(
         permission_name="tag_view", permission_description="Ver Tag"
     )
-    permission15 = auth.create_permission(
+    permission15 = create_permission(
         permission_name="tag_list", permission_description="Listar Tags"
     )
-    permission16 = auth.create_permission(
+    permission16 = create_permission(
         permission_name="tag_create", permission_description="Crear Tag"
     )
-    permission17 = auth.create_permission(
+    permission17 = create_permission(
         permission_name="tag_edit", permission_description="Editar Tag"
     )
-    permission18 = auth.create_permission(
+    permission18 = create_permission(
         permission_name="tag_delete", permission_description="Eliminar Tag"
     )
 
-    role1 = auth.create_role(name="admin", description="Administrador")
-    role2 = auth.create_role(name="editor", description="Editor")
-    role3 = auth.create_role(name="public", description="Usuario Publico")
+    role1 = create_role(name="admin", description="Administrador")
+    role2 = create_role(name="editor", description="Editor")
+    role3 = create_role(name="public", description="Usuario Publico")
 
     role1.permission = [
         permissions1,
@@ -105,27 +110,27 @@ def run():
     ]
     role3.permission = []
 
-    user1 = auth.create_user(
+    user1 = create_user(
         user_name="admin",
         email="admin@mysite.com",
         password="adminpass",
         role=1,
         s_user=True,
     )
-    user2 = auth.create_user(
+    user2 = create_user(
         user_name="editor", email="editor@mysite.com", password="editorpass", role=2
     )
-    user3 = auth.create_user(
+    user3 = create_user(
         user_name="viewer", email="viewer@mysite.com", password="viewerpass", role=3
     )
-    user4 = auth.create_user(
+    user4 = create_user(
         user_name="supereditor",
         email="seditor@mysite.com",
         password="seditorpass",
         role=2,
         s_user=True,
     )
-    user5 = auth.create_user(
+    user5 = create_user(
         user_name="normaladmin",
         email="nadmin@mysite.com",
         password="nadminpass",
@@ -134,7 +139,7 @@ def run():
 
     # Crear 25 usuarios adicionales
     for i in range(1, 26):
-        auth.create_user(
+        create_user(
             user_name=f"user{i}",
             email=f"user{i}@mysite.com",
             password=f"user{i}pass",
@@ -640,21 +645,21 @@ def run():
     )
 
     flags = [
-        auth.FeatureFlag(
+        FeatureFlag(
             name="admin_maintenance_mode",
             description="Modo mantenimiento de administración",
             enabled=False,
             maintenance_message="El sistema de administración está en mantenimiento.",
             updated_by=user1.id_user,
         ),
-        auth.FeatureFlag(
+        FeatureFlag(
             name="portal_maintenance_mode",
             description="Modo mantenimiento de portal web",
             enabled=False,
             maintenance_message="El portal está en mantenimiento.",
             updated_by=user1.id_user,
         ),
-        auth.FeatureFlag(
+        FeatureFlag(
             name="reviews_enabled",
             description="Permitir nuevas reseñas",
             enabled=True,
@@ -662,7 +667,6 @@ def run():
             updated_by=user1.id_user,
         ),
     ]
-    from src.core.database import db
 
     db.session.add_all(flags)
     db.session.commit()

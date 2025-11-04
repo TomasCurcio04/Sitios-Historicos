@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Cambios - {{ sitio.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sitios.css') }}">
+    <style>
+        .historial-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .historial-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+        }
+        .historial-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 2rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .timeline-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 1.5rem;
+            width: 1rem;
+            height: 1rem;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        .action-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .action-CREATE {
+            background: #10b981;
+            color: white;
+        }
+        .action-UPDATE {
+            background: #3b82f6;
+            color: white;
+        }
+        .action-DELETE {
+            background: #ef4444;
+            color: white;
+        }
+        .action-VISIBILITY {
+            background: #f59e0b;
+            color: white;
+        }
+        .cambio-info {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .cambio-info-item {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .cambio-info-item strong {
+            color: #333;
+            margin-right: 0.5rem;
+            min-width: 120px;
+        }
+        .cambio-detail {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            margin-top: 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="historial-header">
+    <h1>📜 Historial de Cambios</h1>
+    <p><strong>Sitio:</strong> {{ sitio.name }}</p>
+    <p><strong>Ciudad:</strong> {{ sitio.city }} - {{ sitio.state_rel.name if sitio.state_rel else '' }}</p>
+</div>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flash-messages">
+      {% for category, msg in messages %}
+        <li class="{{ category }}">{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<!-- Botones de navegación -->
+<div class="btn-group">
+    <form action="{{ url_for('sites.index') }}" method="get">
+        <button type="submit" class="btn btn-create">← Volver al listado</button>
+    </form>
+    <form action="{{ url_for('sites.editar', site_id=sitio.id_site) }}" method="get">
+        <button type="submit" class="btn btn-edit">✏️ Editar sitio</button>
+    </form>
+</div>
+
+<!-- Timeline de cambios -->
+{% if cambios %}
+<div class="timeline">
+    {% for cambio in cambios %}
+    <div class="timeline-item">
+        <span class="action-badge action-{{ cambio.action_type }}">
+            {{ cambio.action_type }}
+        </span>
+        
+        <div class="cambio-info">
+            <div class="cambio-info-item">
+                <strong>👤 Usuario:</strong> {{ cambio.email }}
+                {% if cambio.user_rel %}
+                    {{ cambio.user_rel.email }}
+                {% else %}
+                    ID: {{ cambio.id_user }}
+                {% endif %}
+            </div>
+            
+            <div class="cambio-info-item">
+                <strong>📅 Fecha:</strong>
+                {{ cambio.date_action.strftime('%d/%m/%Y %H:%M:%S') if cambio.date_action else 'N/A' }}
+            </div>
+            
+            {% if cambio.action_detail %}
+            <div class="cambio-detail">
+                <strong>Detalles del cambio:</strong><br>
+                {{ cambio.action_detail }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Resumen -->
+<div style="text-align: center; margin-top: 3rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+    <p style="color: #666; margin: 0;">
+        <strong>Total de cambios registrados:</strong> {{ cambios|length }}
+    </p>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <h2>No hay cambios registrados</h2>
+    <p>Este sitio aún no tiene historial de modificaciones.</p>
+</div>
+{% endif %}
+
+</body>
+</html>
