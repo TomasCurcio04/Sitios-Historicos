@@ -73,25 +73,25 @@ def run():
         permission_name="tag_delete", permission_description="Eliminar Tag"
     )
     permission19 = create_permission(
-        permission_name="review_view", permission_name="Ver Reseña"
+        permission_name="review_view", permission_description="Ver Reseña"
     )
     permission20 = create_permission(
-        permission_name="review_list", permission_name="Listar Reseñas"
+        permission_name="review_list", permission_description="Listar Reseñas"
     )
     permission21 = create_permission(
-        permission_name="review_create", permission_name="Crear Reseña"
+        permission_name="review_create", permission_description="Crear Reseña"
     )
     permission22 = create_permission(
-        permission_name="review_edit", permission_name="Editar Reseña"
+        permission_name="review_edit", permission_description="Editar Reseña"
     )
     permission23 = create_permission(
-        permission_name="review_delete", permission_name="Eliminar Reseña"
+        permission_name="review_delete", permission_description="Eliminar Reseña"
     )
     permission24 = create_permission(
-        permission_name="review_moderate", permission_name="Moderar Reseña"
+        permission_name="review_moderate", permission_description="Moderar Reseña"
     )
     permission25 = create_permission(
-        permission_name="review_publish", permission_name="Publicar Reseña"
+        permission_name="review_publish", permission_description="Publicar Reseña"
     )
 
     role1 = create_role(name="admin", description="Administrador")
