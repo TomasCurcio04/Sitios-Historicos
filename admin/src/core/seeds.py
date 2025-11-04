@@ -72,10 +72,32 @@ def run():
     permission18 = create_permission(
         permission_name="tag_delete", permission_description="Eliminar Tag"
     )
+    permission19 = create_permission(
+        permission_name="review_view", permission_name="Ver Reseña"
+    )
+    permission20 = create_permission(
+        permission_name="review_list", permission_name="Listar Reseñas"
+    )
+    permission21 = create_permission(
+        permission_name="review_create", permission_name="Crear Reseña"
+    )
+    permission22 = create_permission(
+        permission_name="review_edit", permission_name="Editar Reseña"
+    )
+    permission23 = create_permission(
+        permission_name="review_delete", permission_name="Eliminar Reseña"
+    )
+    permission24 = create_permission(
+        permission_name="review_moderate", permission_name="Moderar Reseña"
+    )
+    permission25 = create_permission(
+        permission_name="review_publish", permission_name="Publicar Reseña"
+    )
 
     role1 = create_role(name="admin", description="Administrador")
     role2 = create_role(name="editor", description="Editor")
-    role3 = create_role(name="public", description="Usuario Publico")
+    role3 = create_role(name="moderator", description="Moderador")
+    role4 = create_role(name="public", description="Usuario Publico")
 
     role1.permission = [
         permissions1,
@@ -96,6 +118,9 @@ def run():
         permission16,
         permission17,
         permission18,
+        permission19,
+        permission20,
+        permission24,
     ]
     role2.permission = [
         permissions1,
@@ -108,7 +133,17 @@ def run():
         permission17,
         permission18,
     ]
-    role3.permission = []
+    role3.permission = [
+        permission19,
+        permission20,
+        permission24,
+    ]
+    role4.permission = [
+        permission21,
+        permission22,
+        permission23,
+        permission25,
+    ]
 
     user1 = create_user(
         user_name="admin",
