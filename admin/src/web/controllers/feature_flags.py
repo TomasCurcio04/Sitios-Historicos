@@ -1,22 +1,30 @@
 # pylint: disable=import-error
-"""Módulo controlador de feature flags"""
+"""Controlador de feature flags para configuración del sistema."""
 
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session
-from src.web.utils import admin_maintenance_required
-from src.core import auth
+from src.web.handlers.utils import admin_maintenance_required
+from src.core.services.auth.user_serv import buscar_usuario
+from src.core.services.auth.feature_flag_serv import (
+    list_feature_flags,
+    update_feature_flags,
+)
 
-feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/featureflags")
+feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/feature_flags")
 
 
 @feature_flags_bp.route("/", methods=["GET", "POST"], endpoint="feature_flags")
 @admin_maintenance_required
 def feature_flags():
-    """Vista del menu de feature flags."""
-    usuario = auth.buscar_usuario(session.get("user"))
+    """Gestiona la configuración de feature flags del sistema.
+    
+    GET: Muestra el formulario de configuración
+    POST: Actualiza las configuraciones de feature flags
+    """
+    usuario = buscar_usuario(session.get("user"))
     usuario_id = usuario.id_user if usuario else 1
 
     if request.method == "POST":
-        flags = auth.list_feature_flags()
+        flags = list_feature_flags()
         flags_data = {}
         admin_maintenance_disabled = False
         for flag in flags:
@@ -38,16 +46,19 @@ def feature_flags():
                 "enabled": new_enabled,
                 "maintenance_message": new_message,
             }
-        has_changes = auth.update_feature_flags(flags_data, usuario_id)
-        if has_changes:
-            if admin_maintenance_disabled:
-                flash("Mantenimiento desactivado", "success")
+        try:
+            has_changes = update_feature_flags(flags_data, usuario_id)
+            if has_changes:
+                if admin_maintenance_disabled:
+                    flash("Mantenimiento desactivado", "success")
+                else:
+                    flash("Feature flags actualizados correctamente", "success")
             else:
-                flash("Feature flags actualizados correctamente", "success")
-        else:
-            flash("No se detectaron cambios", "info")
+                flash("No se detectaron cambios", "info")
+        except ValueError as e:
+            flash(str(e), "error")
         return redirect(url_for("feature_flags.feature_flags"))
 
     # Obtener flags frescos para GET
-    flags = auth.list_feature_flags()
+    flags = list_feature_flags()
     return render_template("feature_flags.html", flags=flags)

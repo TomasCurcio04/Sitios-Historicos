@@ -20,19 +20,19 @@
                 </div>
 
                 <div class="topbar-right">
-                    {% if 'user' in session %}
+                    {% if session.get('user') %}
                     <div class="user-dropdown">
                         <button id="user-btn">
-                            {{ session['user'] }} &#9662;
+                            {{ session.get('user_name') or session.get('user') }} &#9662;
                         </button>
                         <div id="user-menu" class="user-dropdown-content">
-                            <a href="javascript:void(0)">Ver perfil</a>
+                            <a href="{{ url_for('mi_perfil.perfil') }}">Ver perfil</a>
                             <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
                         </div>
                     </div>
                     {% else %}
-                    <div class="login-button">
-                        <a href="{{ url_for('auth.login') }}" class="user-dropdown">Iniciar Sesión</a>
+                    <div class="user-dropdown">
+                        <span><a href="{{ url_for('auth.login') }}" style="color: #fff; text-decoration: none;">Iniciar Sesión</a></span>
                     </div>
                     {% endif %}
 
@@ -47,28 +47,28 @@
         <div class="container">
             <!-- Menú lateral -->
             <nav class="sidenav" id="sidenav">
-                <a href="{{ url_for('web.gestionsitioshistoricos') }}"
+                {% if is_authenticated() %}
+                <a href="{{ url_for('sites.index') }}"
                     class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
-                    <a href="{{ url_for('issues.index') }}"
-                        class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
-                        Gestión de sitios históricos
-                    </a>
-                    <a href="{{ url_for('web.validacion_propuesta') }}"
-                        class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
-                        Validación de propuestas
-                    </a>
-                    <a href="{{ url_for('web.moderacion_resenias') }}"
-                        class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
-                        Moderación de reseñas
-                    </a>
-                    <a href="{{ url_for('users.user_index') }}"
-                        class="{% if request.path.startswith('/gestion_usuarios') %}active{% endif %}">
-                        Gestión de usuarios
-                    </a>
-                    <a href="{{ url_for('feature_flags.feature_flags') }}"
-                        class="{% if request.path == '/feature_flags' %}active{% endif %}">
-                        Feature Flags
-                    </a>
+                    Gestión de sitios históricos
+                </a>
+                <a href="{{ url_for('web.validacion_propuesta') }}"
+                    class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
+                    Validación de propuestas
+                </a>
+                <a href="{{ url_for('web.moderacion_resenias') }}"
+                    class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
+                    Moderación de reseñas
+                </a>
+                <a href="{{ url_for('users.user_index') }}"
+                    class="{% if request.path.startswith('/gestion_usuarios') and not request.path.endswith('/perfil') %}active{% endif %}">
+                    Gestión de<br>usuarios
+                </a>
+                <a href="{{ url_for('feature_flags.feature_flags') }}"
+                    class="{% if request.path.startswith('/feature_flags') %}active{% endif %}">
+                    Feature Flags
+                </a>
+                {% endif %}
             </nav>
 
             <!-- Contenido dinámico -->
@@ -104,18 +104,20 @@
             sidenav.classList.toggle('open');
         });
 
-        // Dropdown usuario
+        // Dropdown usuario (solo si está logueado)
         const userBtn = document.getElementById('user-btn');
         const userMenu = document.getElementById('user-menu');
 
-        userBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
-        });
+        if (userBtn && userMenu) {
+            userBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+            });
 
-        document.addEventListener('click', () => {
-            userMenu.style.display = 'none';
-        });
+            document.addEventListener('click', () => {
+                userMenu.style.display = 'none';
+            });
+        }
     </script>
 </body>
 

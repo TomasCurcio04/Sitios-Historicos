@@ -38,7 +38,9 @@
 </table>
 
 <br>
-<a href="{{ url_for('tags.menu_tags') }}">Volver al menú</a>
+<form method="get">
+    <button type="submit" formaction="{{ url_for('tags.menu_tags') }}">Volver al menú</button>
+</form>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}

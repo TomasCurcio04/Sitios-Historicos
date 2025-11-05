@@ -1,192 +1,151 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>{% if sitio %}Editar Sitio{% else %}Crear Sitio{% endif %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 2rem;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 2rem;
-        }
-        .flash-messages {
-            list-style: none;
-            padding: 0;
-            margin: 0 auto 1.5rem;
-            max-width: 600px;
-        }
-        .flash-messages li {
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            text-align: center;
-        }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        form {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        label {
-            display: block;
-            margin-top: 1rem;
-            font-weight: 600;
-        }
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 0.5rem;
-            margin-top: 0.3rem;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 0.95rem;
-        }
-        textarea { resize: vertical; }
-        .btn-submit {
-            margin-top: 1.5rem;
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 8px;
-            background: #007bff;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-submit:hover { background: #0069d9; }
-        .btn-back {
-            margin-top: 1rem;
-            display: inline-block;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            background: #6c757d;
-            color: #fff;
-            font-weight: 600;
-        }
-        .btn-back:hover { background: #5a6268; }
-        #map {
-            height: 300px;
-            width: 100%;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-        .map-note {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 0.4rem;
-        }
-    </style>
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block title %}{% if sitio %}Editar Sitio{% else %}Crear Sitio{% endif %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-container label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+    }
+
+    .form-container input[type="text"],
+    .form-container input[type="number"],
+    .form-container textarea,
+    .form-container select {
+        width: 100%;
+        padding: 0.5rem;
+        margin-top: 0.3rem;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 0.95rem;
+    }
+
+    .form-container textarea {
+        resize: vertical;
+    }
+
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .map-note {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.4rem;
+    }
+
+    .form-help {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.3rem;
+        display: block;
+    }
+</style>
 
 <h1>{% if sitio %}Editar Sitio{% else %}Crear Sitio{% endif %}</h1>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <ul class="flash-messages">
-      {% for category, msg in messages %}
-        <li class="{{ category }}">{{ msg }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+<div class="form-container">
+    <form
+        action="{% if sitio %}{{ url_for('sites.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('sites.crear') }}{% endif %}"
+        method="post">
 
-<form action="{% if sitio %}{{ url_for('issues.actualizar', site_id=sitio.id_site) }}{% else %}{{ url_for('issues.crear') }}{% endif %}" method="post">
-    
-    <!-- Campo oculto para el ID del usuario -->
-    <input type="hidden" name="user_id" value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
-    
-    <!-- CORRECCIÓN: Este campo se llama "nombre" pero tenía id="short_description" -->
-    <label for="nombre">Nombre*</label>
-    <textarea id="nombre" name="nombre" rows="2">{{ sitio.nombre if sitio else '' }}</textarea>
-    <!--<input type="text" id="nombre" name="nombre" value="{{ sitio.name if sitio else '' }}" required>-->
+        <!-- Campo oculto para el ID del usuario -->
+        <input type="hidden" name="user_id"
+            value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
+
+        <!-- CORRECCIÓN: Este campo se llama "nombre" pero tenía id="short_description" -->
+        <label for="nombre">Nombre*</label>
+        <textarea id="nombre" name="nombre" rows="2">{{ sitio.nombre if sitio else '' }}</textarea>
+        <!--<input type="text" id="nombre" name="nombre" value="{{ sitio.name if sitio else '' }}" required>-->
 
 
-    <label for="short_description">Descripción breve</label>
-    <textarea id="short_description" name="short_description" rows="2">{{ sitio.short_description if sitio else '' }}</textarea>
+        <label for="short_description">Descripción breve</label>
+        <textarea id="short_description" name="short_description"
+            rows="2">{{ sitio.short_description if sitio else '' }}</textarea>
 
-    <label for="full_description">Descripción completa</label>
-    <textarea id="full_description" name="full_description" rows="4">{{ sitio.full_description if sitio else '' }}</textarea>
+        <label for="full_description">Descripción completa</label>
+        <textarea id="full_description" name="full_description"
+            rows="4">{{ sitio.full_description if sitio else '' }}</textarea>
 
-    <label for="city">Ciudad*</label>
-    <input type="text" id="city" name="city" value="{{ sitio.city if sitio else '' }}" required>
+        <label for="city">Ciudad*</label>
+        <input type="text" id="city" name="city" value="{{ sitio.city if sitio else '' }}" required>
 
-    <label for="state">Provincia/Estado*</label>
-    <select id="state" name="state" required>
-        <option value="">Selecciona un estado</option>
-        {% for estado in estados %}
-            <option value="{{ estado.id_state }}"
-                {% if sitio and sitio.state == estado.id_state %}selected{% endif %}>
+        <label for="state">Provincia/Estado*</label>
+        <select id="state" name="state" required>
+            <option value="">Selecciona un estado</option>
+            {% for estado in estados %}
+            <option value="{{ estado.id_state }}" {% if sitio and sitio.state==estado.id_state %}selected{% endif %}>
                 {{ estado.name }}
             </option>
-        {% endfor %}
-    </select>
+            {% endfor %}
+        </select>
 
-    <label for="latitude">Latitud</label>
-    <input type="number" step="any" id="latitude" name="latitude" value="{{ sitio.latitude if sitio else '' }}">
+        <label for="latitude">Latitud</label>
+        <input type="number" step="any" id="latitude" name="latitude" value="{{ sitio.latitude if sitio else '' }}">
 
-    <label for="longitude">Longitud</label>
-    <input type="number" step="any" id="longitude" name="longitude" value="{{ sitio.longitude if sitio else '' }}">
+        <label for="longitude">Longitud</label>
+        <input type="number" step="any" id="longitude" name="longitude" value="{{ sitio.longitude if sitio else '' }}">
 
-    <div id="map"></div>
-    <p class="map-note">Haz clic en el mapa para seleccionar la ubicación del sitio histórico.</p>
+        <div id="map"></div>
+        <p class="map-note">Haz clic en el mapa para seleccionar la ubicación del sitio histórico.</p>
 
-    <label for="conservation_state">Estado de conservación</label>
-    <input type="text" id="conservation_state" name="conservation_state" value="{{ sitio.conservation_state if sitio else '' }}">
+        <label for="conservation_state">Estado de conservación</label>
+        <input type="text" id="conservation_state" name="conservation_state"
+            value="{{ sitio.conservation_state if sitio else '' }}">
 
-    <label for="inauguration_year">Año de inauguración</label>
-    <input type="number" id="inauguration_year" name="inauguration_year" value="{{ sitio.inauguration_year if sitio else '' }}">
+        <label for="inauguration_year">Año de inauguración</label>
+        <input type="number" id="inauguration_year" name="inauguration_year"
+            value="{{ sitio.inauguration_year if sitio else '' }}">
 
-    <label for="category">Categoría*</label>
-    <select id="category" name="category" required>
-        <option value="">Selecciona una categoría</option>
-        {% for categoria in categorias %}
-            <option value="{{ categoria.id_category }}"
-                {% if sitio and sitio.category == categoria.id_category %}selected{% endif %}>
+        <label for="category">Categoría*</label>
+        <select id="category" name="category" required>
+            <option value="">Selecciona una categoría</option>
+            {% for categoria in categorias %}
+            <option value="{{ categoria.id_category }}" {% if sitio and sitio.category==categoria.id_category
+                %}selected{% endif %}>
                 {{ categoria.name }}
             </option>
-        {% endfor %}
-    </select>
+            {% endfor %}
+        </select>
 
-    <label for="is_visible">Visible</label>
-    <select id="is_visible" name="is_visible">
-        <option value="1" {% if sitio and sitio.is_visible %}selected{% endif %}>Sí</option>
-        <option value="0" {% if sitio and not sitio.is_visible %}selected{% endif %}>No</option>
-    </select>
+        <label for="is_visible">Visible</label>
+        <select id="is_visible" name="is_visible">
+            <option value="1" {% if sitio and sitio.is_visible %}selected{% endif %}>Sí</option>
+            <option value="0" {% if sitio and not sitio.is_visible %}selected{% endif %}>No</option>
+        </select>
 
-    <label for="tags">Etiquetas*</label>
-    <select id="tags" name="tags" multiple required>
-        {% for etiqueta in etiquetas %}
-            <option value="{{ etiqueta.id_tag }}"
-                {% if sitio and etiqueta in sitio.tag %}selected{% endif %}>
+        <label for="tags">Etiquetas*</label>
+        <select id="tags" name="tags" multiple required>
+            {% for etiqueta in etiquetas %}
+            <option value="{{ etiqueta.id_tag }}" {% if sitio and etiqueta in sitio.tag %}selected{% endif %}>
                 {{ etiqueta.name }}
             </option>
-        {% endfor %}
-    </select>
-    <small>Puedes seleccionar múltiples etiquetas con Ctrl (Windows) o Cmd (Mac).</small>
+            {% endfor %}
+        </select>
+        </br>
+        <small class="form-help">Puedes seleccionar múltiples etiquetas con Ctrl (Windows) o Cmd (Mac).</small>
+        </br>
+        <button type="submit" class="btn-primary-action">{% if sitio %}Actualizar{% else %}Crear{% endif %}</button>
+    </form>
+</div>
 
-    <button type="submit" class="btn-submit">{% if sitio %}Actualizar{% else %}Crear{% endif %}</button>
-</form>
-
-<div style="text-align:center;">
-    <a href="{{ url_for('issues.index') }}" class="btn-back">← Volver al listado</a>
+<div style="text-align:center; margin-top: 1rem;">
+    <a href="{{ url_for('sites.index') }}" class="btn-secondary-action">← Volver al listado</a>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -210,7 +169,7 @@
     }
 
     // Evento de clic en el mapa
-    map.on('click', function(e) {
+    map.on('click', function (e) {
         const { lat, lng } = e.latlng;
 
         // Actualizar inputs
@@ -226,5 +185,4 @@
     });
 </script>
 
-</body>
-</html>
+{% endblock %}

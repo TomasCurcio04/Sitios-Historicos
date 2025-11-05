@@ -32,7 +32,10 @@
     </tbody>
 </table>
 
-<a href="{{ url_for('tags.menu_tags') }}">Volver al menú</a>
+<form method="get">
+    <button type="submit" formaction="{{ url_for('tags.menu_tags') }}">Volver al menú</button>
+</form>
+
 {% endblock %}
 
 

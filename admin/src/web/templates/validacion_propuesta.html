@@ -6,5 +6,24 @@
 <h1>Validación de Propuestas</h1>
 <p>Aquí podrás revisar y aprobar/rechazar propuestas enviadas por los usuarios.</p>
 
-<a href="{{ url_for('web.home') }}" class="btn btn-primary">Volver al Inicio</a>
+<div class="table-scroll-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Propuesta</th>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="5" class="text-center">No hay propuestas pendientes</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<a href="{{ url_for('web.home') }}" class="btn-secondary-action">Volver al Inicio</a>
 {% endblock %}

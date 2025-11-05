@@ -12,6 +12,7 @@ psycopg2-binary = "^2.9.10"
 flask-sqlalchemy-lite = "^0.1.0"
 flask-session = "^0.8.0"
 flask-bcrypt = "^1.0.1"
+minio = "^7.2.18"
 
 
 [tool.poetry.group.test.dependencies]
