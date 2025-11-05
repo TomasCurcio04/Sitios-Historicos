@@ -8,7 +8,7 @@ from src.core.services.auth.role_serv import list_roles
 from src.core.entity.users import Users
 import re
 from src.web.handlers.utils import permissions_required
-from admin.src.core.services.auth.user_serv.user_validador import UserValidator
+from src.core.services.auth.user_serv.user_validador import UserValidator
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
 # Esto nos dará endpoints como 'users.user_index', 'users.user_new', etc.
