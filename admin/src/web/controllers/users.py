@@ -3,7 +3,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
-from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario, list_roles
+from src.core.services.auth.user_serv import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario
+from src.core.services.auth.role_serv import list_roles
 from src.core.entity.users import Users
 import re
 from src.web.handlers.utils import permissions_required
@@ -135,10 +136,10 @@ def user_create():
 @permissions_required("users", ["user_delete"])
 def user_delete(user_id):
     """Desactiva un usuario (eliminación lógica)."""
-    email = request.form.get("email")
-    if email:
+    user = obtener_usuario_por_id(user_id)
+    if user:
         # Llama a la función para eliminar el usuario de la DB
-        eliminar_usuario(email)
+        eliminar_usuario(user_id)
 
     # Redirige de vuelta a la lista de usuarios.
     return redirect(url_for("users.user_index"))

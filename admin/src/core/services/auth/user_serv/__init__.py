@@ -18,27 +18,15 @@ def listar_usuarios(
     search_email=None,
     sort_order="asc",
 ):
-    """Lista usuarios con filtros y paginación.
-
-    Args:
-        page: Número de página
-        per_page: Usuarios por página
-        is_active: Filtro por estado activo
-        rol: Filtro por nombre de rol
-        search_email: Búsqueda por email
-        sort_order: Orden de clasificación (asc/desc)
-
-    Returns:
-        Diccionario con usuarios, total, páginas y metadatos
-    """
+    """Lista usuarios aplicando solo un criterio."""
 
     query = db.session.query(Users)
 
     if is_active is not None:
         query = query.filter(Users.active == is_active)
 
-    if rol is not None:
-        query = query.join(Users.rol_rel).filter(Role.name == rol)
+    if rol:
+        query = query.outerjoin(Users.rol_rel).filter(Role.name == rol)
 
     if search_email:
         query = query.filter(Users.email.ilike(f"%{search_email}%"))
@@ -47,19 +35,16 @@ def listar_usuarios(
         query = query.order_by(Users.date_create.desc())
     else:
         query = query.order_by(Users.date_create.asc())
-
+    
     total = query.count()
-    items = (
-        query.order_by(Users.date_create.asc())
-        .offset((page - 1) * per_page)
-        .limit(per_page)
-        .all()
-    )
-
+    items = query.offset((page - 1) * per_page).limit(per_page).all()
     pages = math.ceil(total / per_page)
+
+    roles = db.session.query(Role).order_by(Role.name).all()
 
     return {
         "items": items,
+        "roles": roles,
         "total": total,
         "page": page,
         "per_page": per_page,
@@ -118,11 +103,32 @@ def create_user(**kwargs):
     """
     if "email" in kwargs and buscar_usuario(kwargs["email"]):
         return "El email ya está registrado"
+    if "user_name" in kwargs and buscar_username(kwargs["user_name"]):
+        return "El nombre de usuario ya está registrado"
     if "password" in kwargs:
         kwargs["password"] = bcrypt.generate_password_hash(kwargs["password"]).decode(
             "utf-8"
         )
-    new_user = Users(**kwargs)
+
+    role_id = kwargs.get("rol")
+    try:
+        role_id = int(role_id)
+    except (TypeError, ValueError):
+        return "Debes seleccionar un rol válido2"
+    role_obj = db.session.get(Role, role_id)
+    if not role_obj:
+        return "Debes seleccionar un rol válido3"
+
+    new_user = Users(
+        email=kwargs["email"],
+        user_name=kwargs["user_name"],
+        password=kwargs["password"],
+        s_user=kwargs.get("s_user", False),
+        active=kwargs.get("active", True),
+        rol_rel = role_obj,
+        role = role_id
+    )
+    
     db.session.add(new_user)
 
     try:
@@ -133,7 +139,7 @@ def create_user(**kwargs):
         return "Error al crear el usuario"
 
 
-def eliminar_usuario(email):
+def eliminar_usuario(user_id):
     """Desactiva un usuario (eliminación lógica).
 
     Args:
@@ -142,7 +148,8 @@ def eliminar_usuario(email):
     Returns:
         Usuario desactivado o None si no existe
     """
-    user = buscar_usuario(email)
+    print("Eliminando usuario con ID:", user_id)
+    user = obtener_usuario_por_id(user_id)
     if user:
         user.active = False
         db.session.commit()
@@ -150,7 +157,7 @@ def eliminar_usuario(email):
     return None
 
 
-def actualizar_usuario(email, **kwargs):
+def actualizar_usuario(user_id, **kwargs):
     """Actualiza los datos de un usuario.
 
     Args:
@@ -160,18 +167,30 @@ def actualizar_usuario(email, **kwargs):
     Returns:
         Tupla (exito, mensaje)
     """
-    user = buscar_usuario(email)
+    user = obtener_usuario_por_id(user_id)
 
     if not user:
         return False, "Usuario no encontrado"
+    
+    if "user_name" in kwargs:
+        existing_user = buscar_username(kwargs["user_name"])
+        if existing_user and existing_user.id_user != user_id:
+            return False, "El nombre de usuario ya está registrado"
 
     user.user_name = kwargs.get("user_name", user.user_name)
-    user.role = kwargs.get("role", user.role)
     user.s_user = kwargs.get("s_user", user.s_user)
     user.modify = datetime.now(timezone.utc)
 
+    role_id = kwargs.get("role")
+    if role_id is not None:
+        role = db.session.get(Role, role_id)
+        if not role:
+            return False, "Rol no encontrado"
+        user.rol_rel = role
+
     db.session.commit()
     return True, "Usuario actualizado."
+
 
 
 def obtener_usuario_por_id(usuario_id):
@@ -201,3 +220,14 @@ def usuario_actual():
     except RuntimeError:
         # Fuera del contexto de request
         return None
+    
+def buscar_username(username):
+    """Busca un usuario por su nombre de usuario.
+    
+    Args:
+        username: Nombre de usuario
+    Returns:
+        Usuario encontrado o None
+    """
+    
+    return db.session.query(Users).filter_by(user_name=username).first()
