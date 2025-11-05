@@ -32,10 +32,10 @@ class ProductionConfig(BaseConfig):
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration class."""
-    MINIO_SERVER = "minio:9000"
+    MINIO_SERVER = "minio.proyecto2025.linti.unlp.edu.ar" # <-- CAMBIADO
     MINIO_ACCESS_KEY = "VutZt4djr4TvVvU6e9ai"
     MINIO_SECRET_KEY = "uCNf8TFkB6kAxMEBGPIJI9GoOXNLU2D7pFvigvM0"
-    MINIO_SECURE = False
+    MINIO_SECURE = True # <-- CAMBIADO
     MINIO_BUCKET = "grupo10"
     # SECRET_KEY = "your_dev_secret_key"
     # DB_USER = "postgres"
