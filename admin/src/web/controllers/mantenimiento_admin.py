@@ -85,6 +85,21 @@ def upload_image():
             flash('Error: Debe seleccionar un sitio histórico.', 'danger')
             return redirect(request.url)
 
+        # --- ¡NUEVA LÓGICA DE PORTADA ÚNICA! ---
+        # Si el usuario marcó 'es_portada' en el formulario...
+        if form_es_portada:
+            # 1. Buscamos la portada actual (si existe) para ese sitio
+            portada_actual = db.session.query(SiteImage).filter_by(
+                id_site=form_sitio_id, 
+                is_thumbnail=True
+            ).first()
+            
+            # 2. Si existe, le quitamos la marca de portada
+            if portada_actual:
+                portada_actual.is_thumbnail = False
+                db.session.add(portada_actual)
+        # --- FIN LÓGICA PORTADA ÚNICA ---
+
         # 3. Preparar el archivo para MinIO (esto no cambia)
         extension = file.filename.rsplit('.', 1)[-1].lower()
         object_name = f"public/sites/{form_sitio_id}/{uuid.uuid4()}.{extension}"

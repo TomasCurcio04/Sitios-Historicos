@@ -120,6 +120,7 @@
     <table class="admin-table">
         <thead>
             <tr>
+                <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Provincia</th>
                 <th>Ciudad</th>
@@ -130,41 +131,48 @@
             </tr>
         </thead>
         <tbody>
-            {% for r in results %}
-            <tr>
-                <td>{{ r.name }}</td>
-                <td>{{ r.state or "" }}</td>
-                <td>{{ r.city }}</td>
-                <td>{{ r.conservation_state }}</td>
-                <td>{% if r.is_visible %}Visible{% else %}No visible{% endif %}</td>
-                <td>{{ r.date_registered[:10] if r.date_registered else "" }}</td>
-                <td>
-                    <div class="acciones">
-                        <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
-                            <button type="submit" class="btn btn-edit">Editar</button>
-                        </form>
+    {% for r in results %}
+    <tr>
+        <td>
+            {% if r.portada_url %}
+                <img src="{{ r.portada_url }}" alt="Portada de {{ r.name }}" style="width: 100px; height: auto; border-radius: 4px;">
+            {% else %}
+                <span style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+            {% endif %}
+        </td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.state or "" }}</td>
+        <td>{{ r.city }}</td>
+        <td>{{ r.conservation_state }}</td>
+        <td>{% if r.is_visible %}Visible{% else %}No visible{% endif %}</td>
+        <td>{{ r.date_registered[:10] if r.date_registered else "" }}</td>
+        <td>
+            <div class="acciones">
+                <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
+                    <button type="submit" class="btn btn-edit">Editar</button>
+                </form>
 
-                        {% if usuario_es_admin %}
-                        <button type="button" class="btn btn-edit" onclick="showHistoryModal('{{ r.id }}')">
-                            Historial de cambios
-                        </button>
-                        {% endif %}
+                
+                <button type="button" class="btn btn-edit" onclick="showHistoryModal('{{ r.id }}')">
+                     Historial de cambios
+                </button>
+                
 
-                        {% if usuario_es_admin %}
-                        <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
-                            <input type="hidden" name="user_id"
-                                value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
-                            <button type="submit" class="btn btn-delete"
-                                onclick="return confirm('¿Seguro que querés ar este sitio?')">
-                                Eliminar
-                            </button>
-                        </form>
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+                {% if usuario_es_admin %}
+                <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
+                    <input type="hidden" name="user_id"
+                        value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
+                    <button type="submit" class="btn btn-delete"
+                        onclick="return confirm('¿Seguro que querés ar este sitio?')">
+                        Eliminar
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
     </table>
 </div>
 
@@ -242,6 +250,26 @@
          * Es llamada por el atributo 'onclick' del botón.
          */
         function showHistoryModal(siteId) {
+            
+            // --- ¡LÓGICA DE PERMISOS! ---
+            // 1. Obtenemos el rol que pasamos desde el controlador
+            
+            
+            const userRole = {{ user_role | default(0) | tojson }};
+
+            // 2. Definimos los roles permitidos (de seeds.py: 1=admin, 2=editor)
+            const isAdmin = (userRole === 1);
+            const isEditor = (userRole === 2);
+
+            // 3. Si NO es admin Y NO es editor...
+            if (!isAdmin && !isEditor) {
+                // Mostramos el alerta y detenemos la función
+                alert('No tiene permiso de ver el historial de modificaciones');
+                return; // <-- Detiene la ejecución
+            }
+            // --- FIN DE LA LÓGICA DE PERMISOS ---
+
+
             // 1. Muestra "Cargando..." y hace visible el modal
             modalContent.innerHTML = '<p>Cargando...</p>';
             modal.style.display = 'block';
