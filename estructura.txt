@@ -1,10 +1,8 @@
-Generando estructura de: /c/proyectosweb/proyecto_de_software_unlp/code
-Fecha: Mon Oct 27 23:49:16     2025
+Generando estructura de: /c/ProyectosWeb/proyecto_de_software_unlp/code
+Fecha: do.,  2 de nov. de 2025 23:35:59
 ----------------------------------------
 
-📄 README.md
 📁 admin/
-    📄 README.md
     📁 __pycache__/
         📄 app.cpython-313.pyc
     📄 app.py
@@ -15,6 +13,7 @@ Fecha: Mon Oct 27 23:49:16     2025
     📄 poetry.lock
     📄 poetry.toml
     📄 pyproject.toml
+    📄 README.md
     📁 src/
         📁 core/
             📄 __init__.py
@@ -48,6 +47,18 @@ Fecha: Mon Oct 27 23:49:16     2025
             📄 database.py
             📁 entity/
                 📄 __init__.py
+                📁 __pycache__/
+                    📄 __init__.cpython-313.pyc
+                    📄 category.cpython-313.pyc
+                    📄 feature_flag.cpython-313.pyc
+                    📄 permission.cpython-313.pyc
+                    📄 role.cpython-313.pyc
+                    📄 site.cpython-313.pyc
+                    📄 site_history.cpython-313.pyc
+                    📄 state.cpython-313.pyc
+                    📄 tag.cpython-313.pyc
+                    📄 user_validador.cpython-313.pyc
+                    📄 users.cpython-313.pyc
                 📄 category.py
                 📄 feature_flag.py
                 📄 permission.py
@@ -56,28 +67,47 @@ Fecha: Mon Oct 27 23:49:16     2025
                 📄 site_history.py
                 📄 state.py
                 📄 tag.py
+                📄 user_validador.py
                 📄 users.py
             📄 seeds.py
             📁 services/
                 📁 auth/
+                    📁 __pycache__/
+                        📄 bcrypt.cpython-313.pyc
                     📄 bcrypt.py
                     📁 feature_flag_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
                     📁 permission_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
                     📁 role_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
                     📁 user_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
                     📄 utils.py
                 📁 board/
                     📄 __init__.py
+                    📁 __pycache__/
+                        📄 __init__.cpython-313.pyc
                     📁 busqueda_avanzada_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
                     📁 site_history_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
                     📁 tag_serv/
                         📄 __init__.py
+                        📁 __pycache__/
+                            📄 __init__.cpython-313.pyc
             📁 tags/
                 📁 __pycache__/
                     📄 tags.cpython-313.pyc
@@ -86,6 +116,7 @@ Fecha: Mon Oct 27 23:49:16     2025
             📁 __pycache__/
                 📄 __init__.cpython-313.pyc
                 📄 config.cpython-313.pyc
+                📄 storage.cpython-313.pyc
                 📄 utils.cpython-313.pyc
             📄 config.py
             📁 controllers/
@@ -97,12 +128,15 @@ Fecha: Mon Oct 27 23:49:16     2025
                     📄 feature_flags.cpython-313.pyc
                     📄 issues.cpython-313.pyc
                     📄 mantenimiento_admin.cpython-313.pyc
+                    📄 mi_perfil.cpython-313.pyc
+                    📄 sites.cpython-313.pyc
                     📄 tags.cpython-313.pyc
                     📄 users.cpython-313.pyc
+                    📄 web.cpython-313.pyc
                 📄 auth.py
-                📄 busqueda_avanzada.py
                 📄 feature_flags.py
                 📄 mantenimiento_admin.py
+                📄 mi_perfil.py
                 📄 sites.py
                 📄 tags.py
                 📄 users.py
@@ -111,13 +145,13 @@ Fecha: Mon Oct 27 23:49:16     2025
                 📁 __pycache__/
                     📄 auth.cpython-313.pyc
                     📄 error.cpython-313.pyc
+                    📄 utils.cpython-313.pyc
                 📄 auth.py
                 📄 error.py
                 📄 utils.py
+            📄 storage.py
             📁 templates/
                 📄 bajo_mantenimiento.html
-                📁 busqueda/
-                    📄 index.html
                 📄 error.html
                 📄 feature_flags.html
                 📄 gestion_usuarios.html
@@ -137,19 +171,19 @@ Fecha: Mon Oct 27 23:49:16     2025
                     📄 index.html
                 📁 tags/
                     📄 _busqueda_orden.html
-                    📄 actualizar.html
                     📄 crear.html
+                    📄 editar.html
                     📄 eliminar.html
                     📄 listar.html
                     📄 menu.html
                 📄 user_edit.html
                 📄 user_new.html
+                📄 user_profile.html
                 📄 validacion_propuesta.html
             📄 utils.py
     📁 static/
         📄 logo.png
         📄 normalize.css
-        📄 sitios.css
         📄 styles.css
     📁 test/
         📁 __pycache__/
@@ -173,4 +207,5 @@ Fecha: Mon Oct 27 23:49:16     2025
 📄 estructura.txt
 📄 list_structure.sh
 📁 portal/
+📄 README.md
 
