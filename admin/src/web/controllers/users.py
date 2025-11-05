@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from src.core.auth.__init__ import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario, list_roles
 from src.core.entity.users import Users
 import re
-from src.web.handlers.auth import admin_required
+from src.web.handlers.utils import permissions_required
 from src.core.entity.user_validador import UserValidator
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
@@ -16,7 +16,7 @@ user_bp = Blueprint("users", __name__, url_prefix="/gestion_usuarios")
 
 # Ruta para LISTAR usuarios
 @user_bp.route("/", methods=["GET"])
-@admin_required
+@permissions_required("users", ["user_list"])
 def user_index():
     """Lista usuarios con filtros, paginación y ordenamiento.
 
@@ -75,7 +75,7 @@ def user_index():
 
 # Ruta para el formulario de CREAR nuevo usuario
 @user_bp.route("/new", methods=["GET"])
-@admin_required
+@permissions_required("users", ["user_create", "user_edit"])
 def user_new():
     """Muestra el formulario para crear un nuevo usuario."""
     # Aquí irá el formulario real de creación
@@ -86,7 +86,7 @@ def user_new():
 
 
 @user_bp.route("/create", methods=["POST"])
-@admin_required
+@permissions_required("users", ["user_create"])
 def user_create():
 
     # 1. Ejecutar el Validador (Maneja Formato, Limpieza y Conversión)
@@ -132,7 +132,7 @@ def user_create():
 
 # Ruta para PROCESAR la eliminación de un usuario
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
-@admin_required
+@permissions_required("users", ["user_delete"])
 def user_delete(user_id):
     """Desactiva un usuario (eliminación lógica)."""
     email = request.form.get("email")
@@ -145,7 +145,7 @@ def user_delete(user_id):
 
 
 @user_bp.route("/<int:user_id>/edit", methods=["GET"])
-@admin_required
+@permissions_required("users", ["user_edit", "user_read"])
 def user_edit(user_id):
     user = obtener_usuario_por_id(user_id)
 
@@ -153,10 +153,14 @@ def user_edit(user_id):
         flash("Usuario no encontrado", "error")
         return redirect(url_for("users.user_index"))
 
-    return render_template("user_edit.html", user=user)
+    roles = list_roles()
+
+    current_rol = user.rol_rel.name if user.rol_rel else None
+
+    return render_template("user_edit.html", user=user, roles=roles, current_rol=current_rol)
 
 @user_bp.route("/<int:user_id>/update", methods=["POST"])
-@admin_required
+@permissions_required("users", ["user_edit"])
 def user_update(user_id):
     """Procesa los datos y actualiza el usuario."""
 

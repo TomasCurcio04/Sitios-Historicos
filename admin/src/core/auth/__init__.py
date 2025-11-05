@@ -9,7 +9,7 @@ from sqlalchemy import desc
 from src.core.database import db
 from src.core.entity.role import Role
 from src.core.entity.permission import Permission
-from src.core.services.auth import bcrypt
+from src.core.services.auth.bcrypt import bcrypt
 
 ####Funciones de usuarios###
 def listar_usuarios(
