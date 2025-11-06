@@ -8,7 +8,7 @@ from src.core.services.auth.role_serv import list_roles
 from src.core.entity.users import Users
 import re
 from src.web.handlers.utils import permissions_required
-from src.core.entity.user_validador import UserValidator
+from src.core.services.auth.user_serv.user_validador import UserValidator
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
 # Esto nos dará endpoints como 'users.user_index', 'users.user_new', etc.
@@ -17,7 +17,7 @@ user_bp = Blueprint("users", __name__, url_prefix="/gestion_usuarios")
 
 # Ruta para LISTAR usuarios
 @user_bp.route("/", methods=["GET"])
-@permissions_required("users", ["user_list"])
+@permissions_required("user", ["list"])
 def user_index():
     """Lista usuarios con filtros, paginación y ordenamiento.
 
@@ -76,7 +76,7 @@ def user_index():
 
 # Ruta para el formulario de CREAR nuevo usuario
 @user_bp.route("/new", methods=["GET"])
-@permissions_required("users", ["user_create", "user_edit"])
+@permissions_required("user", ["create", "edit"])
 def user_new():
     """Muestra el formulario para crear un nuevo usuario."""
     # Aquí irá el formulario real de creación
@@ -87,7 +87,7 @@ def user_new():
 
 
 @user_bp.route("/create", methods=["POST"])
-@permissions_required("users", ["user_create"])
+@permissions_required("user", ["create"])
 def user_create():
 
     # 1. Ejecutar el Validador (Maneja Formato, Limpieza y Conversión)
@@ -133,7 +133,7 @@ def user_create():
 
 # Ruta para PROCESAR la eliminación de un usuario
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
-@permissions_required("users", ["user_delete"])
+@permissions_required("user", ["delete"])
 def user_delete(user_id):
     """Desactiva un usuario (eliminación lógica)."""
     user = obtener_usuario_por_id(user_id)
@@ -146,7 +146,7 @@ def user_delete(user_id):
 
 
 @user_bp.route("/<int:user_id>/edit", methods=["GET"])
-@permissions_required("users", ["user_edit", "user_read"])
+@permissions_required("user", ["edit", "view"])
 def user_edit(user_id):
     user = obtener_usuario_por_id(user_id)
 
@@ -161,7 +161,7 @@ def user_edit(user_id):
     return render_template("user_edit.html", user=user, roles=roles, current_rol=current_rol)
 
 @user_bp.route("/<int:user_id>/update", methods=["POST"])
-@permissions_required("users", ["user_edit"])
+@permissions_required("user", ["edit"])
 def user_update(user_id):
     """Procesa los datos y actualiza el usuario."""
 
