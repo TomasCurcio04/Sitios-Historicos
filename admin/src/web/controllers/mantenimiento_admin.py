@@ -80,17 +80,19 @@ def upload_image():
             minio_bucket=bucket_name
         )
 
-    # --- LÓGICA POST (Subir imagen) ---
+   # --- LÓGICA POST ---
     try:
-        # 1. Obtener datos del formulario (esto no cambia)
+        # 1. Obtener datos del formulario
         file = request.files.get('imagen')
-        form_sitio_id = request.form.get('sitio_id') # Lo recibimos del form
+        form_sitio_id = request.form.get('sitio_id') 
         form_titulo = request.form.get('titulo')
         form_descripcion = request.form.get('descripcion')
         form_orden = int(request.form.get('orden', 0))
         form_es_portada = 'es_portada' in request.form 
 
-        # 2. Validaciones (esto no cambia)
+        # 2. VALIDACIONES (¡Nuevas validaciones añadidas aquí!)
+        
+        # 2.A: Validaciones de Formulario Básico
         if not file or file.filename == '':
             flash('Error: No se seleccionó ningún archivo.', 'danger')
             return redirect(request.url)
@@ -99,7 +101,35 @@ def upload_image():
             flash('Error: Debe seleccionar un sitio histórico.', 'danger')
             return redirect(request.url)
 
-        # --- ¡NUEVA LÓGICA DE PORTADA ÚNICA! ---
+        # 2.B: NUEVA VALIDACIÓN (Límite de 10 imágenes)
+        image_count = db.session.query(SiteImage).filter_by(id_site=form_sitio_id).count()
+        if image_count >= 10:
+            flash(f'Error: El sitio ya tiene {image_count} imágenes (límite de 10).', 'danger')
+            return redirect(request.url)
+
+        # 2.C: NUEVA VALIDACIÓN (Formato)
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'webp'}
+        extension = file.filename.rsplit('.', 1)[-1].lower()
+        if '.' not in file.filename or extension not in ALLOWED_EXTENSIONS:
+            flash('Error: Formato no permitido. Solo se aceptan: JPG, PNG, WEBP.', 'danger')
+            return redirect(request.url)
+
+        # 2.D: NUEVA VALIDACIÓN (Tamaño)
+        # Leemos el archivo UNA SOLA VEZ para validar tamaño y luego subirlo
+        file_data = file.read()
+        file_size = len(file_data)
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+        
+        if file_size > MAX_FILE_SIZE:
+            flash('Error: El archivo es demasiado grande (Máximo 5 MB).', 'danger')
+            return redirect(request.url)
+            
+        # Rebobinamos el archivo para que MinIO pueda leerlo desde el principio
+        file.seek(0) 
+
+        # --- Fin de las validaciones ---
+
+        # 3. Lógica de Portada Única (sin cambios)
         if form_es_portada:
             portada_actual = db.session.query(SiteImage).filter_by(
                 id_site=form_sitio_id, 
@@ -108,28 +138,22 @@ def upload_image():
             if portada_actual:
                 portada_actual.is_thumbnail = False
                 db.session.add(portada_actual)
-        # --- FIN LÓGICA PORTADA ÚNICA ---
 
-        # 3. Preparar el archivo para MinIO (esto no cambia)
-        extension = file.filename.rsplit('.', 1)[-1].lower()
+        # 4. Preparar el archivo para MinIO (Nombre)
         object_name = f"public/sites/{form_sitio_id}/{uuid.uuid4()}.{extension}"
         
-        file_data = file.read()
-        file_size = len(file_data)
-        file.seek(0) 
-        
-       # 4. Subir a MinIO
+        # 5. Subir a MinIO
         bucket_name = current_app.config['MINIO_BUCKET']
         
         current_app.storage.put_object(
             bucket_name,
             object_name,
-            data=file,
-            length=file_size,
+            data=file, # Pasamos el objeto 'file' rebobinado
+            length=file_size, # Usamos el 'file_size' que ya calculamos
             content_type=file.content_type
         )
         
-        # 5. Mapear datos al modelo
+        # 6. Mapear datos al modelo
         nueva_imagen = SiteImage(
             id_site=form_sitio_id,
             file_path=object_name,
@@ -139,7 +163,7 @@ def upload_image():
             is_thumbnail=form_es_portada
         )
         
-        # 6. Guardar en la Base de Datos
+        # 7. Guardar en la Base de Datos
         db.session.add(nueva_imagen)
         db.session.commit()
 
