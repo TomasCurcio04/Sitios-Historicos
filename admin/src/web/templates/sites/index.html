@@ -90,11 +90,11 @@
     <!-- Botones secundarios -->
     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
         <form action="{{ url_for('sites.nuevo') }}" method="get" style="display:inline;">
-            <button type="submit" class="btn-primary-action">+ Crear Nuevo Sitio</button>
+            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_create">+ Crear Nuevo Sitio</button>
         </form>
 
         <form action="{{ url_for('tags.menu_tags') }}" method="get">
-            <button type="submit" class="btn-primary-action">Gestionar Etiquetas</button>
+            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="tag_list">Gestionar Etiquetas</button>
         </form>
 
         <form action="{{ url_for('sites.exportar') }}" method="get">
@@ -105,7 +105,7 @@
             ] %}
             <input type="hidden" name="{{ key }}" value="{{ request.args.get(key, '') }}">
             {% endfor %}
-            <button type="submit" class="btn-primary-action">Exportar CSV</button>
+            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_export_CSV">Exportar CSV</button>
         </form>
     </div>
 </div>
@@ -149,25 +149,29 @@
         <td>
             <div class="acciones">
                 <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
-                    <button type="submit" class="btn btn-edit">Editar</button>
+                    <button type="submit" class="btn btn-edit js-requires-permission" data-permission="site_edit">Editar</button>
                 </form>
 
                 
-                <button type="button" class="btn btn-edit" onclick="showHistoryModal('{{ r.id }}')">
-                     Historial de cambios
-                </button>
+               <button type="button" 
+                     class="btn btn-edit js-requires-permission" 
+                      data-permission="site_history_view"
+                       data-action="show-history"
+                        data-site-id="{{ r.id }}">
+                             Historial de cambios
+               </button>
                 
 
-                {% if usuario_es_admin %}
+                
                 <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
                     <input type="hidden" name="user_id"
                         value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
-                    <button type="submit" class="btn btn-delete"
+                    <button type="submit" class="btn btn-delete js-requires-permission" data-permission="site_delete"
                         onclick="return confirm('¿Seguro que querés ar este sitio?')">
                         Eliminar
                     </button>
                 </form>
-                {% endif %}
+            
             </div>
         </td>
     </tr>
@@ -235,7 +239,7 @@
 
 
 {% if usuario_es_admin %}
-<form action="{{ url_for('mantenimiento_admin.upload_image') }}" method="get" style="display:inline-block; margin-right: 10px;">    <button type="submit" class="btn-primary-action">Gestionar Imágenes</button>
+<form action="{{ url_for('mantenimiento_admin.upload_image') }}" method="get" style="display:inline-block; margin-right: 10px;">    <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_edit">Gestionar Imágenes</button>
 </form>
 {% endif %}
 
@@ -246,82 +250,99 @@
 
 
 <script>
-        // Se obtienen los elementos del DOM que vamos a necesitar
-        const modal = document.getElementById('historyModal');
-        const modalContent = document.getElementById('historyContent');
-        const closeButton = document.querySelector('.close-button');
+    // --- LÓGICA DEL MODAL DE HISTORIAL (SIN CAMBIOS) ---
+    const modal = document.getElementById('historyModal');
+    const modalContent = document.getElementById('historyContent');
+    const closeButton = document.querySelector('.close-button');
 
-        /**
-         * Función para mostrar el modal y cargar el historial.
-         * Es llamada por el atributo 'onclick' del botón.
-         */
-        function showHistoryModal(siteId) {
-            
-            // --- ¡LÓGICA DE PERMISOS! ---
-            // 1. Obtenemos el rol que pasamos desde el controlador
-            
-            
-            const userRole = {{ user_role | default(0) | tojson }};
+    function showHistoryModal(siteId) {
+        
+        // 1. Verificamos el permiso para "Historial"
+        {% if not has_permission("site_history_view") %}
+            alert('No tiene permiso de ver el historial de modificaciones');
+            return;
+        {% endif %}
 
-            // 2. Definimos los roles permitidos (de seeds.py: 1=admin, 2=editor)
-            const isAdmin = (userRole === 1);
-            const isEditor = (userRole === 2);
+        // 2. Si tiene permiso, abre el modal
+        modalContent.innerHTML = '<p>Cargando...</p>';
+        modal.style.display = 'block';
 
-            // 3. Si NO es admin Y NO es editor...
-            if (!isAdmin && !isEditor) {
-                // Mostramos el alerta y detenemos la función
-                alert('No tiene permiso de ver el historial de modificaciones');
-                return; // <-- Detiene la ejecución
-            }
-            // --- FIN DE LA LÓGICA DE PERMISOS ---
+        // 3. Fetch
+        fetch(`/sitios/${siteId}/historial`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
+                }
+                return response.text();
+            })
+            .then(html => {
+                modalContent.innerHTML = html;
+            })
+            .catch(error => {
+                modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Error en fetch:', error);
+            });
+    }
 
+    function closeModal() {
+        modal.style.display = 'none';
+    }
 
-            // 1. Muestra "Cargando..." y hace visible el modal
-            modalContent.innerHTML = '<p>Cargando...</p>';
-            modal.style.display = 'block';
+    if (closeButton) {
+        closeButton.onclick = closeModal;
+    }
 
-            // 2. Usa 'fetch' para pedir el historial al servidor de forma asíncrona
-            fetch(`/sitios/${siteId}/historial`)
-                .then(response => {
-                    // Si la respuesta del servidor no es OK (ej: error 404 o 500)
-                    if (!response.ok) {
-                        throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
-                    }
-                    // Se espera que el servidor devuelva texto (que será el HTML parcial)
-                    return response.text();
-                })
-                .then(html => {
-                    // 3. Inserta el HTML recibido dentro del div del modal
-                    modalContent.innerHTML = html;
-                })
-                .catch(error => {
-                    // 4. Si algo falla durante el 'fetch', muestra un mensaje de error
-                    modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-                    console.error('Error en fetch:', error);
-                });
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            closeModal();
         }
+    }
 
-        /**
-         * Función para cerrar el modal.
-         */
-        function closeModal() {
-            modal.style.display = 'none';
-        }
+    
+    // --- NUEVA LÓGICA PARA BLOQUEAR OTROS BOTONES ---
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // 1. Obtenemos la lista de permisos del usuario desde la sesión
+        // (Esto es seguro porque 'session' solo existe en el servidor)
+        const userPermissions = {{ session.get("permissions", []) | tojson }};
 
-        // --- Asignación de Eventos ---
+        // 2. Definimos los mensajes de error
+        const permissionMessages = {
+            "site_create": "No tiene permiso para crear sitios.",
+            "site_edit": "No tiene permiso para editar.",
+            "site_delete": "No tiene permiso para eliminar.",
+            "site_export_CSV": "No tiene permiso para exportar.",
+            "tag_list": "No tiene permiso para gestionar etiquetas."
+        };
 
-        // Evento para cerrar el modal al hacer clic en el botón (X)
-        if (closeButton) {
-            closeButton.onclick = closeModal;
-        }
+        // 3. Seleccionamos TODOS los botones que marcamos con la clase
+        const protectedButtons = document.querySelectorAll('.js-requires-permission');
 
-        // Evento para cerrar el modal si se hace clic fuera del contenido de la ventana
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-    </script>
+        protectedButtons.forEach(function(button) {
+            // 4. Añadimos un listener a cada botón.
+            // 'true' (useCapture) asegura que se ejecute ANTES que el 'onclick="confirm(...)"' del botón Eliminar.
+            button.addEventListener('click', function(event) {
+                
+                // 5. Obtenemos el permiso que este botón necesita
+                const requiredPermission = button.dataset.permission;
+
+                // 6. Verificamos si el usuario TIENE ese permiso
+                if (!userPermissions.includes(requiredPermission)) {
+                    
+                    // 7. Si NO lo tiene:
+                    event.preventDefault(); // Detiene el clic (ej: el submit del form)
+                    event.stopPropagation(); // Detiene otros clics
+                    event.stopImmediatePropagation(); // Detiene todo lo demás (incluido el 'confirm')
+
+                    // Mostramos el mensaje de error
+                    const message = permissionMessages[requiredPermission] || "No tiene permisos para esta acción.";
+                    alert(message);
+                }
+                // Si SÍ lo tiene, el script no hace nada y el clic continúa.
+            }, true); 
+        });
+    });
+</script>
 
 
 {% endblock %}

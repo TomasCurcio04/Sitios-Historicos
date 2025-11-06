@@ -71,3 +71,18 @@ def admin_required(f):
             return redirect(url_for("web.home"))
         return f(*args, **kwargs)
     return decorated_function
+
+# --- ¡NUEVA FUNCIÓN AÑADIDA! ---
+def has_permission(permission_name):
+    """
+    Verifica si el usuario actual tiene un permiso específico guardado en la sesión.
+    
+    Args:
+        permission_name (str): El nombre del permiso (ej: "site_history_view")
+    
+    Returns:
+        bool: True si el usuario tiene el permiso, False en caso contrario.
+    """
+    # Lee la lista de permisos que guardamos en la sesión durante el login
+    permissions = session.get("permissions", [])
+    return permission_name in permissions

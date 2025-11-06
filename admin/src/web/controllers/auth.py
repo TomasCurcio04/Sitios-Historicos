@@ -2,6 +2,9 @@
 
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from src.core.services.auth.user_serv import verificar_usuario
+from src.core.database import db 
+from src.core.entity.role import Role 
+from sqlalchemy.orm import joinedload # <-- 1. IMPORTAR ESTO
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -19,7 +22,7 @@ def logout():
         flash("Cierre de sesión exitoso", "success")
     else:
         flash("No hay una sesión activa", "error")
-    return redirect(url_for('auth.login'))        
+    return redirect(url_for('auth.login'))       
 
 @bp.post("/authenticate")
 def authenticate():
@@ -28,12 +31,28 @@ def authenticate():
 
     user,error = verificar_usuario(params["email"], params["password"])
     if not user:
-        flash(error, "error")    
+        flash(error, "error")   
         return redirect(url_for('auth.login'))
     
     session.permanent = True
     session["user"] = user.email
     session["user_name"] = user.user_name
     session["role"] = int(user.role)
+
+    # --- 2. LÓGICA DE PERMISOS (CORREGIDA) ---
+    # Usamos query() y joinedload() para forzar la carga de los permisos
+    role_obj = db.session.query(Role).options(
+        joinedload(Role.permission)
+    ).get(int(user.role))
+    
+    # Creamos una lista solo con los nombres de los permisos
+    permission_names = []
+    if role_obj and role_obj.permission:
+        permission_names = [p.permission_name for p in role_obj.permission]
+    
+    # ¡Guardamos la lista en la sesión!
+    session["permissions"] = permission_names
+    # --- FIN DE LA CORRECCIÓN ---
+    
     flash("Inicio de sesión exitoso", "success")
     return redirect(url_for('mi_perfil.perfil'))

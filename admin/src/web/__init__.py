@@ -16,6 +16,7 @@ import shutil
 from flask_session import Session
 import os
 from src.web.handlers import error
+from src.web.handlers.auth import has_permission 
 from sqlalchemy.exc import OperationalError
 from src.web.controllers.web import web
 from src.web.controllers.sites import bp as sites_bp
@@ -71,7 +72,12 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
-
+    # --- 2. REGISTRA EL HELPER EN JINJA ---
+    @app.context_processor
+    def inject_permissions():
+        """Hace que la función has_permission() esté disponible en todos los templates."""
+        return dict(has_permission=has_permission)
+    # --- FIN DEL REGISTRO ---
     # Register commands
     @app.cli.command("reset-db")
     def reset_db_command():
