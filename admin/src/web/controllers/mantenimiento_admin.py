@@ -12,6 +12,7 @@ from flask import (
     current_app
 )
 import uuid # Para nombres de archivo únicos
+from sqlalchemy.orm import joinedload 
 
 # --- Importaciones de tu proyecto (Corregidas) ---
 
@@ -24,7 +25,6 @@ from src.web.storage import storage
 # Importa la sesión de BD
 from src.core.database import db 
 
-# --- ¡AQUÍ ESTÁ LA CORRECCIÓN IMPORTANTE! ---
 # Importamos los modelos desde sus archivos correctos
 from src.core.entity.site import Site
 from src.core.entity.site_image import SiteImage
@@ -49,24 +49,38 @@ def mantenimiento_admin():
     return render_template("mantenimiento_admin.html", message=message)
 
 
-# --- NUEVA RUTA PARA SUBIR IMÁGENES (Actualizada) ---
+# --- RUTA PARA SUBIR Y LISTAR IMÁGENES (Actualizada) ---
 @mantenimiento_admin_bp.route('/upload-image', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def upload_image():
     
-    # --- LÓGICA GET ---
+    # --- LÓGICA GET (Actualizada) ---
     if request.method == 'GET':
         try:
-            # Asumo que tu modelo Site tiene 'nombre'
-            sites = db.session.query(Site).order_by(Site.name).all()
+            # Obtenemos sitios Y sus imágenes (eager loading)
+            sites = db.session.query(Site).options(
+                joinedload(Site.images)
+            ).order_by(Site.name).all()
+            
+            # Pasamos config de MinIO para construir URLs
+            base_url = current_app.config['MINIO_SERVER'] 
+            bucket_name = current_app.config['MINIO_BUCKET']
+
         except Exception as e:
             flash(f'Error al cargar los sitios: {e}', 'danger')
             sites = []
+            base_url = ""
+            bucket_name = ""
             
-        return render_template('mantenimiento_upload.html', sites=sites)
+        return render_template(
+            'mantenimiento_upload.html', 
+            sites=sites,
+            minio_base_url=base_url,
+            minio_bucket=bucket_name
+        )
 
-    # --- LÓGICA POST ---
+    # --- LÓGICA POST (Subir imagen) ---
     try:
         # 1. Obtener datos del formulario (esto no cambia)
         file = request.files.get('imagen')
@@ -86,15 +100,11 @@ def upload_image():
             return redirect(request.url)
 
         # --- ¡NUEVA LÓGICA DE PORTADA ÚNICA! ---
-        # Si el usuario marcó 'es_portada' en el formulario...
         if form_es_portada:
-            # 1. Buscamos la portada actual (si existe) para ese sitio
             portada_actual = db.session.query(SiteImage).filter_by(
                 id_site=form_sitio_id, 
                 is_thumbnail=True
             ).first()
-            
-            # 2. Si existe, le quitamos la marca de portada
             if portada_actual:
                 portada_actual.is_thumbnail = False
                 db.session.add(portada_actual)
@@ -109,31 +119,24 @@ def upload_image():
         file.seek(0) 
         
        # 4. Subir a MinIO
-        # Asumo que tienes MINIO_BUCKET en tu config de Flask
         bucket_name = current_app.config['MINIO_BUCKET']
         
-        # --- ¡ESTA ES LA LÍNEA CORREGIDA! ---
-        # Usamos el cliente MinIO adjuntado a la app (app.storage)
         current_app.storage.put_object(
             bucket_name,
             object_name,
-            data=file, # Pasamos el objeto 'file' directamente
+            data=file,
             length=file_size,
             content_type=file.content_type
         )
         
-        # 5. ¡AQUÍ MAPEAMOS LOS DATOS A TU MODELO 'SiteImage'!
-        
-        # Tu modelo 'SiteImage' guarda solo el 'file_path' (el object_name)
-        # y no la URL completa, lo cual es una mejor práctica.
-        
+        # 5. Mapear datos al modelo
         nueva_imagen = SiteImage(
-            id_site=form_sitio_id,         # Form 'sitio_id' -> Model 'id_site'
-            file_path=object_name,         # Guardamos el path de MinIO
-            title=form_titulo,             # Form 'titulo' -> Model 'title'
-            description=form_descripcion,  # Form 'descripcion' -> Model 'description'
-            display_order=form_orden,      # Form 'orden' -> Model 'display_order'
-            is_thumbnail=form_es_portada   # Form 'es_portada' -> Model 'is_thumbnail'
+            id_site=form_sitio_id,
+            file_path=object_name,
+            title=form_titulo,
+            description=form_descripcion,
+            display_order=form_orden,
+            is_thumbnail=form_es_portada
         )
         
         # 6. Guardar en la Base de Datos
@@ -147,3 +150,85 @@ def upload_image():
         db.session.rollback() 
         flash(f'Error grave al subir la imagen: {str(e)}', 'danger')
         return redirect(request.url)
+
+
+# --- RUTA PARA ELIMINAR IMÁGENES (Sin cambios) ---
+@mantenimiento_admin_bp.route('/delete-image/<int:image_id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_image(image_id):
+    
+    try:
+        # 1. Buscar la imagen en la BD
+        image = db.session.get(SiteImage, image_id)
+        
+        if not image:
+            flash('Imagen no encontrada.', 'danger')
+            return redirect(url_for('mantenimiento_admin.upload_image'))
+            
+        # 2. Aplicar la restricción
+        if image.is_thumbnail:
+            flash('Error: No se puede eliminar una imagen marcada como portada.', 'danger')
+            return redirect(url_for('mantenimiento_admin.upload_image'))
+            
+        # 3. Borrar de MinIO
+        bucket_name = current_app.config['MINIO_BUCKET']
+        current_app.storage.remove_object(bucket_name, image.file_path) 
+        
+        # 4. Borrar de la BD
+        db.session.delete(image)
+        db.session.commit()
+        
+        flash('Imagen eliminada correctamente.', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar la imagen: {str(e)}', 'danger')
+
+    return redirect(url_for('mantenimiento_admin.upload_image'))
+
+
+# --- ¡NUEVA RUTA PARA HACER PORTADA! ---
+@mantenimiento_admin_bp.route('/make-cover/<int:image_id>', methods=['POST'])
+@login_required
+@admin_required
+def make_cover(image_id):
+    
+    try:
+        # 1. Buscar la imagen que queremos hacer portada
+        image_to_make_cover = db.session.get(SiteImage, image_id)
+        
+        if not image_to_make_cover:
+            flash('Imagen no encontrada.', 'danger')
+            return redirect(url_for('mantenimiento_admin.upload_image'))
+            
+        # 2. Si ya es portada, no hacemos nada
+        if image_to_make_cover.is_thumbnail:
+            flash('Esa imagen ya es la portada.', 'info')
+            return redirect(url_for('mantenimiento_admin.upload_image'))
+
+        # 3. Buscar la portada actual de ESE sitio
+        portada_actual = db.session.query(SiteImage).filter_by(
+            id_site=image_to_make_cover.id_site, 
+            is_thumbnail=True
+        ).first()
+
+        # 4. Desmarcar la portada vieja (si existe)
+        if portada_actual:
+            portada_actual.is_thumbnail = False
+            db.session.add(portada_actual)
+            
+        # 5. Marcar la nueva portada
+        image_to_make_cover.is_thumbnail = True
+        db.session.add(image_to_make_cover)
+        
+        # 6. Guardar cambios
+        db.session.commit()
+        
+        flash('Nueva imagen de portada establecida con éxito.', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al cambiar la portada: {str(e)}', 'danger')
+
+    return redirect(url_for('mantenimiento_admin.upload_image'))
