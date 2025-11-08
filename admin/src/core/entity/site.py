@@ -26,6 +26,9 @@ if TYPE_CHECKING:
     from src.core.entity.site_image import SiteImage
     from src.core.entity.site_history import SiteHistory
     from src.core.entity.site_tag import SiteTag
+    from src.core.entity.review import Review
+    from src.core.entity.site_visit import SiteVisit
+    from src.core.entity.site_favorite import SiteFavorite
 
 
 site_tag = Table(
@@ -69,6 +72,9 @@ class Site(Base):
     user: Mapped["Users"] = relationship(back_populates="sites")
     history: Mapped[list["SiteHistory"]] = relationship(back_populates="site_rel")
     images: Mapped[list["SiteImage"]] = relationship(back_populates="site_rel")
+    reviews: Mapped[list["Review"]] = relationship("Review", back_populates="site_rel")
+    visits: Mapped["SiteVisit"] = relationship("SiteVisit", back_populates="site_rel", uselist=False)
+    favorites: Mapped[list["SiteFavorite"]] = relationship("SiteFavorite", back_populates="site_rel")
 
     def __repr__(self):
         return f"<Site(name='{self.name}', state='{self.state}', is_visible={self.is_visible})>"

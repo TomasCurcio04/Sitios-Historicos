@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from src.core.entity.site_history import SiteHistory
     from src.core.entity.role import Role
     from src.core.entity.feature_flag import FeatureFlag
+    from src.core.entity.review import Review
 
 # Expresion regular para validar emails
 
@@ -47,6 +48,7 @@ class Users(Base):
     flags: Mapped[list["FeatureFlag"]] = relationship(
         "FeatureFlag", back_populates="user"
     )
+    moderated_reviews: Mapped[list["Review"]] = relationship("Review", back_populates="moderator_rel")
 
     # Fechas de creación y modificación
     date_create: Mapped[datetime] = mapped_column(

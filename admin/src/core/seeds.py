@@ -9,8 +9,10 @@ from src.core.services.auth.permission_serv import create_permission
 from src.core.entity.feature_flag import FeatureFlag
 from src.core.database import db
 from src.core.entity.site_image import SiteImage
-
-# from src.core.auth import feature_flag
+from src.core.entity.review import Review
+from src.core.entity.public_user import PublicUser
+from src.core.entity.site_visit import SiteVisit
+from src.core.entity.site_favorite import SiteFavorite
 
 
 def run():
@@ -149,27 +151,27 @@ def run():
         user_name="admin",
         email="admin@mysite.com",
         password="adminpass",
-        role=1,
+        rol=1,
         s_user=True,
     )
     user2 = create_user(
-        user_name="editor", email="editor@mysite.com", password="editorpass", role=2
+        user_name="editor", email="editor@mysite.com", password="editorpass", rol=2
     )
     user3 = create_user(
-        user_name="viewer", email="viewer@mysite.com", password="viewerpass", role=3
+        user_name="viewer", email="viewer@mysite.com", password="viewerpass", rol=3
     )
     user4 = create_user(
         user_name="supereditor",
         email="seditor@mysite.com",
         password="seditorpass",
-        role=2,
+        rol=2,
         s_user=True,
     )
     user5 = create_user(
         user_name="normaladmin",
         email="nadmin@mysite.com",
         password="nadminpass",
-        role=1,
+        rol=1,
     )
 
     # Crear 25 usuarios adicionales
@@ -178,7 +180,7 @@ def run():
             user_name=f"user{i}",
             email=f"user{i}@mysite.com",
             password=f"user{i}pass",
-            role=(i % 3) + 1,
+            rol=(i % 3) + 1,
         )
 
     board_category1 = board.create_category(

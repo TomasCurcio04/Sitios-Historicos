@@ -1,10 +1,14 @@
 # pylint: disable=import-error
 """Utilidades de autenticación y autorización."""
 
+from functools import wraps
 from flask import flash, session as current_user, abort, redirect, url_for, request
+
 from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
 from src.core.services.auth.feature_flag_serv import get_feature_flag
-from functools import wraps
+
+from src.core.entity.site_visit import SiteVisit
+from src.core.database import db
 
 # Obtener permisos del usuario
 from src.core.services.auth.permission_serv import get_permissions
@@ -56,11 +60,11 @@ def check_permissions(section, permissions):
 
 def permissions_required(section, permissions):
     """Decorador que verifica permisos requeridos en rutas.
-    
+
     Args:
         section: Sección del sistema
         permissions: Lista de permisos requeridos
-    
+
     Returns:
         Decorador que verifica permisos
     """
@@ -70,7 +74,7 @@ def permissions_required(section, permissions):
         def wrapped_view(*args, **kwargs):
             if not check_permissions(section, permissions):
                 flash("No tienes permisos para realizar esta acción", "warning")
-                return redirect(request.referrer or url_for('home.index'))
+                return redirect(request.referrer or url_for("home.index"))
             return view(*args, **kwargs)
 
         return wrapped_view
