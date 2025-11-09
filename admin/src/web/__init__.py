@@ -1,5 +1,9 @@
 # pylint: disable=import-error
 """Inicialización del módulo web de la aplicación Flask."""
+import signal
+import sys
+import shutil
+import os
 from flask import (
     Flask,
     render_template,
@@ -10,14 +14,16 @@ from flask import (
     url_for,
     flash,
 )
-import signal
-import sys
-import shutil
 from flask_session import Session
-import os
-from src.web.handlers import error
-from src.web.handlers.auth import has_permission 
 from sqlalchemy.exc import OperationalError
+from src.web.handlers import error
+from src.web.handlers.auth import (
+    is_authenticated,
+    template_is_authenticated,
+    login_required,
+    has_permission,
+)
+from src.web.handlers.utils import admin_maintenance_required, permissions_required
 from src.web.controllers.web import web
 from src.web.controllers.sites import bp as sites_bp
 from src.web.controllers.tags import bp as tags_bp
@@ -26,18 +32,14 @@ from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 from src.web.controllers.mi_perfil import mi_perfil_bp
-
-from src.core.services.auth.bcrypt import bcrypt
-from src.web.handlers.auth import is_authenticated, template_is_authenticated
 from src.web.config import config
 from src.web.storage import storage
+from src.core.services.auth.bcrypt import bcrypt
 from src.core import database
 from src.core import seeds
-from src.web.handlers.utils import admin_maintenance_required
 from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
 from src.core.services.auth.feature_flag_serv import get_feature_flag
-from src.web.handlers.auth import login_required
-from src.web.handlers.utils import permissions_required
+from api.controllers.sites import bp as api_sites_bp
 
 
 session = Session()
@@ -72,11 +74,13 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
+
     # --- 2. REGISTRA EL HELPER EN JINJA ---
     @app.context_processor
     def inject_permissions():
         """Hace que la función has_permission() esté disponible en todos los templates."""
         return dict(has_permission=has_permission)
+
     # --- FIN DEL REGISTRO ---
     # Register commands
     @app.cli.command("reset-db")
@@ -105,6 +109,7 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(feature_flags_bp)
     app.register_blueprint(mantenimiento_admin_bp)
     app.register_blueprint(mi_perfil_bp)
+    app.register_blueprint(api_sites_bp)
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)
@@ -132,6 +137,7 @@ def create_app(env="development", static_folder=None):
             "static",
             "feature_flags.feature_flags",
             "mantenimiento_admin.mantenimiento_admin",
+            "api_sites.all_sites",
         ]
         if request.endpoint in exempt_endpoints:
             return
