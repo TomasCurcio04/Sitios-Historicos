@@ -40,7 +40,9 @@ def create_tag():
     if not name:
         flash("El nombre es obligatorio", "error")
         return redirect(url_for("tags.create_tag_form"))
-
+    if len(name) < 3:
+        flash("El nombre debe tener al menos 3 caracteres", "error")
+        return redirect(url_for("tags.create_tag_form"))
     tag, error = crear_tag(name)
     if error:
         flash(error, "error")
