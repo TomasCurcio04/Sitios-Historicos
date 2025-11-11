@@ -74,7 +74,7 @@ def permissions_required(section, permissions):
         def wrapped_view(*args, **kwargs):
             if not check_permissions(section, permissions):
                 flash("No tienes permisos para realizar esta acción", "warning")
-                return redirect(request.referrer or url_for("home.index"))
+                return redirect(request.referrer or url_for("web.home"))
             return view(*args, **kwargs)
 
         return wrapped_view
