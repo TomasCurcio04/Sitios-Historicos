@@ -12,7 +12,7 @@ bp = Blueprint("tags", __name__, url_prefix="/etiquetas")
 def menu_tags():
 
     """Muestra el menú principal de gestión de etiquetas."""
-    return render_template("tag/menu.html")
+    return render_template("tags/menu.html")
 
     
 @bp.get("/listar")
