@@ -97,7 +97,7 @@ def run():
     role1 = create_role(name="admin", description="Administrador")
     role2 = create_role(name="editor", description="Editor")
     role3 = create_role(name="moderator", description="Moderador")
-    role4 = create_role(name="public", description="Usuario Publico")
+    # role4 = create_role(name="public", description="Usuario Publico")
 
     role1.permission = [
         permissions1,
@@ -138,12 +138,12 @@ def run():
         permission20,
         permission24,
     ]
-    role4.permission = [
-        permission21,
-        permission22,
-        permission23,
-        permission25,
-    ]
+    # role4.permission = [
+    #     permission21,
+    #     permission22,
+    #     permission23,
+    #     permission25,
+    # ]
 
     user1 = create_user(
         user_name="admin",
