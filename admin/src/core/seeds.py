@@ -5,6 +5,7 @@
 from src.core.services import board
 from src.core.services.auth.role_serv import create_role
 from src.core.services.auth.user_serv import create_user
+from src.core.services.auth.user_serv import create_user_public
 from src.core.services.auth.permission_serv import create_permission
 from src.core.entity.feature_flag import FeatureFlag
 from src.core.database import db
@@ -13,6 +14,7 @@ from src.core.entity.review import Review
 from src.core.entity.public_user import PublicUser
 from src.core.entity.site_visit import SiteVisit
 from src.core.entity.site_favorite import SiteFavorite
+
 
 
 def run():
@@ -680,221 +682,197 @@ def run():
         created_by=user1.id_user,
         tag=[board_tag2, board_tag5, board_tag12],
     )
-    review1 = board.create_review(site_id=site6.id_site, user_id=1, rating=4, comment="Hermoso paisaje natural.")
-    review2 = board.create_review(site_id=site6.id_site, user_id=2, rating=5, comment="Excelente lugar para visitar.")
-    review3 = board.create_review(site_id=site6.id_site, user_id=3, rating=4, comment="Muy recomendable, volvería sin dudarlo.")
-    review4 = board.create_review(site_id=site6.id_site, user_id=4, rating=3, comment="Buen servicio y atención del personal.")
-    review5 = board.create_review(site_id=site6.id_site, user_id=5, rating=5, comment="Lugar tranquilo y acogedor.")
-    review6 = board.create_review(site_id=site6.id_site, user_id=1, rating=2, comment="No me gustó tanto como esperaba.")
-    review7 = board.create_review(site_id=site6.id_site, user_id=2, rating=5, comment="Ideal para pasar un día en familia.")
-    review8 = board.create_review(site_id=site6.id_site, user_id=3, rating=4, comment="Increíbles vistas y fotografías.")
-    review9 = board.create_review(site_id=site6.id_site, user_id=4, rating=3, comment="Mucha gente, pero vale la pena.")
-    review10 = board.create_review(site_id=site6.id_site, user_id=5, rating=4, comment="Un sitio histórico muy interesante.")
-    review11 = board.create_review(site_id=site6.id_site, user_id=1, rating=5, comment="Perfecto para una escapada de fin de semana.")
-    review12 = board.create_review(site_id=site6.id_site, user_id=2, rating=2, comment="Demasiado caro para lo que ofrecen.")
-    review13 = board.create_review(site_id=site6.id_site, user_id=3, rating=5, comment="La comida local es deliciosa.")
-    review14 = board.create_review(site_id=site6.id_site, user_id=4, rating=4, comment="Fácil acceso y bien señalizado.")
-    review15 = board.create_review(site_id=site6.id_site, user_id=5, rating=5, comment="El personal fue muy amable.")
-    review16 = board.create_review(site_id=site6.id_site, user_id=1, rating=4, comment="Un lugar pintoresco y único.")
-    review17 = board.create_review(site_id=site6.id_site, user_id=2, rating=3, comment="No recomiendo visitarlo en temporada alta.")
-    review18 = board.create_review(site_id=site6.id_site, user_id=3, rating=5, comment="Lugar con mucha historia y cultura.")
-    review19 = board.create_review(site_id=site6.id_site, user_id=4, rating=5, comment="Ideal para amantes de la naturaleza.")
-    review20 = board.create_review(site_id=site6.id_site, user_id=5, rating=4, comment="Una experiencia inolvidable.")
-    review21 = board.create_review(site_id=site1.id_site, user_id=user1.id_user, rating=5, comment="Excelente lugar para visitar.")
-    review22 = board.create_review(site_id=site2.id_site, user_id=user2.id_user, rating=4, comment="Muy interesante y bien conservado.")
-    review23 = board.create_review(site_id=site3.id_site, user_id=user3.id_user, rating=3, comment="Buen lugar, pero podría mejorar en infraestructura.")
-    review24 = board.create_review(site_id=site4.id_site, user_id=user4.id_user, rating=4, comment="Lugar histórico con gran valor cultural.") 
-    review25 = board.create_review(site_id=site5.id_site, user_id=user5.id_user, rating=5, comment="Impresionante arquitectura y historia.")
-    review26 = board.create_review(site_id=site6.id_site, user_id=user1.id_user, rating=4, comment="Hermoso paisaje natural.")
-    
+ 
+   
 
     # Crear imágenes para los sitios con rutas reales de MinIO
     site_images = [
-        SiteImage(
-            site_id=site1.id_site,
-            image_path="public/sites/1/da8d038a-0cee-45f8-a293-abd0951149f5.jpg",
-            title="Cerro de los 7 colores",
-            description="Imagen del Cerro de los 7 colores",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site2.id_site,
-            image_path="public/sites/2/1d02d758-7ac9-47c9-9c91-7066a44f7cc1.jpg",
-            title="La Cueva de las Manos",
-            description="Imagen de La Cueva de las Manos",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site3.id_site,
-            image_path="public/sites/3/6b9fd85a-aa11-4f75-9d30-dd6d0a643996.jpg",
-            title="La Manzana Jesuítica",
-            description="Imagen de La Manzana Jesuítica",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site4.id_site,
-            image_path="public/sites/4/918ed3e6-e111-40a9-8298-61f321530e2b.jpg",
-            title="Cabildo de Buenos Aires",
-            description="Imagen del Cabildo de Buenos Aires",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site5.id_site,
-            image_path="public/sites/5/241e7979-14fb-410b-90e4-821cee6ea492.jpg",
-            title="Catedral de Salta",
-            description="Imagen de la Catedral de Salta",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site6.id_site,
-            image_path="public/sites/6/e8eb9dcd-0f6d-490c-85dc-8a44d8b55a4d.jpeg",
-            title="Glaciar Perito Moreno",
-            description="Imagen del Glaciar Perito Moreno",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site9.id_site,
-            image_path="public/sites/9/f5ec8d77-429a-4053-b556-a0ed8b8d1379.jpeg",
-            title="Aconcagua",
-            description="Imagen del Aconcagua",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site10.id_site,
-            image_path="public/sites/10/80624add-3ad0-484a-a9a2-aa9564ef39ff.jpeg",
-            title="Casa Rosada",
-            description="Imagen de la Casa Rosada",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site11.id_site,
-            image_path="public/sites/11/a87c4b33-ea7c-4963-9eeb-3412598a8d78.jpeg",
-            title="Cataratas del Iguazú",
-            description="Imagen de las Cataratas del Iguazú",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site13.id_site,
-            image_path="public/sites/13/1b687aa7-11cd-46cd-8906-ab3422a7a686.jpeg",
-            title="Monumento a la Bandera",
-            description="Imagen del Monumento a la Bandera",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site16.id_site,
-            image_path="public/sites/16/738c89b5-7e98-498c-bd2e-fbba42f4b5fa.webp",
-            title="Ushuaia",
-            description="Imagen de Ushuaia",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site17.id_site,
-            image_path="public/sites/17/f0f119f9-bed2-4a3a-8622-5d04bb045c0c.jpeg",
-            title="Parque Nacional Los Glaciares",
-            description="Imagen del Parque Nacional Los Glaciares",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site18.id_site,
-            image_path="public/sites/18/4e657abf-a34b-43f4-af7c-108c22b42763.jpeg",
-            title="Esteros del Iberá",
-            description="Imagen de los Esteros del Iberá",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site19.id_site,
-            image_path="public/sites/19/a836b970-75ea-47c1-8ed6-851ca3cb2ae3.jpeg",
-            title="Parque Nacional Talampaya",
-            description="Imagen del Parque Nacional Talampaya",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site20.id_site,
-            image_path="public/sites/20/e20fbc16-80fc-437f-9e8b-8833fcb32750.jpg",
-            title="Bariloche",
-            description="Imagen de Bariloche",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site21.id_site,
-            image_path="public/sites/21/c5c4c6f9-06fc-43bd-b450-8ee3a62fd0d5.jpg",
-            title="Parque Nacional Ischigualasto",
-            description="Imagen del Parque Nacional Ischigualasto",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site22.id_site,
-            image_path="public/sites/22/34ec6bcd-82a6-4256-a6d5-58bf893679c7.jpg",
-            title="Caminito",
-            description="Imagen de Caminito",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site23.id_site,
-            image_path="public/sites/23/afb87af5-8d14-4b45-b9e4-ec4d4a4dbb79.jpg",
-            title="Parque Nacional Los Cardones",
-            description="Imagen del Parque Nacional Los Cardones",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site25.id_site,
-            image_path="public/sites/25/5f66a631-0838-45e8-8a26-3e4bb9b4ee64.jpg",
-            title="Parque Nacional El Palmar",
-            description="Imagen del Parque Nacional El Palmar",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site26.id_site,
-            image_path="public/sites/26/2ff1c912-626b-440f-9950-332a909f235c.jpg",
-            title="Parque Nacional Calilegua",
-            description="Imagen del Parque Nacional Calilegua",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site27.id_site,
-            image_path="public/sites/27/d9e99acc-9c81-4cbc-80c8-6849c9626cfa.jpg",
-            title="Parque Nacional Lanín",
-            description="Imagen del Parque Nacional Lanín",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site28.id_site,
-            image_path="public/sites/28/aa06b73f-e834-4427-834c-478ebdc71e92.jpg",
-            title="Parque Nacional Chaco",
-            description="Imagen del Parque Nacional Chaco",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-        SiteImage(
-            site_id=site29.id_site,
-            image_path="public/sites/29/728ae69e-1337-481c-a52a-e45764fd7d03.jpg",
-            title="Parque Nacional Lihué Calel",
-            description="Imagen del Parque Nacional Lihué Calel",
-            display_order=1,
-            is_thumbnail=True,
-        ),
-    ]
+    SiteImage(
+        id_site=site1.id_site,
+        file_path="public/sites/1/da8d038a-0cee-45f8-a293-abd0951149f5.jpg",
+        title="Cerro de los 7 colores",
+        description="Imagen del Cerro de los 7 colores",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site2.id_site,
+        file_path="public/sites/2/1d02d758-7ac9-47c9-9c91-7066a44f7cc1.jpg",
+        title="La Cueva de las Manos",
+        description="Imagen de La Cueva de las Manos",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site3.id_site,
+        file_path="public/sites/3/6b9fd85a-aa11-4f75-9d30-dd6d0a643996.jpg",
+        title="La Manzana Jesuítica",
+        description="Imagen de La Manzana Jesuítica",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site4.id_site,
+        file_path="public/sites/4/918ed3e6-e111-40a9-8298-61f321530e2b.jpg",
+        title="Cabildo de Buenos Aires",
+        description="Imagen del Cabildo de Buenos Aires",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site5.id_site,
+        file_path="public/sites/5/241e7979-14fb-410b-90e4-821cee6ea492.jpg",
+        title="Catedral de Salta",
+        description="Imagen de la Catedral de Salta",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site6.id_site,
+        file_path="public/sites/6/e8eb9dcd-0f6d-490c-85dc-8a44d8b55a4d.jpeg",
+        title="Glaciar Perito Moreno",
+        description="Imagen del Glaciar Perito Moreno",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site9.id_site,
+        file_path="public/sites/9/f5ec8d77-429a-4053-b556-a0ed8b8d1379.jpeg",
+        title="Aconcagua",
+        description="Imagen del Aconcagua",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site10.id_site,
+        file_path="public/sites/10/80624add-3ad0-484a-a9a2-aa9564ef39ff.jpeg",
+        title="Casa Rosada",
+        description="Imagen de la Casa Rosada",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site11.id_site,
+        file_path="public/sites/11/a87c4b33-ea7c-4963-9eeb-3412598a8d78.jpeg",
+        title="Cataratas del Iguazú",
+        description="Imagen de las Cataratas del Iguazú",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site13.id_site,
+        file_path="public/sites/13/1b687aa7-11cd-46cd-8906-ab3422a7a686.jpeg",
+        title="Monumento a la Bandera",
+        description="Imagen del Monumento a la Bandera",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site16.id_site,
+        file_path="public/sites/16/738c89b5-7e98-498c-bd2e-fbba42f4b5fa.webp",
+        title="Ushuaia",
+        description="Imagen de Ushuaia",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site17.id_site,
+        file_path="public/sites/17/f0f119f9-bed2-4a3a-8622-5d04bb045c0c.jpeg",
+        title="Parque Nacional Los Glaciares",
+        description="Imagen del Parque Nacional Los Glaciares",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site18.id_site,
+        file_path="public/sites/18/4e657abf-a34b-43f4-af7c-108c22b42763.jpeg",
+        title="Esteros del Iberá",
+        description="Imagen de los Esteros del Iberá",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site19.id_site,
+        file_path="public/sites/19/a836b970-75ea-47c1-8ed6-851ca3cb2ae3.jpeg",
+        title="Parque Nacional Talampaya",
+        description="Imagen del Parque Nacional Talampaya",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site20.id_site,
+        file_path="public/sites/20/e20fbc16-80fc-437f-9e8b-8833fcb32750.jpg",
+        title="Bariloche",
+        description="Imagen de Bariloche",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site21.id_site,
+        file_path="public/sites/21/c5c4c6f9-06fc-43bd-b450-8ee3a62fd0d5.jpg",
+        title="Parque Nacional Ischigualasto",
+        description="Imagen del Parque Nacional Ischigualasto",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site22.id_site,
+        file_path="public/sites/22/34ec6bcd-82a6-4256-a6d5-58bf893679c7.jpg",
+        title="Caminito",
+        description="Imagen de Caminito",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site23.id_site,
+        file_path="public/sites/23/afb87af5-8d14-4b45-b9e4-ec4d4a4dbb79.jpg",
+        title="Parque Nacional Los Cardones",
+        description="Imagen del Parque Nacional Los Cardones",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site25.id_site,
+        file_path="public/sites/25/5f66a631-0838-45e8-8a26-3e4bb9b4ee64.jpg",
+        title="Parque Nacional El Palmar",
+        description="Imagen del Parque Nacional El Palmar",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site26.id_site,
+        file_path="public/sites/26/2ff1c912-626b-440f-9950-332a909f235c.jpg",
+        title="Parque Nacional Calilegua",
+        description="Imagen del Parque Nacional Calilegua",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site27.id_site,
+        file_path="public/sites/27/d9e99acc-9c81-4cbc-80c8-6849c9626cfa.jpg",
+        title="Parque Nacional Lanín",
+        description="Imagen del Parque Nacional Lanín",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site28.id_site,
+        file_path="public/sites/28/aa06b73f-e834-4427-834c-478ebdc71e92.jpg",
+        title="Parque Nacional Chaco",
+        description="Imagen del Parque Nacional Chaco",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+    SiteImage(
+        id_site=site29.id_site,
+        file_path="public/sites/29/728ae69e-1337-481c-a52a-e45764fd7d03.jpg",
+        title="Parque Nacional Lihué Calel",
+        description="Imagen del Parque Nacional Lihué Calel",
+        display_order=1,
+        is_thumbnail=True,
+    ),
+]
+
 
     db.session.add_all(site_images)
     db.session.commit()
@@ -925,6 +903,73 @@ def run():
 
     db.session.add_all(flags)
     db.session.commit()
+
+        # ----------------------------
+    # Crear 5 usuarios públicos
+    # ----------------------------
+    userpublic1 = create_user_public(
+        google_id="001",
+        email="userpublic1@example.com",
+        name="Usuario Público 1",
+        picture="https://example.com/pic1.jpg"
+    )
+
+    userpublic2 = create_user_public(
+        google_id="002",
+        email="userpublic2@example.com",
+        name="Usuario Público 2",
+        picture="https://example.com/pic2.jpg"
+    )
+
+    userpublic3 = create_user_public(
+        google_id="003",
+        email="userpublic3@example.com",
+        name="Usuario Público 3",
+        picture="https://example.com/pic3.jpg"
+    )
+
+    userpublic4 = create_user_public(
+        google_id="004",
+        email="userpublic4@example.com",
+        name="Usuario Público 4",
+        picture="https://example.com/pic4.jpg"
+    )
+
+    userpublic5 = create_user_public(
+        google_id="005",
+        email="userpublic5@example.com",
+        name="Usuario Público 5",
+        picture="https://example.com/pic5.jpg"
+    )
+
+
+
+    review1 = board.create_review(id_site=site1.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Hermoso paisaje natural.")
+    review2 = board.create_review(id_site=site2.id_site, id_public_user=userpublic2.id_public_user, rating=5, content="Excelente lugar para visitar.")
+    review3 = board.create_review(id_site=site3.id_site, id_public_user=userpublic3.id_public_user, rating=4, content="Muy recomendable, volvería sin dudarlo.")
+    review4 = board.create_review(id_site=site4.id_site, id_public_user=userpublic4.id_public_user, rating=3, content="Buen servicio y atención del personal.")
+    review5 = board.create_review(id_site=site5.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="Lugar tranquilo y acogedor.")
+    review6 = board.create_review(id_site=site6.id_site, id_public_user=userpublic1.id_public_user, rating=2, content="No me gustó tanto como esperaba.")
+    review7 = board.create_review(id_site=site7.id_site, id_public_user=userpublic2.id_public_user, rating=5, content="Ideal para pasar un día en familia.")
+    review8 = board.create_review(id_site=site8.id_site, id_public_user=userpublic3.id_public_user, rating=4, content="Increíbles vistas y fotografías.")
+    review9 = board.create_review(id_site=site9.id_site, id_public_user=userpublic4.id_public_user, rating=3, content="Mucha gente, pero vale la pena.")
+    review10 = board.create_review(id_site=site10.id_site, id_public_user=userpublic5.id_public_user, rating=4, content="Un sitio histórico muy interesante.")
+    review11 = board.create_review(id_site=site11.id_site, id_public_user=userpublic1.id_public_user, rating=5, content="Perfecto para una escapada de fin de semana.")
+    review12 = board.create_review(id_site=site12.id_site, id_public_user=userpublic2.id_public_user, rating=2, content="Demasiado caro para lo que ofrecen.")
+    review13 = board.create_review(id_site=site13.id_site, id_public_user=userpublic3.id_public_user, rating=5, content="La comida local es deliciosa.")
+    review14 = board.create_review(id_site=site14.id_site, id_public_user=userpublic4.id_public_user, rating=4, content="Fácil acceso y bien señalizado.")
+    review15 = board.create_review(id_site=site15.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="El personal fue muy amable.")
+    review16 = board.create_review(id_site=site16.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Un lugar pintoresco y único.")
+    review17 = board.create_review(id_site=site17.id_site, id_public_user=userpublic2.id_public_user, rating=3, content="No recomiendo visitarlo en temporada alta.")
+    review18 = board.create_review(id_site=site18.id_site, id_public_user=userpublic3.id_public_user, rating=5, content="Lugar con mucha historia y cultura.")
+    review19 = board.create_review(id_site=site19.id_site, id_public_user=userpublic4.id_public_user, rating=5, content="Ideal para amantes de la naturaleza.")
+    review20 = board.create_review(id_site=site20.id_site, id_public_user=userpublic5.id_public_user, rating=4, content="Una experiencia inolvidable.")
+    review21 = board.create_review(id_site=site21.id_site, id_public_user=userpublic1.id_public_user, rating=5, content="Excelente lugar para visitar.")
+    review22 = board.create_review(id_site=site22.id_site, id_public_user=userpublic2.id_public_user, rating=4, content="Muy interesante y bien conservado.")
+    review23 = board.create_review(id_site=site23.id_site, id_public_user=userpublic3.id_public_user, rating=3, content="Buen lugar, pero podría mejorar en infraestructura.")
+    review24 = board.create_review(id_site=site24.id_site, id_public_user=userpublic4.id_public_user, rating=4, content="Lugar histórico con gran valor cultural.") 
+    review25 = board.create_review(id_site=site25.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="Impresionante arquitectura y historia.")
+    review26 = board.create_review(id_site=site1.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Hermoso paisaje natural.")
 
 
 
