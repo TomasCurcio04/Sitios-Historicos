@@ -680,6 +680,33 @@ def run():
         created_by=user1.id_user,
         tag=[board_tag2, board_tag5, board_tag12],
     )
+    review1 = board.create_review(site_id=site6.id_site, user_id=1, rating=4, comment="Hermoso paisaje natural.")
+    review2 = board.create_review(site_id=site6.id_site, user_id=2, rating=5, comment="Excelente lugar para visitar.")
+    review3 = board.create_review(site_id=site6.id_site, user_id=3, rating=4, comment="Muy recomendable, volvería sin dudarlo.")
+    review4 = board.create_review(site_id=site6.id_site, user_id=4, rating=3, comment="Buen servicio y atención del personal.")
+    review5 = board.create_review(site_id=site6.id_site, user_id=5, rating=5, comment="Lugar tranquilo y acogedor.")
+    review6 = board.create_review(site_id=site6.id_site, user_id=1, rating=2, comment="No me gustó tanto como esperaba.")
+    review7 = board.create_review(site_id=site6.id_site, user_id=2, rating=5, comment="Ideal para pasar un día en familia.")
+    review8 = board.create_review(site_id=site6.id_site, user_id=3, rating=4, comment="Increíbles vistas y fotografías.")
+    review9 = board.create_review(site_id=site6.id_site, user_id=4, rating=3, comment="Mucha gente, pero vale la pena.")
+    review10 = board.create_review(site_id=site6.id_site, user_id=5, rating=4, comment="Un sitio histórico muy interesante.")
+    review11 = board.create_review(site_id=site6.id_site, user_id=1, rating=5, comment="Perfecto para una escapada de fin de semana.")
+    review12 = board.create_review(site_id=site6.id_site, user_id=2, rating=2, comment="Demasiado caro para lo que ofrecen.")
+    review13 = board.create_review(site_id=site6.id_site, user_id=3, rating=5, comment="La comida local es deliciosa.")
+    review14 = board.create_review(site_id=site6.id_site, user_id=4, rating=4, comment="Fácil acceso y bien señalizado.")
+    review15 = board.create_review(site_id=site6.id_site, user_id=5, rating=5, comment="El personal fue muy amable.")
+    review16 = board.create_review(site_id=site6.id_site, user_id=1, rating=4, comment="Un lugar pintoresco y único.")
+    review17 = board.create_review(site_id=site6.id_site, user_id=2, rating=3, comment="No recomiendo visitarlo en temporada alta.")
+    review18 = board.create_review(site_id=site6.id_site, user_id=3, rating=5, comment="Lugar con mucha historia y cultura.")
+    review19 = board.create_review(site_id=site6.id_site, user_id=4, rating=5, comment="Ideal para amantes de la naturaleza.")
+    review20 = board.create_review(site_id=site6.id_site, user_id=5, rating=4, comment="Una experiencia inolvidable.")
+    review21 = board.create_review(site_id=site1.id_site, user_id=user1.id_user, rating=5, comment="Excelente lugar para visitar.")
+    review22 = board.create_review(site_id=site2.id_site, user_id=user2.id_user, rating=4, comment="Muy interesante y bien conservado.")
+    review23 = board.create_review(site_id=site3.id_site, user_id=user3.id_user, rating=3, comment="Buen lugar, pero podría mejorar en infraestructura.")
+    review24 = board.create_review(site_id=site4.id_site, user_id=user4.id_user, rating=4, comment="Lugar histórico con gran valor cultural.") 
+    review25 = board.create_review(site_id=site5.id_site, user_id=user5.id_user, rating=5, comment="Impresionante arquitectura y historia.")
+    review26 = board.create_review(site_id=site6.id_site, user_id=user1.id_user, rating=4, comment="Hermoso paisaje natural.")
+    
 
     # Crear imágenes para los sitios con rutas reales de MinIO
     site_images = [
@@ -898,5 +925,7 @@ def run():
 
     db.session.add_all(flags)
     db.session.commit()
+
+
 
     print("✔️  Base de datos rellenada con datos de prueba.")
