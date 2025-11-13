@@ -140,6 +140,9 @@ def create_app(env="development", static_folder=None):
             "feature_flags.feature_flags",
             "mantenimiento_admin.mantenimiento_admin",
             "api_sites.all_sites",
+            "api_search.search_nearby",
+            "api_search.search_by_filters",
+            "api_search.autocomplete_cities",
         ]
         if request.endpoint in exempt_endpoints:
             return
