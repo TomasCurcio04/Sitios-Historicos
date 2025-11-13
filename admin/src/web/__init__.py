@@ -32,7 +32,7 @@ from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 from src.web.controllers.mi_perfil import mi_perfil_bp
-from src.web.controllers.reseñas import bp as gestion_resenas_bp
+from src.web.controllers.resenias import bp as gestion_resenas_bp
 from src.web.config import config
 from src.web.storage import storage
 from src.core.services.auth.bcrypt import bcrypt
