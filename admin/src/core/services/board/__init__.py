@@ -12,6 +12,7 @@ from src.core.entity.category import Category
 from src.core.entity.state import State
 from src.core.entity.site_history import SiteHistory
 from src.core.entity.tag import Tag
+from src.core.entity.review import Review
 
 # -------------------------
 # Configuración de fuente de datos
@@ -168,6 +169,17 @@ def delete_site(site_id):
     session.commit()
     return True
 
+# -------------------------
+# Funciones de reseñas usando DB
+# -------------------------
+
+def create_review(**kwargs):
+    review = Review(**kwargs)
+    session = db.session
+    session.add(review)
+    session.commit()
+    session.refresh(review)
+    return review
 # -------------------------
 # Funciones de asignación
 # -------------------------
