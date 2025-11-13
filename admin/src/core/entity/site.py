@@ -67,14 +67,23 @@ class Site(Base):
         nullable=False,
         default=False,
     )
+    deleted: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
     tag: Mapped[list["Tag"]] = relationship(secondary=site_tag)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
     user: Mapped["Users"] = relationship(back_populates="sites")
     history: Mapped[list["SiteHistory"]] = relationship(back_populates="site_rel")
     images: Mapped[list["SiteImage"]] = relationship(back_populates="site_rel")
     reviews: Mapped[list["Review"]] = relationship("Review", back_populates="site_rel")
-    visits: Mapped["SiteVisit"] = relationship("SiteVisit", back_populates="site_rel", uselist=False)
-    favorites: Mapped[list["SiteFavorite"]] = relationship("SiteFavorite", back_populates="site_rel")
+    visits: Mapped["SiteVisit"] = relationship(
+        "SiteVisit", back_populates="site_rel", uselist=False
+    )
+    favorites: Mapped[list["SiteFavorite"]] = relationship(
+        "SiteFavorite", back_populates="site_rel"
+    )
 
     def __repr__(self):
         return f"<Site(name='{self.name}', state='{self.state}', is_visible={self.is_visible})>"
