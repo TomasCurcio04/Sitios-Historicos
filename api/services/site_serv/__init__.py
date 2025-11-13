@@ -1,30 +1,65 @@
 """Servicios de sitios para la API"""
 
-from src.core.services.board import list_sites
+from sqlalchemy import func, or_
+from src.core.database import db
+from src.core.entity.site import Site
+from src.core.entity.state import State
+from src.core.entity.tag import Tag
+from src.core.entity.site import site_tag
 
 
-def site_to_dict(site):
-    """Convierte un objeto Site a diccionario."""
-    return {
-        'id': site.id_site,
-        'name': site.name,
-        'short_description': site.short_description,
-        'city': site.city,
-        'latitude': float(site.latitude) if site.latitude else None,
-        'longitude': float(site.longitude) if site.longitude else None,
-        'is_visible': site.is_visible
-    }
-
-
-def all_sites_to_json():
-    """Listar todos los sitios en formato json"""
-    sites = list_sites()
-    var_return = []
-
-    # Convertir sitios a formato JSON
-    if isinstance(sites, list):
-        var_return = [site_to_dict(site) for site in sites]
+def listar_sitios(name=None, description=None, city=None, province=None, tags=None, 
+                  order_by=None, lat=None, long=None, radius=None, page=1, per_page=20):
+    """Listar sitios con filtros y paginación"""
+    query = db.session.query(Site).filter(Site.is_visible, ~Site.deleted)
+    
+    # Filtro por nombre
+    if name:
+        query = query.filter(Site.name.ilike(f'%{name}%'))
+    
+    # Filtro por descripción
+    if description:
+        query = query.filter(or_(
+            Site.short_description.ilike(f'%{description}%'),
+            Site.full_description.ilike(f'%{description}%')
+        ))
+    
+    # Filtro por ciudad
+    if city:
+        query = query.filter(Site.city.ilike(city))
+    
+    # Filtro por provincia
+    if province:
+        query = query.join(State).filter(State.name.ilike(province))
+    
+    # Filtro por tags
+    if tags:
+        tag_list = [tag.strip() for tag in tags.split(',')]
+        query = query.join(site_tag).join(Tag).filter(Tag.name.in_(tag_list))
+    
+    # Filtro geoespacial
+    if lat and long and radius:
+        distance = func.sqrt(
+            func.pow(69.1 * (Site.latitude - lat), 2) +
+            func.pow(69.1 * (Site.longitude - long) * func.cos(Site.latitude / 57.3), 2)
+        )
+        query = query.filter(distance <= radius)
+    
+    # Ordenamiento
+    if order_by == 'latest':
+        query = query.order_by(Site.date_registered.desc())
+    elif order_by == 'oldest':
+        query = query.order_by(Site.date_registered.asc())
     else:
-        var_return = [site_to_dict(site) for site in sites.get("items", [])]
-
-    return var_return
+        query = query.order_by(Site.id_site)
+    
+    # Paginación
+    total = query.count()
+    items = query.offset((page - 1) * per_page).limit(per_page).all()
+    
+    return {
+        'total': total,
+        'page': page,
+        'per_page': per_page,
+        'items': items
+    }
