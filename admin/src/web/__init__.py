@@ -32,6 +32,7 @@ from src.web.controllers.users import user_bp
 from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 from src.web.controllers.mi_perfil import mi_perfil_bp
+from src.web.controllers.reseñas import bp as gestion_resenas_bp
 from src.web.config import config
 from src.web.storage import storage
 from src.core.services.auth.bcrypt import bcrypt
@@ -110,6 +111,7 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(mantenimiento_admin_bp)
     app.register_blueprint(mi_perfil_bp)
     app.register_blueprint(api_sites_bp)
+    app.register_blueprint(gestion_resenas_bp)
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)
