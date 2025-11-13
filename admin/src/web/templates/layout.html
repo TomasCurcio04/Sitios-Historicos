@@ -49,15 +49,15 @@
             <nav class="sidenav" id="sidenav">
                 {% if is_authenticated() %}
                 <a href="{{ url_for('sites.index') }}"
-                    class="{% if request.path == '/gestionsitioshistoricos' %}active{% endif %}">
+                    class="{% if request.path == url_for('sites.index') %}active{% endif %}">
                     Gestión de sitios históricos
                 </a>
                 <a href="{{ url_for('web.validacion_propuesta') }}"
-                    class="{% if request.path == '/validacion_propuesta' %}active{% endif %}">
+                    class="{% if request.path == url_for('web.validacion_propuesta') %}active{% endif %}">
                     Validación de propuestas
                 </a>
-                <a href="{{ url_for('web.moderacion_resenias') }}"
-                    class="{% if request.path == '/moderacion_resenias' %}active{% endif %}">
+                <a href="{{ url_for('gestion_resenas.index') }}"
+                    class="{% if request.path == url_for('gestion_resenas.index') %}active{% endif %}">
                     Moderación de reseñas
                 </a>
                 <a href="{{ url_for('users.user_index') }}"
