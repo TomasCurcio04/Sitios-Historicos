@@ -2,10 +2,9 @@
 
 from sqlalchemy import func, or_
 from src.core.database import db
-from src.core.entity.site import Site
+from src.core.entity.site import Site, site_tag
 from src.core.entity.state import State
 from src.core.entity.tag import Tag
-from src.core.entity.site import site_tag
 
 
 def listar_sitios(name=None, description=None, city=None, province=None, tags=None, 
