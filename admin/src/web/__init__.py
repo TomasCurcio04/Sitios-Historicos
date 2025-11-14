@@ -41,6 +41,7 @@ from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from api.controllers.sites import bp as api_sites_bp
 from api.controllers.search import bp as api_search_bp
+from flask_cors import CORS
 
 
 session = Session()
@@ -75,6 +76,8 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
+    # inicializo cors
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # --- 2. REGISTRA EL HELPER EN JINJA ---
     @app.context_processor
