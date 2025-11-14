@@ -15,7 +15,7 @@ class BaseConfig:
     SESSION_FILE_DIR = "./flask_session_data"
     SESSION_PERMANENT = True
     SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
-    CORS_ORIGINS = ["*"]
+    CORS_ORIGINS = ["http://localhost:5173"]
     CORS_RESOURCES = [r"/api/*"]
 
 
