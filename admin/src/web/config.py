@@ -16,6 +16,7 @@ class BaseConfig:
     SESSION_PERMANENT = True
     SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
     CORS_ORIGINS = ["*"]
+    CORS_RESOURCES = [r"/api/*"]
 
 
 class ProductionConfig(BaseConfig):

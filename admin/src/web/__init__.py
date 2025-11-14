@@ -77,7 +77,7 @@ def create_app(env="development", static_folder=None):
     # inicializo storage
     storage.init_app(app)
     # inicializo cors
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app)
 
     # --- 2. REGISTRA EL HELPER EN JINJA ---
     @app.context_processor
