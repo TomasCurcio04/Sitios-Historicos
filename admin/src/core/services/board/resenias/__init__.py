@@ -11,7 +11,6 @@ from sqlalchemy import or_, distinct
 def buscar_review_con_filtros(filtros):
     query = db.session.query(Review)
 
-    # Filtrar por sitio
    # Filtrar por sitio por ID
     if filtros.get("sitio"):
       query = query.filter(Review.id_site.in_(filtros["sitio"]))
