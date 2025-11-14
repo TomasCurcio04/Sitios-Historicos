@@ -98,6 +98,7 @@ def run():
         permission_name="review_publish", permission_description="Publicar Reseña"
     )
 
+
     role1 = create_role(name="admin", description="Administrador")
     role2 = create_role(name="editor", description="Editor")
     role3 = create_role(name="moderator", description="Moderador")
@@ -136,6 +137,8 @@ def run():
         permission16,
         permission17,
         permission18,
+        permission20,
+        permission24,
     ]
     role3.permission = [
         permission19,
@@ -969,7 +972,7 @@ def run():
     review23 = board.create_review(id_site=site23.id_site, id_public_user=userpublic3.id_public_user, rating=3, content="Buen lugar, pero podría mejorar en infraestructura.")
     review24 = board.create_review(id_site=site24.id_site, id_public_user=userpublic4.id_public_user, rating=4, content="Lugar histórico con gran valor cultural.") 
     review25 = board.create_review(id_site=site25.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="Impresionante arquitectura y historia.")
-    review26 = board.create_review(id_site=site1.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Hermoso paisaje natural.")
+    review26 = board.create_review(id_site=site26.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Hermoso paisaje.")
 
 
 
