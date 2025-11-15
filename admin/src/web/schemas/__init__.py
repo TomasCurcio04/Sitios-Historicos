@@ -1,0 +1,1 @@
+"""Schemas para validación y serialización de la API"""
