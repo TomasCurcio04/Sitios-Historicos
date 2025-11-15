@@ -6,25 +6,25 @@ from marshmallow import Schema, fields, validate
 class SiteQuerySchema(Schema):
     """Schema para validar parámetros de query del endpoint sites"""
     
-    name = fields.Str(missing=None)
-    description = fields.Str(missing=None)
-    city = fields.Str(missing=None)
-    province = fields.Str(missing=None)
-    tags = fields.Str(missing=None)
-    conservation_state = fields.Str(missing=None)
-    search = fields.Str(missing=None)
+    name = fields.Str(load_default=None)
+    description = fields.Str(load_default=None)
+    city = fields.Str(load_default=None)
+    province = fields.Str(load_default=None)
+    tags = fields.Str(load_default=None)
+    conservation_state = fields.Str(load_default=None)
+    search = fields.Str(load_default=None)
     
     order_by = fields.Str(
-        missing=None,
+        load_default=None,
         validate=validate.OneOf(['rating-5-1', 'rating-1-5', 'latest', 'oldest', 'name-asc', 'name-desc'])
     )
     
-    lat = fields.Float(missing=None, validate=validate.Range(min=-90, max=90))
-    long = fields.Float(missing=None, validate=validate.Range(min=-180, max=180))
-    radius = fields.Float(missing=None, validate=validate.Range(min=0))
+    lat = fields.Float(load_default=None, validate=validate.Range(min=-90, max=90))
+    long = fields.Float(load_default=None, validate=validate.Range(min=-180, max=180))
+    radius = fields.Float(load_default=None, validate=validate.Range(min=0))
     
-    page = fields.Int(missing=1, validate=validate.Range(min=1))
-    per_page = fields.Int(missing=20, validate=validate.Range(min=1, max=100))
+    page = fields.Int(load_default=1, validate=validate.Range(min=1))
+    per_page = fields.Int(load_default=20, validate=validate.Range(min=1, max=100))
 
 
 class SiteResponseSchema(Schema):
