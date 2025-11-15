@@ -3,7 +3,9 @@
 # from os import environ
 from datetime import timedelta
 from os import environ
+from dotenv import load_dotenv
 
+load_dotenv()  # Cargar variables de entorno desde el archivo .env
 
 class BaseConfig:
     """Base configuration class."""
@@ -16,8 +18,6 @@ class BaseConfig:
     SESSION_PERMANENT = True
     SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
     CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
-    GOOGLE_CLIENT_ID = ""
-    GOOGLE_CLIENT_SECRET = ""
 
 
 class ProductionConfig(BaseConfig):
@@ -61,6 +61,8 @@ class DevelopmentConfig(BaseConfig):
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}{f'?{DB_SSL_PARAMS}' if DB_SSL_PARAMS else ''}"
         # "default": "postgresql+psycopg2://neondb_owner:npg_RAUO1X2TMZad@ep-red-river-a828fhqc-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require"
     }
+    GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
 
 
 
