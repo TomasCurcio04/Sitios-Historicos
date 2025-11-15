@@ -42,6 +42,9 @@ class SiteResponseSchema(Schema):
     tags = fields.List(fields.Str())
     state_of_conservation = fields.Str(allow_none=True)
     cover_image = fields.Str(allow_none=True)
+    images = fields.List(fields.Dict(), allow_none=True)
+    average_rating = fields.Float(allow_none=True)
+    review_count = fields.Int()
     inserted_at = fields.Str(allow_none=True)
     updated_at = fields.Str(allow_none=True)
 
