@@ -1,23 +1,40 @@
 """Funciones auxiliares para el servicio de sitios"""
 
 from collections import OrderedDict
-from api.services.site_serv import listar_sitios
+from api.services.site_serv import listar_sitios, get_site_by_id_service
 from src.core.database import db
 from src.core.entity.site_image import SiteImage
 
 
-def site_to_dict(site):
+def site_to_dict(site, include_full_data=False):
     """Convierte un objeto Site a diccionario según especificación API."""
-    # Limitar tags a máximo 5 para el portal público
-    tags = [tag.name for tag in site.tag[:5]] if site.tag else []
+    # Para listado: limitar tags a 5, para detalle: todos los tags
+    tags = [tag.name for tag in (site.tag[:5] if not include_full_data else site.tag)] if site.tag else []
     
     # Imagen de portada (buscar thumbnail o primera disponible)
     cover_image = None
+    images = []
+    
     try:
-        # Buscar primero la imagen thumbnail
+        # Obtener todas las imágenes si es detalle completo
+        if include_full_data:
+            all_images = db.session.query(SiteImage).filter(
+                SiteImage.id_site == site.id_site
+            ).order_by(SiteImage.display_order, SiteImage.id_site_image).all()
+            
+            images = [{
+                "id": img.id_site_image,
+                "title": img.title,
+                "description": img.description,
+                "file_path": img.file_path,
+                "is_thumbnail": img.is_thumbnail,
+                "display_order": img.display_order
+            } for img in all_images]
+        
+        # Buscar imagen thumbnail
         thumbnail = db.session.query(SiteImage).filter(
             SiteImage.id_site == site.id_site,
-            SiteImage.is_thumbnail == True
+            SiteImage.is_thumbnail
         ).first()
         
         if thumbnail:
@@ -31,8 +48,28 @@ def site_to_dict(site):
                 cover_image = first_image.file_path
     except Exception:
         cover_image = None
+        images = []
     
-    return {
+    # Calcular rating promedio y cantidad de reseñas si es detalle completo
+    average_rating = None
+    review_count = 0
+    
+    if include_full_data:
+        try:
+            from src.core.entity.review import Review
+            reviews_query = db.session.query(Review).filter(
+                Review.id_site == site.id_site,
+                Review.approved  # Solo reseñas aprobadas
+            )
+            
+            review_count = reviews_query.count()
+            if review_count > 0:
+                ratings = [r.rating for r in reviews_query.all()]
+                average_rating = sum(ratings) / len(ratings)
+        except Exception:
+            pass
+    
+    result = {
         "id": site.id_site,
         "name": site.name,
         "short_description": site.short_description,
@@ -48,6 +85,16 @@ def site_to_dict(site):
         "inserted_at": site.date_registered.isoformat() + "Z" if site.date_registered else None,
         "updated_at": site.date_registered.isoformat() + "Z" if site.date_registered else None
     }
+    
+    # Agregar datos adicionales para detalle completo
+    if include_full_data:
+        result.update({
+            "images": images,
+            "average_rating": round(average_rating, 1) if average_rating else None,
+            "review_count": review_count
+        })
+    
+    return result
 
 
 def all_sites_to_json(**kwargs):
@@ -65,3 +112,13 @@ def all_sites_to_json(**kwargs):
             "total": result["total"]
         }
     }
+
+
+def get_site_by_id(site_id):
+    """Obtiene un sitio por ID y registra la visita"""
+    site = get_site_by_id_service(site_id)
+    
+    if not site:
+        return None
+    
+    return site_to_dict(site, include_full_data=True)

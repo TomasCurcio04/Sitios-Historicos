@@ -8,6 +8,7 @@ from src.core.entity.state import State
 from src.core.entity.tag import Tag
 from src.core.entity.review import Review
 from src.core.entity.site_image import SiteImage
+from src.core.services.board.site_views import add_site_visit
 
 
 def listar_sitios(
@@ -27,13 +28,11 @@ def listar_sitios(
 ):
     """Listar sitios con filtros y paginación"""
     query = db.session.query(Site).filter(Site.is_visible, ~Site.deleted)
-    
+
     # Join con state_rel y eager loading de relaciones
     query = query.join(State, Site.state == State.id_state)
     query = query.options(
-        joinedload(Site.state_rel),
-        joinedload(Site.tag),
-        joinedload(Site.images)
+        joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
     )
 
     # Filtro por nombre
@@ -48,7 +47,7 @@ def listar_sitios(
                 Site.short_description.ilike(f"%{search}%"),
             )
         )
-    
+
     # Filtro por descripción
     if description:
         query = query.filter(
@@ -69,7 +68,7 @@ def listar_sitios(
     # Filtro por estado de conservación
     if conservation_state:
         query = query.filter(Site.conservation_state.ilike(conservation_state))
-    
+
     # Filtro por tags
     if tags:
         tag_list = [tag.strip() for tag in tags.split(",")]
@@ -92,20 +91,26 @@ def listar_sitios(
         query = query.order_by(Site.date_registered.asc())
     elif order_by == "rating-5-1":
         # Ordenar por rating promedio descendente (5 a 1)
-        avg_rating = db.session.query(
-            Review.id_site,
-            func.avg(Review.rating).label('avg_rating')
-        ).group_by(Review.id_site).subquery()
-        
+        avg_rating = (
+            db.session.query(
+                Review.id_site, func.avg(Review.rating).label("avg_rating")
+            )
+            .group_by(Review.id_site)
+            .subquery()
+        )
+
         query = query.outerjoin(avg_rating, Site.id_site == avg_rating.c.id_site)
         query = query.order_by(avg_rating.c.avg_rating.desc().nullslast())
     elif order_by == "rating-1-5":
         # Ordenar por rating promedio ascendente (1 a 5)
-        avg_rating = db.session.query(
-            Review.id_site,
-            func.avg(Review.rating).label('avg_rating')
-        ).group_by(Review.id_site).subquery()
-        
+        avg_rating = (
+            db.session.query(
+                Review.id_site, func.avg(Review.rating).label("avg_rating")
+            )
+            .group_by(Review.id_site)
+            .subquery()
+        )
+
         query = query.outerjoin(avg_rating, Site.id_site == avg_rating.c.id_site)
         query = query.order_by(avg_rating.c.avg_rating.asc().nullsfirst())
     elif order_by == "name-asc":
@@ -120,3 +125,27 @@ def listar_sitios(
     items = query.offset((page - 1) * per_page).limit(per_page).all()
 
     return {"total": total, "page": page, "per_page": per_page, "items": items}
+
+
+def get_site_by_id_service(site_id):
+    """Obtiene un sitio por ID y registra la visita"""
+    # Obtener sitio con relaciones
+    site = (
+        db.session.query(Site)
+        .filter(Site.id_site == site_id, Site.is_visible, ~Site.deleted)
+        .options(
+            joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
+        )
+        .first()
+    )
+
+    if not site:
+        return None
+
+    # Registrar visita
+    try:
+        add_site_visit(site_id)
+    except Exception:
+        pass  # Si falla el registro de visita, no afecta la respuesta
+
+    return site
