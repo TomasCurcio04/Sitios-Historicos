@@ -149,3 +149,59 @@ def get_site_by_id_service(site_id):
         pass  # Si falla el registro de visita, no afecta la respuesta
 
     return site
+
+def create_site_service(site_data, user_id):
+    """Crea un nuevo sitio histórico en la base de datos"""
+    from datetime import datetime, timezone
+    
+    # Buscar provincia por nombre
+    state = db.session.query(State).filter(
+        State.name.ilike(site_data['province'])
+    ).first()
+    
+    if not state:
+        raise ValueError(f"Province '{site_data['province']}' not found")
+    
+    # Crear sitio (inicialmente no visible hasta aprobación)
+    site = Site(
+        name=site_data['name'],
+        short_description=site_data['short_description'],
+        full_description=site_data['description'],
+        city=site_data['city'],
+        state=state.id_state,
+        latitude=site_data['lat'],
+        longitude=site_data['long'],
+        conservation_state=site_data['state_of_conservation'],
+        category=1,  # Categoría por defecto
+        created_by=user_id,
+        is_visible=False,  # Requiere aprobación
+        date_registered=datetime.now(timezone.utc)
+    )
+    
+    db.session.add(site)
+    db.session.flush()  # Para obtener el ID
+    
+    # Procesar tags
+    for tag_name in site_data['tags']:
+        tag = db.session.query(Tag).filter(
+            Tag.name.ilike(tag_name.strip())
+        ).first()
+        
+        if not tag:
+            # Crear tag si no existe
+            tag = Tag(name=tag_name.strip())
+            db.session.add(tag)
+            db.session.flush()
+        
+        site.tag.append(tag)
+    
+    db.session.commit()
+    
+    # Recargar con relaciones
+    return db.session.query(Site).filter(
+        Site.id_site == site.id_site
+    ).options(
+        joinedload(Site.state_rel),
+        joinedload(Site.tag),
+        joinedload(Site.images)
+    ).first()

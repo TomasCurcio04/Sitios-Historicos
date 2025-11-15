@@ -49,6 +49,23 @@ class SiteResponseSchema(Schema):
     updated_at = fields.Str(allow_none=True)
 
 
+class SiteCreateSchema(Schema):
+    """Schema para crear un nuevo sitio"""
+    
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=150))
+    short_description = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    description = fields.Str(required=True)
+    city = fields.Str(required=True, validate=validate.Length(min=1, max=50))
+    province = fields.Str(required=True)
+    lat = fields.Float(required=True, validate=validate.Range(min=-90, max=90))
+    long = fields.Float(required=True, validate=validate.Range(min=-180, max=180))
+    tags = fields.List(fields.Str(), required=True)
+    state_of_conservation = fields.Str(
+        required=True,
+        validate=validate.OneOf(['excelente', 'bueno', 'regular', 'malo'])
+    )
+
+
 class SitesListResponseSchema(Schema):
     """Schema para la respuesta completa del listado de sites"""
     

@@ -2,8 +2,8 @@
 
 from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
-from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema, SiteResponseSchema
-from api.services.site_serv.utils_site import all_sites_to_json, get_site_by_id
+from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema, SiteResponseSchema, SiteCreateSchema
+from api.services.site_serv.utils_site import all_sites_to_json, get_site_by_id, create_site
 
 bp = Blueprint("api_sites", __name__, url_prefix="/api/sites")
 
@@ -59,6 +59,47 @@ def get_site(site_id):
         # Serializar respuesta usando schema
         response_schema = SiteResponseSchema()
         return jsonify(response_schema.dump(site_data))
+        
+    except Exception as e:
+        return jsonify({
+            "error": {
+                "code": "server_error",
+                "message": "An unexpected error occurred"
+            }
+        }), 500
+
+
+@bp.route("/", methods=["POST"])
+@bp.route("", methods=["POST"])
+def create_site_endpoint():
+    """Crea un nuevo sitio histórico."""
+    try:
+        # TODO: Implementar autenticación JWT cuando esté disponible
+        # Placeholder: usar user_id = 1 hasta que esté la autenticación
+        user_id = 1
+        
+        # Validar datos usando schema
+        schema = SiteCreateSchema()
+        try:
+            site_data = schema.load(request.get_json())
+        except ValidationError as err:
+            return jsonify({
+                "error": {
+                    "code": "invalid_data",
+                    "message": "Invalid input data",
+                    "details": err.messages
+                }
+            }), 400
+        
+        # Crear sitio
+        new_site = create_site(site_data, user_id)
+        
+        # Serializar respuesta
+        response_schema = SiteResponseSchema()
+        response_data = response_schema.dump(new_site)
+        response_data['user_id'] = user_id
+        
+        return jsonify(response_data), 201
         
     except Exception as e:
         return jsonify({

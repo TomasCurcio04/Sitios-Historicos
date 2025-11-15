@@ -899,4 +899,103 @@ def run():
     db.session.add_all(flags)
     db.session.commit()
 
+    # Crear reseñas aleatorias
+    create_sample_reviews()
+
     print("✔️  Base de datos rellenada con datos de prueba.")
+
+
+def create_sample_reviews():
+    """Crea reseñas aleatorias para testing"""
+    import random
+    from datetime import timedelta
+    from src.core.entity.review import ReviewStatus
+
+    # Comentarios de ejemplo
+    comments = [
+        "Excelente lugar histórico, muy bien conservado",
+        "Falta mejor señalización en el interior",
+        "Hermosa arquitectura colonial",
+        "El guía fue muy informativo",
+        "Necesita más mantenimiento",
+        "Imperdible para los amantes de la historia",
+        "Muy interesante pero algo descuidado",
+        "Perfecto para visitar en familia",
+        "La vista desde aquí es espectacular",
+        "Recomiendo visitarlo temprano",
+        "Podría tener mejor iluminación",
+        "Un tesoro histórico bien preservado",
+        "Faltan carteles explicativos",
+        "Lugar mágico lleno de historia",
+        "Acceso un poco complicado pero vale la pena",
+    ]
+
+    # Crear usuario público de prueba si no existe
+    public_user = db.session.query(PublicUser).first()
+    if not public_user:
+        public_user = PublicUser(
+            google_id="test_user_123", email="test@example.com", name="Usuario Test"
+        )
+        db.session.add(public_user)
+        db.session.commit()
+
+    # Obtener sitios visibles
+    sites = (
+        db.session.query(board.Site)
+        .filter(board.Site.is_visible, ~board.Site.deleted)
+        .all()
+    )
+
+    # Crear reseñas para algunos sitios (70%)
+    sites_with_reviews = random.sample(sites, min(len(sites), int(len(sites) * 0.7)))
+
+    for site in sites_with_reviews:
+        # 1-6 reseñas por sitio
+        num_reviews = random.randint(1, 6)
+
+        for _ in range(num_reviews):
+            # Rating aleatorio (1-5)
+            rating = random.randint(1, 5)
+
+            # Comentario aleatorio
+            comment = random.choice(comments)
+
+            # Estado con probabilidades realistas
+            status_choice = random.choices(
+                [ReviewStatus.APROBADA, ReviewStatus.PENDIENTE, ReviewStatus.RECHAZADA],
+                weights=[
+                    0.6,
+                    0.3,
+                    0.1,
+                ],  # 60% aprobadas, 30% pendientes, 10% rechazadas
+            )[0]
+
+            # Fechas aleatorias en los últimos 6 meses
+            from datetime import datetime, timezone
+
+            days_ago = random.randint(1, 180)
+            created_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
+            updated_date = created_date + timedelta(hours=random.randint(0, 48))
+
+            # Fecha de moderación solo si está aprobada o rechazada
+            moderated_date = None
+            if status_choice in [ReviewStatus.APROBADA, ReviewStatus.RECHAZADA]:
+                moderated_date = created_date + timedelta(days=random.randint(1, 7))
+
+            # Crear reseña
+            review = Review(
+                id_site=site.id_site,
+                id_public_user=public_user.id_public_user,
+                rating=rating,
+                content=comment,
+                status=status_choice,
+                date_created=created_date,
+                updated_at=updated_date,
+                date_moderated=moderated_date,
+                moderated_by=1 if moderated_date else None,
+            )
+
+            db.session.add(review)
+
+    db.session.commit()
+    print("✔️  Reseñas de prueba creadas exitosamente")

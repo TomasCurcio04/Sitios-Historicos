@@ -8,16 +8,31 @@ from src.core.entity.state import State
 from src.core.entity.category import Category
 import csv
 import io
-from flask import Blueprint, request, render_template, flash, redirect, url_for, Response, session, current_app
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    Response,
+    session,
+    current_app,
+)
 from datetime import datetime
-from src.core.services.board.busqueda_avanzada_serv import buscar_sites, obtener_provincias_con_sitios, ordenar_lista, paginar_lista
+from src.core.services.board.busqueda_avanzada_serv import (
+    buscar_sites,
+    obtener_provincias_con_sitios,
+    ordenar_lista,
+    paginar_lista,
+)
 from src.core.services.board.tag_serv import obtener_todas_las_tags
 from src.core.entity.site import Site
 from src.core.entity.site_image import SiteImage
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
-#USUARIO_ES_ADMIN = True  //esto era para pruebas
+# USUARIO_ES_ADMIN = True  //esto era para pruebas
 
 
 # =====================================================
@@ -25,7 +40,8 @@ bp = Blueprint("sites", __name__, url_prefix="/sitios")
 # =====================================================
 
 
-bp = Blueprint('sites', __name__, url_prefix='/sitios')
+bp = Blueprint("sites", __name__, url_prefix="/sitios")
+
 
 def parse_date(s):
     try:
@@ -33,7 +49,8 @@ def parse_date(s):
     except (ValueError, TypeError):
         return None
 
-@bp.get('/')
+
+@bp.get("/")
 def index():
     ciudad = request.args.get("ciudad", "").strip()
     provincia = request.args.get("provincia", "").strip()
@@ -50,56 +67,61 @@ def index():
     page = int(request.args.get("page", 1))
 
     if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
-        flash("El rango de fechas es inválido: 'Desde' no puede ser mayor que 'Hasta'.", "error")
-    
+        flash(
+            "El rango de fechas es inválido: 'Desde' no puede ser mayor que 'Hasta'.",
+            "error",
+        )
 
-    results = buscar_sites({
-        "ciudad": ciudad,
-        "provincia": provincia,
-        "estado": estado,
-        "visibilidad": visibilidad,
-        "busqueda_texto": busqueda_texto,
-        "tags": tags,
-        "fecha_desde": fecha_desde,
-        "fecha_hasta": fecha_hasta
-    })  
-    
-     # Ordenar la lista en Python
+    results = buscar_sites(
+        {
+            "ciudad": ciudad,
+            "provincia": provincia,
+            "estado": estado,
+            "visibilidad": visibilidad,
+            "busqueda_texto": busqueda_texto,
+            "tags": tags,
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta,
+        }
+    )
+
+    # Ordenar la lista en Python
     results = ordenar_lista(results, sort, order)
 
     # Paginación
     page_items, total_pages, total_results = paginar_lista(results, page, per_page)
     total_pages = max(1, total_pages)
-    
+
     # --- LÓGICA PARA BUSCAR PORTADAS ---
-    
+
     # Obtenemos config de MinIO
-    base_url = current_app.config['MINIO_SERVER'] 
-    bucket_name = current_app.config['MINIO_BUCKET']
+    base_url = current_app.config["MINIO_SERVER"]
+    bucket_name = current_app.config["MINIO_BUCKET"]
 
     for item in page_items:
         # Buscamos la portada para este item['id']
-        portada = db.session.query(SiteImage.file_path).filter_by(
-            id_site=item['id'], 
-            is_thumbnail=True
-        ).first()
-        
-        if portada and portada.file_path:
+        portada = (
+            db.session.query(SiteImage.image_path)
+            .filter_by(id_site=item["id"], is_thumbnail=True)
+            .first()
+        )
+
+        if portada and portada.image_path:
             # Construimos la URL completa
-            item['portada_url'] = f"http://{base_url}/{bucket_name}/{portada.file_path}"
+            item["portada_url"] = (
+                f"http://{base_url}/{bucket_name}/{portada.image_path}"
+            )
         else:
-            item['portada_url'] = None # Para mostrar "Sin imagen"
-    
-    
-    
+            item["portada_url"] = None  # Para mostrar "Sin imagen"
+
     all_tags = obtener_todas_las_tags()
     provincias = obtener_provincias_con_sitios()
 
     # 1. Obtenemos el rol REAL de la sesión
     user_role = session.get("role", 0)  # 0 significa "invitado" si no está logueado
-    
+
     # 2. Determinamos si es admin (rol 1)
-    usuario_es_admin = (user_role == 1)
+    usuario_es_admin = user_role == 1
 
     return render_template(
         "sites/index.html",
@@ -122,9 +144,8 @@ def index():
         total_results=total_results,
         request=request,
         usuario_es_admin=usuario_es_admin,
-        user_role=user_role
+        user_role=user_role,
     )
-
 
 
 # =====================================================
@@ -247,7 +268,10 @@ def actualizar(site_id):
         db.session.commit()
 
         if cambios_detectados:
-            flash(f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).", "success")
+            flash(
+                f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).",
+                "success",
+            )
         else:
             flash("Sitio guardado sin cambios detectados.", "info")
 

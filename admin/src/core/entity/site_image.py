@@ -16,10 +16,10 @@ class SiteImage(Base):
 
     __tablename__ = "site_image"
     id_site_image: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    id_site: Mapped[int] = mapped_column(ForeignKey("site.id_site"), nullable=False)
+    site_id: Mapped[int] = mapped_column(ForeignKey("site.id_site"), nullable=False)
     site_rel: Mapped["Site"] = relationship(back_populates="images")
     title: Mapped[str] = mapped_column(String(50), nullable=False)
-    file_path: Mapped[str] = mapped_column(String(150), nullable=False)
+    image_path: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str] = mapped_column(String(120), nullable=False)
     is_thumbnail: Mapped[bool] = mapped_column(default=False)
     display_order: Mapped[int] = mapped_column(default=0)
@@ -33,4 +33,4 @@ class SiteImage(Base):
     )
 
     def __repr__(self):
-        return f"<SiteImage(title='{self.title}', file_path='{self.file_path}', is_thumbnail={self.is_thumbnail})>"
+        return f"<SiteImage(title='{self.title}', image_path='{self.image_path}', is_thumbnail={self.is_thumbnail})>"
