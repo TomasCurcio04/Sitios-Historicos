@@ -1,8 +1,9 @@
 """Controlador de sitios de la API"""
 
-import json
-from flask import Blueprint, Response, request
-from api.services.site_serv.utils_site import all_sites_to_json
+from flask import Blueprint, request, jsonify
+from marshmallow import ValidationError
+from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema, SiteResponseSchema, SiteCreateSchema
+from api.services.site_serv.utils_site import all_sites_to_json, get_site_by_id, create_site
 
 bp = Blueprint("api_sites", __name__, url_prefix="/api/sites")
 
@@ -11,21 +12,99 @@ bp = Blueprint("api_sites", __name__, url_prefix="/api/sites")
 @bp.route("", methods=["GET"])
 def all_sites():
     """Retorna sitios con filtros."""
-    # Obtener parámetros de la URL
-    params = {
-        'name': request.args.get('name'),
-        'description': request.args.get('description'),
-        'city': request.args.get('city'),
-        'province': request.args.get('province'),
-        'tags': request.args.get('tags'),
-        'order_by': request.args.get('order_by'),
-        'lat': float(request.args.get('lat')) if request.args.get('lat') else None,
-        'long': float(request.args.get('long')) if request.args.get('long') else None,
-        'radius': float(request.args.get('radius')) if request.args.get('radius') else None,
-        'page': int(request.args.get('page', 1)),
-        'per_page': min(int(request.args.get('per_page', 20)), 100)
-    }
-    
-    sites = all_sites_to_json(**params)
-    json_str = json.dumps(sites, ensure_ascii=False)
-    return Response(json_str, mimetype='application/json')
+    try:
+        # Validar parámetros usando schema
+        schema = SiteQuerySchema()
+        try:
+            params = schema.load(request.args)
+        except ValidationError as err:
+            return jsonify({
+                "error": {
+                    "code": "invalid_query",
+                    "message": "Parameter validation failed",
+                    "details": err.messages
+                }
+            }), 400
+        
+        # Obtener sitios
+        sites_data = all_sites_to_json(**params)
+        
+        # Serializar respuesta usando schema
+        response_schema = SitesListResponseSchema()
+        return jsonify(response_schema.dump(sites_data))
+        
+    except Exception as e:
+        return jsonify({
+            "error": {
+                "code": "server_error",
+                "message": "An unexpected error occurred"
+            }
+        }), 500
+
+
+@bp.route("/<int:site_id>", methods=["GET"])
+def get_site(site_id):
+    """Obtiene detalles de un sitio específico por ID."""
+    try:
+        site_data = get_site_by_id(site_id)
+        
+        if not site_data:
+            return jsonify({
+                "error": {
+                    "code": "not_found",
+                    "message": "Site not found"
+                }
+            }), 404
+        
+        # Serializar respuesta usando schema
+        response_schema = SiteResponseSchema()
+        return jsonify(response_schema.dump(site_data))
+        
+    except Exception as e:
+        return jsonify({
+            "error": {
+                "code": "server_error",
+                "message": "An unexpected error occurred"
+            }
+        }), 500
+
+
+@bp.route("/", methods=["POST"])
+@bp.route("", methods=["POST"])
+def create_site_endpoint():
+    """Crea un nuevo sitio histórico."""
+    try:
+        # TODO: Implementar autenticación JWT cuando esté disponible
+        # Placeholder: usar user_id = 1 hasta que esté la autenticación
+        user_id = 1
+        
+        # Validar datos usando schema
+        schema = SiteCreateSchema()
+        try:
+            site_data = schema.load(request.get_json())
+        except ValidationError as err:
+            return jsonify({
+                "error": {
+                    "code": "invalid_data",
+                    "message": "Invalid input data",
+                    "details": err.messages
+                }
+            }), 400
+        
+        # Crear sitio
+        new_site = create_site(site_data, user_id)
+        
+        # Serializar respuesta
+        response_schema = SiteResponseSchema()
+        response_data = response_schema.dump(new_site)
+        response_data['user_id'] = user_id
+        
+        return jsonify(response_data), 201
+        
+    except Exception as e:
+        return jsonify({
+            "error": {
+                "code": "server_error",
+                "message": "An unexpected error occurred"
+            }
+        }), 500

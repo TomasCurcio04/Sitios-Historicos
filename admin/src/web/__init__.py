@@ -41,7 +41,11 @@ from src.core import seeds
 from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from api.controllers.sites import bp as api_sites_bp
+from api.controllers.reviews import bp as api_reviews_bp
+from api.controllers.favorites import bp as api_favorites_bp
+from api.controllers.me import bp as api_me_bp
 from api.controllers.search import bp as api_search_bp
+from flask_cors import CORS
 
 
 session = Session()
@@ -76,6 +80,8 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
+    # inicializo cors
+    CORS(app)
 
     # --- 2. REGISTRA EL HELPER EN JINJA ---
     @app.context_processor
@@ -112,6 +118,9 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(mantenimiento_admin_bp)
     app.register_blueprint(mi_perfil_bp)
     app.register_blueprint(api_sites_bp)
+    app.register_blueprint(api_reviews_bp)
+    app.register_blueprint(api_favorites_bp)
+    app.register_blueprint(api_me_bp)
     app.register_blueprint(api_search_bp)
     app.register_blueprint(gestion_resenas_bp)
 
@@ -142,6 +151,14 @@ def create_app(env="development", static_folder=None):
             "feature_flags.feature_flags",
             "mantenimiento_admin.mantenimiento_admin",
             "api_sites.all_sites",
+            "api_sites.get_site",
+            "api_sites.create_site_endpoint",
+            "api_reviews.get_site_reviews",
+            "api_reviews.create_site_review",
+            "api_reviews.get_site_review",
+            "api_reviews.delete_site_review",
+            "api_favorites.toggle_site_favorite_endpoint",
+            "api_me.get_my_favorites",
             "api_search.search_nearby",
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",

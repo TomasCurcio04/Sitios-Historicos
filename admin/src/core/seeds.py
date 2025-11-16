@@ -907,73 +907,103 @@ def run():
     db.session.add_all(flags)
     db.session.commit()
 
-        # ----------------------------
-    # Crear 5 usuarios públicos
-    # ----------------------------
-    userpublic1 = create_user_public(
-        google_id="001",
-        email="userpublic1@example.com",
-        name="Usuario Público 1",
-        picture="https://example.com/pic1.jpg"
-    )
-
-    userpublic2 = create_user_public(
-        google_id="002",
-        email="userpublic2@example.com",
-        name="Usuario Público 2",
-        picture="https://example.com/pic2.jpg"
-    )
-
-    userpublic3 = create_user_public(
-        google_id="003",
-        email="userpublic3@example.com",
-        name="Usuario Público 3",
-        picture="https://example.com/pic3.jpg"
-    )
-
-    userpublic4 = create_user_public(
-        google_id="004",
-        email="userpublic4@example.com",
-        name="Usuario Público 4",
-        picture="https://example.com/pic4.jpg"
-    )
-
-    userpublic5 = create_user_public(
-        google_id="005",
-        email="userpublic5@example.com",
-        name="Usuario Público 5",
-        picture="https://example.com/pic5.jpg"
-    )
-
-
-
-    review1 = board.create_review(id_site=site1.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Hermoso paisaje natural.")
-    review2 = board.create_review(id_site=site2.id_site, id_public_user=userpublic2.id_public_user, rating=5, content="Excelente lugar para visitar.")
-    review3 = board.create_review(id_site=site3.id_site, id_public_user=userpublic3.id_public_user, rating=4, content="Muy recomendable, volvería sin dudarlo.")
-    review4 = board.create_review(id_site=site4.id_site, id_public_user=userpublic4.id_public_user, rating=3, content="Buen servicio y atención del personal.")
-    review5 = board.create_review(id_site=site5.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="Lugar tranquilo y acogedor.")
-    review6 = board.create_review(id_site=site6.id_site, id_public_user=userpublic1.id_public_user, rating=2, content="No me gustó tanto como esperaba.")
-    review7 = board.create_review(id_site=site7.id_site, id_public_user=userpublic2.id_public_user, rating=5, content="Ideal para pasar un día en familia.")
-    review8 = board.create_review(id_site=site8.id_site, id_public_user=userpublic3.id_public_user, rating=4, content="Increíbles vistas y fotografías.")
-    review9 = board.create_review(id_site=site9.id_site, id_public_user=userpublic4.id_public_user, rating=3, content="Mucha gente, pero vale la pena.")
-    review10 = board.create_review(id_site=site10.id_site, id_public_user=userpublic5.id_public_user, rating=4, content="Un sitio histórico muy interesante.")
-    review11 = board.create_review(id_site=site11.id_site, id_public_user=userpublic1.id_public_user, rating=5, content="Perfecto para una escapada de fin de semana.")
-    review12 = board.create_review(id_site=site12.id_site, id_public_user=userpublic2.id_public_user, rating=2, content="Demasiado caro para lo que ofrecen.")
-    review13 = board.create_review(id_site=site13.id_site, id_public_user=userpublic3.id_public_user, rating=5, content="La comida local es deliciosa.")
-    review14 = board.create_review(id_site=site14.id_site, id_public_user=userpublic4.id_public_user, rating=4, content="Fácil acceso y bien señalizado.")
-    review15 = board.create_review(id_site=site15.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="El personal fue muy amable.")
-    review16 = board.create_review(id_site=site16.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Un lugar pintoresco y único.")
-    review17 = board.create_review(id_site=site17.id_site, id_public_user=userpublic2.id_public_user, rating=3, content="No recomiendo visitarlo en temporada alta.")
-    review18 = board.create_review(id_site=site18.id_site, id_public_user=userpublic3.id_public_user, rating=5, content="Lugar con mucha historia y cultura.")
-    review19 = board.create_review(id_site=site19.id_site, id_public_user=userpublic4.id_public_user, rating=5, content="Ideal para amantes de la naturaleza.")
-    review20 = board.create_review(id_site=site20.id_site, id_public_user=userpublic5.id_public_user, rating=4, content="Una experiencia inolvidable.")
-    review21 = board.create_review(id_site=site21.id_site, id_public_user=userpublic1.id_public_user, rating=5, content="Excelente lugar para visitar.")
-    review22 = board.create_review(id_site=site22.id_site, id_public_user=userpublic2.id_public_user, rating=4, content="Muy interesante y bien conservado.")
-    review23 = board.create_review(id_site=site23.id_site, id_public_user=userpublic3.id_public_user, rating=3, content="Buen lugar, pero podría mejorar en infraestructura.")
-    review24 = board.create_review(id_site=site24.id_site, id_public_user=userpublic4.id_public_user, rating=4, content="Lugar histórico con gran valor cultural.") 
-    review25 = board.create_review(id_site=site25.id_site, id_public_user=userpublic5.id_public_user, rating=5, content="Impresionante arquitectura y historia.")
-    review26 = board.create_review(id_site=site26.id_site, id_public_user=userpublic1.id_public_user, rating=4, content="Hermoso paisaje.")
-
-
+    # Crear reseñas aleatorias
+    create_sample_reviews()
 
     print("✔️  Base de datos rellenada con datos de prueba.")
+
+
+def create_sample_reviews():
+    """Crea reseñas aleatorias para testing"""
+    import random
+    from datetime import timedelta
+    from src.core.entity.review import ReviewStatus
+
+    # Comentarios de ejemplo
+    comments = [
+        "Excelente lugar histórico, muy bien conservado",
+        "Falta mejor señalización en el interior",
+        "Hermosa arquitectura colonial",
+        "El guía fue muy informativo",
+        "Necesita más mantenimiento",
+        "Imperdible para los amantes de la historia",
+        "Muy interesante pero algo descuidado",
+        "Perfecto para visitar en familia",
+        "La vista desde aquí es espectacular",
+        "Recomiendo visitarlo temprano",
+        "Podría tener mejor iluminación",
+        "Un tesoro histórico bien preservado",
+        "Faltan carteles explicativos",
+        "Lugar mágico lleno de historia",
+        "Acceso un poco complicado pero vale la pena",
+    ]
+
+    # Crear usuario público de prueba si no existe
+    public_user = db.session.query(PublicUser).first()
+    if not public_user:
+        public_user = PublicUser(
+            google_id="test_user_123", email="test@example.com", name="Usuario Test"
+        )
+        db.session.add(public_user)
+        db.session.commit()
+
+    # Obtener sitios visibles
+    sites = (
+        db.session.query(board.Site)
+        .filter(board.Site.is_visible, ~board.Site.deleted)
+        .all()
+    )
+
+    # Crear reseñas para algunos sitios (70%)
+    sites_with_reviews = random.sample(sites, min(len(sites), int(len(sites) * 0.7)))
+
+    for site in sites_with_reviews:
+        # 1-6 reseñas por sitio
+        num_reviews = random.randint(1, 6)
+
+        for _ in range(num_reviews):
+            # Rating aleatorio (1-5)
+            rating = random.randint(1, 5)
+
+            # Comentario aleatorio
+            comment = random.choice(comments)
+
+            # Estado con probabilidades realistas
+            status_choice = random.choices(
+                [ReviewStatus.APROBADA, ReviewStatus.PENDIENTE, ReviewStatus.RECHAZADA],
+                weights=[
+                    0.6,
+                    0.3,
+                    0.1,
+                ],  # 60% aprobadas, 30% pendientes, 10% rechazadas
+            )[0]
+
+            # Fechas aleatorias en los últimos 6 meses
+            from datetime import datetime, timezone
+
+            days_ago = random.randint(1, 180)
+            created_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
+            updated_date = created_date + timedelta(hours=random.randint(0, 48))
+
+            # Fecha de moderación solo si está aprobada o rechazada
+            moderated_date = None
+            if status_choice in [ReviewStatus.APROBADA, ReviewStatus.RECHAZADA]:
+                moderated_date = created_date + timedelta(days=random.randint(1, 7))
+
+            # Crear reseña
+            review = Review(
+                id_site=site.id_site,
+                id_public_user=public_user.id_public_user,
+                rating=rating,
+                content=comment,
+                status=status_choice,
+                date_created=created_date,
+                updated_at=updated_date,
+                date_moderated=moderated_date,
+                moderated_by=1 if moderated_date else None,
+            )
+
+            db.session.add(review)
+
+    db.session.commit()
+    print("✔️  Reseñas de prueba creadas exitosamente")
