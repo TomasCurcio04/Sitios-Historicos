@@ -102,7 +102,7 @@ def index():
         # Buscamos la portada para este item['id']
         portada = (
             db.session.query(SiteImage.image_path)
-            .filter_by(id_site=item["id"], is_thumbnail=True)
+            .filter_by(site_id=item["id"], is_thumbnail=True)
             .first()
         )
 
