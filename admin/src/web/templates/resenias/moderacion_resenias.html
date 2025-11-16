@@ -127,13 +127,13 @@
                 <td>{{ r['date_created'] }}</td>
                 <td>
                     <div class="acciones">
-                        {% if r['status'] != "Aprobada" %}
+                        {% if r['status'] == "Pendiente" %}
                             <form method="post" action="{{ url_for('gestion_resenias.approve_review', id_review=r['id_review']) }}">
                                 <button type="submit">Aprobar</button>
                             </form>
                         {% endif %}
                         
-                          {% if r['status'] != "Rechazada" %}
+                          {% if r['status'] == "Pendiente" %}
                          <button type="button" onclick="document.getElementById('reject-box-{{ r['id_review'] }}').style.display='block'" >
                             Rechazar
                         </button>
