@@ -4,6 +4,7 @@ from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema, SiteResponseSchema, SiteCreateSchema
 from api.services.site_serv.utils_site import all_sites_to_json, get_site_by_id, create_site
+from api.utils.auth import require_auth
 
 bp = Blueprint("api_sites", __name__, url_prefix="/api/sites")
 
@@ -74,9 +75,12 @@ def get_site(site_id):
 def create_site_endpoint():
     """Crea un nuevo sitio histórico."""
     try:
-        # TODO: Implementar autenticación JWT cuando esté disponible
-        # Placeholder: usar user_id = 1 hasta que esté la autenticación
-        user_id = 1
+        # Verificar autenticación
+        user, auth_error = require_auth()
+        if auth_error:
+            return auth_error
+        
+        user_id = user['user_id']
         
         # Validar datos usando schema
         schema = SiteCreateSchema()
