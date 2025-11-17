@@ -47,3 +47,5 @@ build/
 Thumbs.db
 flask_session/
 flask_session_data/
+.env
+.env.local

@@ -3,6 +3,7 @@
 
 import math
 from datetime import datetime, timezone
+from src.core.entity.public_user import PublicUser
 from src.core.entity.users import Users
 from src.core.database import db
 from src.core.entity.role import Role
@@ -63,6 +64,17 @@ def buscar_usuario(email):
         Usuario encontrado o None
     """
     return db.session.query(Users).filter_by(email=email).first()
+
+def buscar_usuario_public(email):
+    """Busca un usuario público por su correo electrónico.
+
+    Args:
+        email: Correo electrónico del usuario
+
+    Returns:
+        Usuario público encontrado o None
+    """
+    return db.session.query(PublicUser).filter_by(email=email).first()
 
 
 def verificar_usuario(email, password):
@@ -137,6 +149,26 @@ def create_user(**kwargs):
     except:
         db.session.rollback()
         return "Error al crear el usuario"
+    
+
+def crear_user_public(**kwargs):
+
+    """Crea un nuevo usuario público. """
+
+    new_user = PublicUser(
+        google_id=kwargs["google_id"],
+        email=kwargs["email"],
+        name=kwargs["name"],
+        picture=kwargs["picture"]
+    )
+
+    db.session.add(new_user)
+    try:
+        db.session.commit()
+        return new_user
+    except:
+        db.session.rollback()
+        return "Error al crear el usuario público"
 
 
 def eliminar_usuario(user_id):

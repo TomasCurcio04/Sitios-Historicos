@@ -16,6 +16,7 @@ from flask import (
 )
 from flask_session import Session
 from sqlalchemy.exc import OperationalError
+from admin.src.web.oauth import init_oauth
 from src.web.handlers import error
 from src.web.handlers.auth import (
     is_authenticated,
@@ -45,6 +46,7 @@ from api.controllers.favorites import bp as api_favorites_bp
 from api.controllers.me import bp as api_me_bp
 from api.controllers.search import bp as api_search_bp
 from flask_cors import CORS
+from src.web.controllers.auth_google import bp as google_auth_bp
 
 
 session = Session()
@@ -71,6 +73,10 @@ def create_app(env="development", static_folder=None):
     # Configuración
     app.config.from_object(config[env])
 
+
+    print("GOOGLE_CLIENT_ID:", app.config.get("GOOGLE_CLIENT_ID"))
+    print("GOOGLE_CLIENT_SECRET:", app.config.get("GOOGLE_CLIENT_SECRET"))
+
     # Inicialización de la base de datos
     database.init_db(app)
     # Inicializando Session
@@ -82,6 +88,8 @@ def create_app(env="development", static_folder=None):
     # inicializo cors
     CORS(app)
 
+    init_oauth(app)
+
     # --- 2. REGISTRA EL HELPER EN JINJA ---
     @app.context_processor
     def inject_permissions():
@@ -89,7 +97,7 @@ def create_app(env="development", static_folder=None):
         return dict(has_permission=has_permission)
 
     # --- FIN DEL REGISTRO ---
-    # Register commands
+    # Register
     @app.cli.command("reset-db")
     def reset_db_command():
         """Comando CLI para reiniciar la base de datos.
@@ -117,10 +125,14 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(mantenimiento_admin_bp)
     app.register_blueprint(mi_perfil_bp)
     app.register_blueprint(api_sites_bp)
+<<<<<<< HEAD
     app.register_blueprint(api_reviews_bp)
     app.register_blueprint(api_favorites_bp)
     app.register_blueprint(api_me_bp)
     app.register_blueprint(api_search_bp)
+=======
+    app.register_blueprint(google_auth_bp)
+>>>>>>> origin/feature/google
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)

@@ -409,6 +409,29 @@ hr {
 
 }
 
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #fff;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-google:hover {
+    background-color: #f7f7f7;
+}
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
 /* --- ESTILOS DE TABLA (MOVIDOS DEL MEDIA QUERY) --- */
 
 .table-responsive {

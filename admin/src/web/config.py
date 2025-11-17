@@ -3,7 +3,9 @@
 # from os import environ
 from datetime import timedelta
 from os import environ
+from dotenv import load_dotenv
 
+load_dotenv()  # Cargar variables de entorno desde el archivo .env
 
 class BaseConfig:
     """Base configuration class."""
@@ -15,8 +17,12 @@ class BaseConfig:
     SESSION_FILE_DIR = "./flask_session_data"
     SESSION_PERMANENT = True
     SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
+<<<<<<< HEAD
     CORS_ORIGINS = ["http://localhost:5173", "http://localhost:5000"]
     CORS_RESOURCES = [r"/api/*"]
+=======
+    CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+>>>>>>> origin/feature/google
 
 
 class ProductionConfig(BaseConfig):
@@ -33,6 +39,8 @@ class ProductionConfig(BaseConfig):
     SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
     CORS_ORIGINS = ["https://grupo10.proyecto2025.linti.edu.ar/"]
 
+    GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration class."""
@@ -54,6 +62,9 @@ class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_ENGINES = {
         "default": f"{DB_SCHEME}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}{f'?{DB_SSL_PARAMS}' if DB_SSL_PARAMS else ''}"
     }
+    GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
+
 
 
 config = {
