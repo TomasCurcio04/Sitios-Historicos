@@ -1,6 +1,8 @@
 """Utilidades de autenticación para la API"""
 
-from flask import request, jsonify
+from flask import request, jsonify, current_app
+import jwt
+from src.core.services.auth.user_serv import buscar_usuario_public
 
 
 def get_authenticated_user():
@@ -10,29 +12,35 @@ def get_authenticated_user():
     Returns:
         dict: Información del usuario o None si no está autenticado
     """
-    # TODO: Implementar validación JWT real cuando esté disponible
-    # auth_header = request.headers.get('Authorization')
-    # if not auth_header or not auth_header.startswith('Bearer '):
-    #     return None
-    # 
-    # token = auth_header.split(' ')[1]
-    # try:
-    #     # Validar y decodificar JWT
-    #     payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-    #     return {
-    #         'public_user_id': payload.get('public_user_id'),
-    #         'user_id': payload.get('user_id'),
-    #         'email': payload.get('email')
-    #     }
-    # except jwt.InvalidTokenError:
-    #     return None
-    
-    # Placeholder: simular usuario autenticado
-    return {
-        'public_user_id': 1,
-        'user_id': 1,
-        'email': 'test@example.com'
-    }
+    try:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return None
+        
+        token = auth_header.split(' ')[1]
+        payload = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
+        
+        # Para tokens de prueba, usar datos del payload directamente
+        if payload.get('email') == 'test@example.com':
+            return {
+                'public_user_id': payload.get('public_user_id'),
+                'user_id': payload.get('public_user_id'),
+                'email': payload.get('email')
+            }
+        
+        # Para tokens reales, buscar en la base de datos
+        user = buscar_usuario_public(payload.get('email'))
+        if not user:
+            return None
+        
+        return {
+            'public_user_id': user.id,
+            'user_id': user.id,
+            'email': user.email
+        }
+    except Exception as e:
+        print(f"Error en get_authenticated_user: {str(e)}")
+        return None
 
 
 def require_auth():

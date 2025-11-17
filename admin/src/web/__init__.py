@@ -45,6 +45,7 @@ from api.controllers.reviews import bp as api_reviews_bp
 from api.controllers.favorites import bp as api_favorites_bp
 from api.controllers.me import bp as api_me_bp
 from api.controllers.search import bp as api_search_bp
+from api.controllers.auth import bp as api_auth_bp
 from flask_cors import CORS
 from src.web.controllers.auth_google import bp as google_auth_bp
 
@@ -72,7 +73,6 @@ def create_app(env="development", static_folder=None):
 
     # Configuración
     app.config.from_object(config[env])
-
 
     print("GOOGLE_CLIENT_ID:", app.config.get("GOOGLE_CLIENT_ID"))
     print("GOOGLE_CLIENT_SECRET:", app.config.get("GOOGLE_CLIENT_SECRET"))
@@ -125,14 +125,12 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(mantenimiento_admin_bp)
     app.register_blueprint(mi_perfil_bp)
     app.register_blueprint(api_sites_bp)
-<<<<<<< HEAD
     app.register_blueprint(api_reviews_bp)
     app.register_blueprint(api_favorites_bp)
     app.register_blueprint(api_me_bp)
     app.register_blueprint(api_search_bp)
-=======
+    app.register_blueprint(api_auth_bp)
     app.register_blueprint(google_auth_bp)
->>>>>>> origin/feature/google
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)
@@ -172,6 +170,11 @@ def create_app(env="development", static_folder=None):
             "api_search.search_nearby",
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",
+            "api_auth.get_token",
+            "api_auth.get_test_token",
+            "google_auth.google_login",
+            "google_auth.login",
+            "google_auth.auth",
         ]
         if request.endpoint in exempt_endpoints:
             return

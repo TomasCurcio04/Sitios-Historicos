@@ -13,16 +13,14 @@ class BaseConfig:
     TESTING = False
     DEBUG = False
     SECRET_KEY = "your_secret_key"
+    JWT_SECRET_KEY = environ.get("JWT_SECRET_KEY", "jwt_secret_key_default")
     SESSION_TYPE = "filesystem"
     SESSION_FILE_DIR = "./flask_session_data"
     SESSION_PERMANENT = True
     SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
-<<<<<<< HEAD
     CORS_ORIGINS = ["http://localhost:5173", "http://localhost:5000"]
     CORS_RESOURCES = [r"/api/*"]
-=======
     CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
->>>>>>> origin/feature/google
 
 
 class ProductionConfig(BaseConfig):
