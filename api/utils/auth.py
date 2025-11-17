@@ -20,15 +20,7 @@ def get_authenticated_user():
         token = auth_header.split(' ')[1]
         payload = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
         
-        # Para tokens de prueba, usar datos del payload directamente
-        if payload.get('email') == 'test@example.com':
-            return {
-                'public_user_id': payload.get('public_user_id'),
-                'user_id': payload.get('public_user_id'),
-                'email': payload.get('email')
-            }
-        
-        # Para tokens reales, buscar en la base de datos
+        # Buscar usuario en la base de datos por email del token
         user = buscar_usuario_public(payload.get('email'))
         if not user:
             return None
@@ -38,6 +30,8 @@ def get_authenticated_user():
             'user_id': user.id,
             'email': user.email
         }
+    except jwt.InvalidTokenError:
+        return None
     except Exception as e:
         print(f"Error en get_authenticated_user: {str(e)}")
         return None
