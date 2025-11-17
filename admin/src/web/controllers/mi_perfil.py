@@ -12,11 +12,15 @@ mi_perfil_bp = Blueprint("mi_perfil", __name__, url_prefix="/mi_perfil")
 def perfil():
     """Muestra el perfil del usuario actual."""
 
-    if not session.get("user"):
+    user_data = session.get("user")
+
+    if not user_data:
         flash("Debes iniciar sesión para ver tu perfil", "error")
         return redirect(url_for("auth.login"))
+    
+    email = user_data["email"]
 
-    user = buscar_usuario(session.get("user"))
+    user = buscar_usuario(email)
     if not user:
         flash("Usuario no encontrado", "error")
         return redirect(url_for("auth.login"))

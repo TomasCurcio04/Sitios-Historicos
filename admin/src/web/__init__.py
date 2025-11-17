@@ -8,7 +8,7 @@ from flask import (
     Flask,
     render_template,
     Blueprint,
-    session as current_user,
+    session as flask_session,
     request,
     redirect,
     url_for,
@@ -16,6 +16,7 @@ from flask import (
 )
 from flask_session import Session
 from sqlalchemy.exc import OperationalError
+from admin.src.web.oauth import init_oauth
 from src.web.handlers import error
 from src.web.handlers.auth import (
     is_authenticated,
@@ -38,17 +39,18 @@ from src.web.storage import storage
 from src.core.services.auth.bcrypt import bcrypt
 from src.core import database
 from src.core import seeds
-from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
+from src.core.services.auth.user_serv import buscar_usuario, buscar_usuario_public
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from api.controllers.sites import bp as api_sites_bp
 from api.controllers.reviews import bp as api_reviews_bp
 from api.controllers.favorites import bp as api_favorites_bp
 from api.controllers.me import bp as api_me_bp
 from api.controllers.search import bp as api_search_bp
+from src.web.controllers.auth_google import bp as google_auth_bp
 from flask_cors import CORS
 
 
-session = Session()
+server_session  = Session()
 
 
 def create_app(env="development", static_folder=None):
@@ -67,6 +69,8 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
+    CORS(app, supports_credentials=True)
+
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
@@ -75,13 +79,15 @@ def create_app(env="development", static_folder=None):
     # Inicialización de la base de datos
     database.init_db(app)
     # Inicializando Session
-    session.init_app(app)
+    server_session.init_app(app)
     # Inicializando Bcrypt
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
     # inicializo cors
     CORS(app)
+
+    init_oauth(app)
 
     # --- 2. REGISTRA EL HELPER EN JINJA ---
     @app.context_processor
@@ -90,7 +96,7 @@ def create_app(env="development", static_folder=None):
         return dict(has_permission=has_permission)
 
     # --- FIN DEL REGISTRO ---
-    # Register commands
+    # Register
     @app.cli.command("reset-db")
     def reset_db_command():
         """Comando CLI para reiniciar la base de datos.
@@ -123,6 +129,7 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(api_me_bp)
     app.register_blueprint(api_search_bp)
     app.register_blueprint(gestion_resenas_bp)
+    app.register_blueprint(google_auth_bp)
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)
@@ -140,8 +147,17 @@ def create_app(env="development", static_folder=None):
         Redirige a los usuarios no autenticados al login y a los usuarios
         no superusuarios a la página de mantenimiento cuando está activo.
         """
-        current_user.setdefault("user", None)
-        usuario = buscar_usuario(current_user.get("user"))
+        user_dict = flask_session.get("user")
+        usuario = None
+
+        user_type = user_dict.get("type") if user_dict else None
+
+        if user_type == "back":
+            usuario = buscar_usuario(user_dict["email"])
+
+        elif user_type == "google":
+            usuario = buscar_usuario_public(user_dict["email"])
+        
         flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
@@ -162,6 +178,10 @@ def create_app(env="development", static_folder=None):
             "api_search.search_nearby",
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",
+            "google_auth.login",
+            "google_auth.auth",
+            "google_auth.logout",
+            "google_auth.status",
         ]
         if request.endpoint in exempt_endpoints:
             return

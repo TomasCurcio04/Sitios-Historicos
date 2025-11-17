@@ -23,7 +23,7 @@
                     {% if session.get('user') %}
                     <div class="user-dropdown">
                         <button id="user-btn">
-                            {{ session.get('user_name') or session.get('user') }} &#9662;
+                            {{ session["user"]["user_name"] }} &#9662;
                         </button>
                         <div id="user-menu" class="user-dropdown-content">
                             <a href="{{ url_for('mi_perfil.perfil') }}">Ver perfil</a>
