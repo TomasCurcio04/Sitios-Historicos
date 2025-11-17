@@ -1,18 +1,23 @@
-from flask import Blueprint, redirect, url_for, session, render_template
+from flask import Blueprint, redirect, url_for, session, render_template, request
 from admin.src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
 from admin.src.web.oauth import oauth
 
 
 bp = Blueprint("google_auth", __name__, url_prefix="/google")
 
-@bp.route("/")
-def google_login():
-    user = session.get("user")
-    return render_template("google_login.html", user=user)
+# @bp.route("/")
+# def google_login():
+#     user = session.get("user")
+    
+#     return render_template("google_login.html", user=user)
 
 @bp.route("/login")
 def login():
+    session['next'] = request.args.get('next') or request.referrer
     redirect_uri = url_for("google_auth.auth", _external=True)
+
+
+    print(f"🔍 Redirect URI generada: {redirect_uri}") 
     return oauth.google.authorize_redirect(redirect_uri)
 
 @bp.route("/login/callback")
@@ -36,12 +41,19 @@ def auth():
         "id": userinfo.get("sub"),
         "email": userinfo.get("email"),
         "name": userinfo.get("name"),
-        "picture": userinfo.get("picture")
+        "picture": userinfo.get("picture"),
+        "type": "google"
     }
-
-    return redirect("http://localhost:5173/")
+    next_url = session.get('next') or '/'
+    return redirect(next_url)
     
 @bp.route("/logout")
 def logout():
     session.pop("user", None)
-    return redirect('/')
+    next_url = request.args.get("next", "/")
+    return redirect(next_url)
+
+@bp.route("/status")
+def status():
+    user = session.get("user")
+    return {"logged_in": bool(user), "user": user}

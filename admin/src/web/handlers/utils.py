@@ -20,7 +20,7 @@ def admin_maintenance_required(view):
 
     def wrapped_view(*args, **kwargs):
         flag = get_feature_flag("admin_maintenance_mode")
-        usuario = buscar_usuario(current_user.get("user"))
+        usuario = buscar_usuario(current_user["user"]["email"])
         # SI no es usuario, no puede entrar.
         if not usuario:
             return redirect(url_for("auth.login"))
@@ -43,7 +43,7 @@ def check_permissions(section, permissions):
     Returns:
         True si tiene permisos o es superusuario, False caso contrario
     """
-    usuario = buscar_usuario(current_user.get("user"))
+    usuario = buscar_usuario(current_user["user"]["email"])
     if not usuario:
         return False
 

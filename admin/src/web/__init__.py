@@ -8,7 +8,7 @@ from flask import (
     Flask,
     render_template,
     Blueprint,
-    session as current_user,
+    session as flask_session,
     request,
     redirect,
     url_for,
@@ -38,13 +38,14 @@ from src.web.storage import storage
 from src.core.services.auth.bcrypt import bcrypt
 from src.core import database
 from src.core import seeds
-from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
+from src.core.services.auth.user_serv import buscar_usuario, buscar_usuario_public
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from api.controllers.sites import bp as api_sites_bp
 from src.web.controllers.auth_google import bp as google_auth_bp
+from flask_cors import CORS
 
 
-session = Session()
+server_session  = Session()
 
 
 def create_app(env="development", static_folder=None):
@@ -63,19 +64,17 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
+    CORS(app, supports_credentials=True)
+
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
     app.config.from_object(config[env])
 
-
-    print("GOOGLE_CLIENT_ID:", app.config.get("GOOGLE_CLIENT_ID"))
-    print("GOOGLE_CLIENT_SECRET:", app.config.get("GOOGLE_CLIENT_SECRET"))
-
     # Inicialización de la base de datos
     database.init_db(app)
     # Inicializando Session
-    session.init_app(app)
+    server_session.init_app(app)
     # Inicializando Bcrypt
     bcrypt.init_app(app)
     # inicializo storage
@@ -136,8 +135,17 @@ def create_app(env="development", static_folder=None):
         Redirige a los usuarios no autenticados al login y a los usuarios
         no superusuarios a la página de mantenimiento cuando está activo.
         """
-        current_user.setdefault("user", None)
-        usuario = buscar_usuario(current_user.get("user"))
+        user_dict = flask_session.get("user")
+        usuario = None
+
+        user_type = user_dict.get("type") if user_dict else None
+
+        if user_type == "back":
+            usuario = buscar_usuario(user_dict["email"])
+
+        elif user_type == "google":
+            usuario = buscar_usuario_public(user_dict["email"])
+        
         flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
@@ -147,6 +155,10 @@ def create_app(env="development", static_folder=None):
             "feature_flags.feature_flags",
             "mantenimiento_admin.mantenimiento_admin",
             "api_sites.all_sites",
+            "google_auth.login",
+            "google_auth.auth",
+            "google_auth.logout",
+            "google_auth.status",
         ]
         if request.endpoint in exempt_endpoints:
             return

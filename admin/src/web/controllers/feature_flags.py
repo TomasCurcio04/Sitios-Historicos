@@ -20,7 +20,7 @@ def feature_flags():
     GET: Muestra el formulario de configuración
     POST: Actualiza las configuraciones de feature flags
     """
-    usuario = buscar_usuario(session.get("user"))
+    usuario = buscar_usuario(session["user"]["email"])
     usuario_id = usuario.id_user if usuario else 1
 
     if request.method == "POST":

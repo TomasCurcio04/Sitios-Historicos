@@ -35,9 +35,12 @@ def authenticate():
         return redirect(url_for('auth.login'))
     
     session.permanent = True
-    session["user"] = user.email
-    session["user_name"] = user.user_name
-    session["role"] = int(user.role)
+    session["user"] = {
+        "type": "back",
+        "email": user.email,
+        "user_name": user.user_name,
+        "role": int(user.role),
+    }
 
     # --- 2. LÓGICA DE PERMISOS (CORREGIDA) ---
     # Usamos query() y joinedload() para forzar la carga de los permisos
