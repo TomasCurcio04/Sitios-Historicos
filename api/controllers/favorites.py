@@ -3,6 +3,7 @@
 from flask import Blueprint, jsonify
 from api.services.site_serv.utils_site import get_site_by_id
 from src.core.services.board.site_favorites import toggle_site_favorite
+from api.utils.auth import require_auth
 
 bp = Blueprint("api_favorites", __name__, url_prefix="/api/sites")
 
@@ -11,9 +12,12 @@ bp = Blueprint("api_favorites", __name__, url_prefix="/api/sites")
 def toggle_site_favorite_endpoint(site_id):
     """Alterna el estado de favorito de un sitio."""
     try:
-        # TODO: Implementar autenticación JWT cuando esté disponible
-        # Placeholder: usar public_user_id = 1 hasta que esté la autenticación
-        public_user_id = 1
+        # Verificar autenticación
+        user, auth_error = require_auth()
+        if auth_error:
+            return auth_error
+        
+        public_user_id = user['public_user_id']
         
         # Verificar que el sitio existe
         site_data = get_site_by_id(site_id)
