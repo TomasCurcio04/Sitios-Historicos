@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from src.web.schemas.reviews import ReviewQuerySchema, ReviewsListResponseSchema, ReviewResponseSchema, ReviewCreateSchema
 from api.services.site_serv.utils_site import get_site_by_id
 from api.services.review_serv.utils_review import get_reviews_by_site, create_review, get_review_by_id, delete_review
+from api.utils.auth import require_auth
 
 bp = Blueprint("api_reviews", __name__, url_prefix="/api/sites")
 
@@ -59,9 +60,12 @@ def get_site_reviews(site_id):
 def create_site_review(site_id):
     """Crea una nueva reseña para un sitio específico."""
     try:
-        # TODO: Implementar autenticación JWT cuando esté disponible
-        # Placeholder: usar user_id = 1 hasta que esté la autenticación
-        user_id = 1
+        # Verificar autenticación
+        user, auth_error = require_auth()
+        if auth_error:
+            return auth_error
+        
+        user_id = user['public_user_id']
         
         # Verificar que el sitio existe
         site_data = get_site_by_id(site_id)
@@ -148,9 +152,12 @@ def get_site_review(site_id, review_id):
 def delete_site_review(site_id, review_id):
     """Elimina una reseña específica por ID."""
     try:
-        # TODO: Implementar autenticación JWT cuando esté disponible
-        # Placeholder: usar user_id = 1 hasta que esté la autenticación
-        user_id = 1
+        # Verificar autenticación
+        user, auth_error = require_auth()
+        if auth_error:
+            return auth_error
+        
+        user_id = user['public_user_id']
         
         # Obtener reseña
         review_data = get_review_by_id(review_id, site_id, include_pending=True)

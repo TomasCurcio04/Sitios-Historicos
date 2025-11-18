@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema
 from src.core.services.board.site_favorites import get_user_favorites
 from api.services.site_serv.utils_site import site_to_dict
+from api.utils.auth import require_auth
 
 bp = Blueprint("api_me", __name__, url_prefix="/api/me")
 
@@ -13,9 +14,12 @@ bp = Blueprint("api_me", __name__, url_prefix="/api/me")
 def get_my_favorites():
     """Lista los sitios favoritos del usuario autenticado."""
     try:
-        # TODO: Implementar autenticación JWT cuando esté disponible
-        # Placeholder: usar public_user_id = 1 hasta que esté la autenticación
-        public_user_id = 1
+        # Verificar autenticación
+        user, auth_error = require_auth()
+        if auth_error:
+            return auth_error
+        
+        public_user_id = user['public_user_id']
         
         # Validar parámetros de paginación
         schema = SiteQuerySchema()

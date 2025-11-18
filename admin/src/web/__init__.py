@@ -46,11 +46,12 @@ from api.controllers.reviews import bp as api_reviews_bp
 from api.controllers.favorites import bp as api_favorites_bp
 from api.controllers.me import bp as api_me_bp
 from api.controllers.search import bp as api_search_bp
-from src.web.controllers.auth_google import bp as google_auth_bp
+from api.controllers.auth import bp as api_auth_bp
 from flask_cors import CORS
+from src.web.controllers.auth_google import bp as google_auth_bp
 
 
-server_session  = Session()
+server_session = Session()
 
 
 def create_app(env="development", static_folder=None):
@@ -75,6 +76,9 @@ def create_app(env="development", static_folder=None):
 
     # Configuración
     app.config.from_object(config[env])
+
+    print("GOOGLE_CLIENT_ID:", app.config.get("GOOGLE_CLIENT_ID"))
+    print("GOOGLE_CLIENT_SECRET:", app.config.get("GOOGLE_CLIENT_SECRET"))
 
     # Inicialización de la base de datos
     database.init_db(app)
@@ -128,6 +132,7 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(api_favorites_bp)
     app.register_blueprint(api_me_bp)
     app.register_blueprint(api_search_bp)
+    app.register_blueprint(api_auth_bp)
     app.register_blueprint(gestion_resenas_bp)
     app.register_blueprint(google_auth_bp)
 
@@ -157,7 +162,7 @@ def create_app(env="development", static_folder=None):
 
         elif user_type == "google":
             usuario = buscar_usuario_public(user_dict["email"])
-        
+
         flag = get_feature_flag("admin_maintenance_mode")
         exempt_endpoints = [
             "auth.login",
@@ -178,6 +183,10 @@ def create_app(env="development", static_folder=None):
             "api_search.search_nearby",
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",
+            "api_auth.get_token",
+            "google_auth.google_login",
+            "google_auth.login",
+            "google_auth.auth",
             "google_auth.login",
             "google_auth.auth",
             "google_auth.logout",
