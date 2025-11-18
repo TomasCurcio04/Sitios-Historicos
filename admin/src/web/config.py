@@ -38,8 +38,9 @@ class ProductionConfig(BaseConfig):
     SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
     CORS_ORIGINS = ["https://grupo10.proyecto2025.linti.edu.ar/"]
 
-    GOOGLE_CLIENT_ID = {"google-oauth": environ.get("GOOGLE_CLIENT_ID")}
-    GOOGLE_CLIENT_SECRET = {"google-oauth": environ.get("GOOGLE_CLIENT_SECRET")}
+    # {"default": "postgresql+psycopg2://grupo10:GtGouFR0ONveaoqQKi31@127.0.0.1:5432/grupo10?options=-c%20search_path=postgres" }
+    GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
 
 
 class DevelopmentConfig(BaseConfig):

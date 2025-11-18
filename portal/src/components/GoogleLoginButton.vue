@@ -24,11 +24,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+// URL del backend tomada desde .env
+const API_URL = import.meta.env.VITE_API_URL
+
 const loggedIn = ref(false)
 const user = ref(null)
 
+// Consultar estado de sesión
 onMounted(async () => {
-  const res = await fetch('http://localhost:5000/google/status', {
+  const res = await fetch(`${API_URL}/google/status`, {
     credentials: 'include'
   })
   const data = await res.json()
@@ -37,15 +41,17 @@ onMounted(async () => {
   user.value = data.user || null
 })
 
+// Iniciar sesión
 const loginWithGoogle = () => {
-  window.location.href = 'http://localhost:5000/google/login'
+  const current = window.location.href
+  window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
 }
 
+// Cerrar sesión
 const logout = () => {
-  const current = window.location.href;
-  window.location.href = `http://localhost:5000/google/logout?next=${encodeURIComponent(current)}`;
-};
-
+  const current = window.location.href
+  window.location.href = `${API_URL}/google/logout?next=${encodeURIComponent(current)}`
+}
 </script>
 
 <style scoped>

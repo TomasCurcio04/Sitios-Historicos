@@ -5,19 +5,11 @@ from src.web.oauth import oauth
 
 bp = Blueprint("google_auth", __name__, url_prefix="/google")
 
-# @bp.route("/")
-# def google_login():
-#     user = session.get("user")
-    
-#     return render_template("google_login.html", user=user)
-
 @bp.route("/login")
 def login():
     session['next'] = request.args.get('next') or request.referrer
     redirect_uri = url_for("google_auth.auth", _external=True)
 
-
-    print(f"🔍 Redirect URI generada: {redirect_uri}") 
     return oauth.google.authorize_redirect(redirect_uri)
 
 @bp.route("/login/callback")
@@ -26,9 +18,7 @@ def auth():
     userinfo = token["userinfo"]
     email = userinfo.get("email")
 
-    print("email:", email)
     user  = buscar_usuario_public(email)
-    print("user:", user)
     if not user:
         crear_user_public(
             google_id = userinfo.get("sub"),
