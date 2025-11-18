@@ -49,9 +49,17 @@ export default {
 
     onMounted(async () => {
       try {
-        items.value = await props.fetchFn(props.queryParams)
+        const result = await props.fetchFn(props.queryParams)
+        // Adaptación para la nueva api.js
+        if (result.success) {
+          items.value = result.data.items || []
+        } else {
+          console.error('Error loading section:', result.error)
+          items.value = []
+        }
       } catch (err) {
         console.error('Error loading section:', err)
+        items.value = []
       } finally {
         loading.value = false
       }

@@ -42,13 +42,26 @@ export default {
   setup() {
     const isLoggedIn = !!localStorage.getItem('auth_token')
 
-    const fetchMostVisited = (params) => fetchSites({ order: 'most_visited', limit: 4, ...params })
+    // Adaptamos las funciones de fetch
+    const fetchMostVisited = async (params) => {
+      const result = await fetchSites({ order: 'most_visited', limit: 4, ...params })
+      return result.success ? result.data : []
+    }
 
-    const fetchTopRated = (params) => fetchSites({ order: 'top_rated', limit: 4, ...params })
+    const fetchTopRated = async (params) => {
+      const result = await fetchSites({ order: 'top_rated', limit: 4, ...params })
+      return result.success ? result.data : []
+    }
 
-    const fetchFavorites = (params) => fetchSites({ filter: 'favorites', limit: 4, ...params })
+    const fetchFavorites = async (params) => {
+      const result = await fetchSites({ filter: 'favorites', limit: 4, ...params })
+      return result.success ? result.data : []
+    }
 
-    const fetchRecent = (params) => fetchSites({ order: 'recent', limit: 4, ...params })
+    const fetchRecent = async (params) => {
+      const result = await fetchSites({ order: 'recent', limit: 4, ...params })
+      return result.success ? result.data : []
+    }
 
     function goToSearch(q) {
       window.location.href = `/sites?q=${encodeURIComponent(q)}`
