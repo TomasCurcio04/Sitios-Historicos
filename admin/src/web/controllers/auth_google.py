@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, url_for, session, render_template, request
-from admin.src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
-from admin.src.web.oauth import oauth
+from src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
+from src.web.oauth import oauth
 
 
 bp = Blueprint("google_auth", __name__, url_prefix="/google")
