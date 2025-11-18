@@ -47,6 +47,10 @@ from src.web.api.controllers.favorites import bp as api_favorites_bp
 from src.web.api.controllers.me import bp as api_me_bp
 from src.web.api.controllers.search import bp as api_search_bp
 from src.web.api.controllers.auth import bp as api_auth_bp
+<<<<<<< HEAD
+=======
+from src.web.api.controllers.metadata import bp as api_metadata_bp
+>>>>>>> feature/api
 from flask_cors import CORS
 from src.web.controllers.auth_google import bp as google_auth_bp
 
@@ -131,6 +135,7 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(api_search_bp)
     app.register_blueprint(api_auth_bp)
     app.register_blueprint(gestion_resenas_bp)
+    app.register_blueprint(api_metadata_bp)
     app.register_blueprint(google_auth_bp)
 
     # Registrar manejadores de errores
