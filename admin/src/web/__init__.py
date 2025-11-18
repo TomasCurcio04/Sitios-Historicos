@@ -41,12 +41,12 @@ from src.core import database
 from src.core import seeds
 from src.core.services.auth.user_serv import buscar_usuario, buscar_usuario_public
 from src.core.services.auth.feature_flag_serv import get_feature_flag
-from api.controllers.sites import bp as api_sites_bp
-from api.controllers.reviews import bp as api_reviews_bp
-from api.controllers.favorites import bp as api_favorites_bp
-from api.controllers.me import bp as api_me_bp
-from api.controllers.search import bp as api_search_bp
-from api.controllers.auth import bp as api_auth_bp
+from src.web.api.controllers.sites import bp as api_sites_bp
+from src.web.api.controllers.reviews import bp as api_reviews_bp
+from src.web.api.controllers.favorites import bp as api_favorites_bp
+from src.web.api.controllers.me import bp as api_me_bp
+from src.web.api.controllers.search import bp as api_search_bp
+from src.web.api.controllers.auth import bp as api_auth_bp
 from flask_cors import CORS
 from src.web.controllers.auth_google import bp as google_auth_bp
 
@@ -76,7 +76,6 @@ def create_app(env="development", static_folder=None):
 
     # Configuración
     app.config.from_object(config[env])
-
 
     # Inicialización de la base de datos
     database.init_db(app)
