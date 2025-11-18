@@ -1,4 +1,13 @@
+"""Test module for database connection."""
+
 from sqlalchemy import create_engine, text
+import sys
+import os
+
+# Agregar la ruta del proyecto al path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Importar directamente desde el archivo config
 from src.web.config import DevelopmentConfig
 
 

@@ -16,7 +16,7 @@ from flask import (
 )
 from flask_session import Session
 from sqlalchemy.exc import OperationalError
-from admin.src.web.oauth import init_oauth
+from src.web.oauth import init_oauth
 from src.web.handlers import error
 from src.web.handlers.auth import (
     is_authenticated,
@@ -76,7 +76,6 @@ def create_app(env="development", static_folder=None):
 
     # Configuración
     app.config.from_object(config[env])
-
 
     # Inicialización de la base de datos
     database.init_db(app)
