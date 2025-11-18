@@ -8,16 +8,6 @@
     <h2>Ingreso al Sistema</h2>
 
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}"> 
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
 
     <form action="{{ url_for('auth.authenticate') }}" method="post"> 
         <label for="email">Correo electrónico:</label>

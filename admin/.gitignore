@@ -9,6 +9,7 @@ env/
 __pycache__/
 *.pyo
 *.pyd
+.pytest_cache/
 
 # Archivos de logs
 *.log
@@ -45,3 +46,6 @@ build/
 .DS_Store
 Thumbs.db
 flask_session/
+flask_session_data/
+.env
+.env.local

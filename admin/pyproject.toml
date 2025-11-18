@@ -6,12 +6,20 @@ authors = ["Erik Cespedes <cespedeserik87@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.12"
+python = ">=3.12,<4.0"
 flask = "^3.1.2"
 psycopg2-binary = "^2.9.10"
 flask-sqlalchemy-lite = "^0.1.0"
 flask-session = "^0.8.0"
 flask-bcrypt = "^1.0.1"
+minio = "^7.2.18"
+flask-cors = "^6.0.1"
+marshmallow = "^4.1.0"
+authlib = "^1.6.5"
+requests = "^2.32.5"
+pyopenssl = "^25.3.0"
+python-dotenv = "^1.2.1"
+pyjwt = "^2.10.1"
 
 
 [tool.poetry.group.test.dependencies]

@@ -1,0 +1,235 @@
+{% extends "layout.html" %}
+
+{% block title %}Moderación de Reseñas{% endblock %}
+
+{% block content %}
+<h1>Moderación de Reseñas</h1>
+
+<div class="search-bar">
+    <form method="get" action="{{ url_for('gestion_resenias.index') }}">
+
+        <!-- Estado -->
+        <label>Estado:</label>
+        <select name="estado">
+            <option value="" {% if estado == "" %}selected{% endif %}>--Cualquiera--</option>
+            <option value="Pendiente" {% if estado == "Pendiente" %}selected{% endif %}>Pendiente</option>
+            <option value="Aprobada" {% if estado == "Aprobada" %}selected{% endif %}>Aprobada</option>
+            <option value="Rechazada" {% if estado == "Rechazada" %}selected{% endif %}>Rechazada</option>
+        </select>
+
+        <br><br>
+        
+        
+        <!-- Sitio -->
+        <label>Sitio:</label>
+        <br>
+        <small class="form-help">Puedes seleccionar múltiples sitios con Ctrl (Windows) o Cmd (Mac).</small>
+        <br>
+        <select name="sitio" multiple>
+            <option value="">--Cualquiera--</option>
+
+            {% for s in sitios %}
+                <option value="{{ s[0] }}"
+                    {% if sitio and s[0] in sitio %}
+                    selected
+                    {% endif %}
+                >{{ s[1] }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <br><br>
+
+        <!-- Calificación -->
+        <label for="puntuacion">Calificación</label>
+        <br>
+        <small class="form-help">Puedes seleccionar múltiples calificaciones con Ctrl (Windows) o Cmd (Mac).</small>
+        <br>
+        <select id="puntuacion" name="puntuacion" multiple>
+            {% for i in range(1, 6) %}
+                <option value="{{ i }}" {% if puntuacion and i|string in puntuacion %}selected{% endif %}>
+                    {{ i }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <!-- Email usuario -->
+        <label>Búsqueda por email:</label>
+        <input placeholder="email@example.com" type="text" name="email_usuario" value="{{ email_usuario }}">
+
+        <br><br>
+
+        <!-- Fechas -->
+         <label > Fecha</label><br>
+        <label>Desde:</label>
+        <input type="date" name="fecha_desde" value="{{ fecha_desde }}">
+
+        <label>Hasta:</label>
+        <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}">
+
+        <br><br>
+
+        <!-- Ordenamiento -->
+        <label>Ordenar por:</label>
+        <select name="sort">
+            <option value="date_created" {% if sort == "date_created" %}selected{% endif %}>Fecha de registro</option>
+            <option value="rating" {% if sort == "rating" %}selected{% endif %}>Calificación</option>
+        </select>
+
+        <label>Orden:</label>
+        <select name="order">
+            <option value="asc" {% if order == "asc" %}selected{% endif %}>Ascendente</option>
+            <option value="desc" {% if order == "desc" %}selected{% endif %}>Descendente</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Buscar</button>
+        <a href="{{ url_for('gestion_resenias.index') }}">
+            <button type="button">Limpiar filtros</button>
+        </a>
+    </form>
+</div>
+
+<!-- Tabla de resultados -->
+{% if results %}
+    <p>Total de resultados: {{ total_results }}</p>
+
+    <div class="table-scroll-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Sitio</th>
+                    <th>Usuario</th>
+                    <th>Calificación</th>
+                    <th>Contenido</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                <td>{{ r['name'] }}</td>
+                <td>{{ r['user_email'] }}</td>
+                <td>{{ r['rating'] }}</td>
+                <td>{{ r['content'] }}</td>
+                {% if r['status'] == "Aprobada" %}
+                    <td style="color:green; font-weight:bold;">{{ r['status'] }}</td>
+                {% elif r['status'] == "Rechazada" %}
+                    <td style="color:red; font-weight:bold;">{{ r['status'] }}</td>
+                {% else %}
+                    <td style="color:orange; font-weight:bold;">{{ r['status'] }}</td>
+                 {% endif %}
+
+                <td>{{ r['date_created'] }}</td>
+                <td>
+                    <div class="acciones">
+                        {% if r['status'] == "Pendiente" %}
+                            <form method="post" action="{{ url_for('gestion_resenias.approve_review', id_review=r['id_review']) }}">
+                                <button type="submit">Aprobar</button>
+                            </form>
+                        {% endif %}
+                        
+                          {% if r['status'] == "Pendiente" %}
+                         <button type="button" onclick="document.getElementById('reject-box-{{ r['id_review'] }}').style.display='block'" >
+                            Rechazar
+                        </button>
+                        {% endif %}
+                      
+                        <form method="post"
+                            id="reject-box-{{ r['id_review'] }}"
+                            action="{{ url_for('gestion_resenias.reject_review', id_review=r['id_review']) }}"
+                            style="display:none; margin-top:5px;">
+                            <textarea name="rejection_reason"
+                                    maxlength="200"
+                                    placeholder="Motivo del rechazo..."
+                                    required></textarea>
+                            <br>
+                            <button type="submit">Confirmar Rechazo</button>
+                        </form>
+                           
+                     
+                        <form method="post" action="{{ url_for('gestion_resenias.delete_review', id_review=r['id_review']) }}"
+                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta reseña? Esta acción no se puede deshacer.');">
+                            <button  type="submit">Eliminar</button>
+                        </form>
+
+                        <form action="{{ url_for('gestion_resenias.review_detail', id_review=r['id_review']) }}">
+                            <button type="submit">Ver más</button>
+                        </form>
+                    </div>
+                </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p style="text-align:center; font-size:1.1rem; color:#666;">
+        No hay reseñas pendientes de moderación con esos filtros.
+    </p>
+{% endif %}
+
+<!-- Paginación -->
+{% if total_pages > 1 %}
+    <form id="pagination-form" method="get">
+        <!-- Conserva filtros solo si tienen valor -->
+        {% if sitio %}
+            {% for s in sitio %}
+                <input type="hidden" name="sitio" value="{{ s }}">
+            {% endfor %}
+        {% endif %}
+        {% if email_usuario %}
+            <input type="hidden" name="email_usuario" value="{{ email_usuario }}">
+        {% endif %}
+        {% if puntuacion %}
+            {% for p in puntuacion %}
+                <input type="hidden" name="puntuacion" value="{{ p }}">
+            {% endfor %}
+        {% endif %}
+        {% if estado %}
+            <input type="hidden" name="estado" value="{{ estado }}">
+        {% endif %}
+        <!-- Conservar fechas -->
+        {% if fecha_desde %}
+            <input type="hidden" name="fecha_desde" value="{{ fecha_desde }}">
+        {% endif %}
+        {% if fecha_hasta %}
+            <input type="hidden" name="fecha_hasta" value="{{ fecha_hasta }}">
+        {% endif %}
+        <!-- Conservar ordenamiento -->
+        <input type="hidden" name="sort" value="{{ sort }}">
+        <input type="hidden" name="order" value="{{ order }}">
+        <input type="hidden" name="per_page" value="{{ per_page }}">
+
+        <nav aria-label="Paginación de Reseñas" class="mt-4">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <button type="submit" name="page" value="{{ page - 1 }}" class="page-link">&laquo;</button>
+                    </li>
+                {% endif %}
+
+                {% for p in range(1, total_pages + 1) %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <button type="submit" name="page" value="{{ p }}" class="page-link">{{ p }}</button>
+                    </li>
+                {% endfor %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <button type="submit" name="page" value="{{ page + 1 }}" class="page-link">&raquo;</button>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </form>
+{% endif %}
+
+<a href="{{ url_for('web.home') }}" class="btn-secondary-action">Volver al Inicio</a>
+{% endblock %}
+

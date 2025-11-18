@@ -1,9 +1,18 @@
+"""Manejadores de autenticación y autorización para la aplicación."""
+
 from functools import wraps
 from flask import session, redirect, url_for, flash
-from src.core.auth import buscar_usuario
+from src.core.services.auth.user_serv import buscar_usuario
 
 def login_required(f):
-    """Decorator para rutas que requieren autenticación."""
+    """Decorator que requiere autenticación para acceder a una ruta.
+    
+    Args:
+        f: Función de vista a decorar
+    
+    Returns:
+        Función decorada que verifica autenticación
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated(session):
@@ -13,15 +22,45 @@ def login_required(f):
     return decorated_function
 
 def is_authenticated(session):
-    """Verifica que el usuario este autenticado."""
+    """Verifica si el usuario está autenticado.
+    
+    Args:
+        session: Sesión de Flask
+    
+    Returns:
+        True si el usuario está autenticado, False en caso contrario
+    """
     return session.get("user") is not None
 
+def template_is_authenticated():
+    """Función wrapper para usar is_authenticated en templates sin parámetros.
+    
+    Returns:
+        True si el usuario está autenticado, False en caso contrario
+    """
+    from flask import session
+    return is_authenticated(session)
+
 def is_admin(session):
-    """Devuelve True si el usuario logueado tiene rol de administrador."""
+    """Verifica si el usuario tiene rol de administrador.
+    
+    Args:
+        session: Sesión de Flask
+    
+    Returns:
+        True si el usuario es administrador, False en caso contrario
+    """
     return int(session.get("role", 0)) == 1
 
 def admin_required(f):
-    """Decorator para rutas que requieren rol administrador."""
+    """Decorator que requiere rol de administrador para acceder a una ruta.
+    
+    Args:
+        f: Función de vista a decorar
+    
+    Returns:
+        Función decorada que verifica rol de administrador
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not is_authenticated(session):
@@ -32,3 +71,18 @@ def admin_required(f):
             return redirect(url_for("web.home"))
         return f(*args, **kwargs)
     return decorated_function
+
+# --- ¡NUEVA FUNCIÓN AÑADIDA! ---
+def has_permission(permission_name):
+    """
+    Verifica si el usuario actual tiene un permiso específico guardado en la sesión.
+    
+    Args:
+        permission_name (str): El nombre del permiso (ej: "site_history_view")
+    
+    Returns:
+        bool: True si el usuario tiene el permiso, False en caso contrario.
+    """
+    # Lee la lista de permisos que guardamos en la sesión durante el login
+    permissions = session.get("permissions", [])
+    return permission_name in permissions

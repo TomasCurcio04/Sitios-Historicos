@@ -1,0 +1,167 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+    /* Añade espacio debajo de los grupos de formulario */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    /* Añade espacio debajo de los títulos principales */
+    h2 {
+        margin-top: 20px;
+        margin-bottom: 25px;
+    }
+</style>
+
+<div class="container">
+    <h2>Subir Nueva Imagen para Sitio Histórico</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('mantenimiento_admin.upload_image') }}" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="sitio_id">Sitio Histórico</label>
+            <select name="sitio_id" id="sitio_id" class="form-control" required>
+                <option value="">Selecciona un sitio...</option>
+                {% for site in sites %}
+                <option value="{{ site.id_site }}">{{ site.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="imagen">Archivo de Imagen</label>
+            <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*" required>
+        </div>
+
+        <div class="form-group">
+            <label for="titulo">Título (Alt-text)</label>
+            <input type="text" name="titulo" id="titulo" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="orden">Orden</label>
+            <input type="number" name="orden" id="orden" class="form-control" value="0">
+        </div>
+
+        <div class="form-check" style="margin-bottom: 20px;"> <input type="checkbox" name="es_portada" id="es_portada"
+                class="form-check-input" value="true">
+            <label class="form-check-label" for="es_portada">Marcar como portada</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Subir Imagen</button>
+    </form>
+</div>
+
+<hr style="margin-top: 40px; margin-bottom: 40px;">
+
+<div class="container">
+    <h2>Gestionar Imágenes</h2>
+
+    <div class="form-group">
+        <label for="site_selector">Selecciona un sitio para ver sus imágenes:</label>
+        <select id="site_selector" class="form-control">
+            <option value="">-- Selecciona un sitio --</option>
+            {% for site in sites %}
+            <option value="{{ site.id_site }}">{{ site.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div id="image-management-container">
+        {% for site in sites %}
+        <div id="images-for-site-{{ site.id_site }}" class="site-image-list" style="display: none; margin-top: 20px;">
+
+            {% if site.images %}
+            <table class="admin-table" style="width: 100%; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Título</th>
+                        <th>¿Es Portada?</th>
+                        <th colspan="2">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for image in site.images %}
+                    <tr>
+                        <td>
+                            <img src="http://{{ minio_base_url }}/{{ minio_bucket }}/{{ image.image_path }}"
+                                alt="{{ image.title }}" style="width: 100px; height: auto; border-radius: 4px;">
+                        </td>
+                        <td>{{ image.title }}</td>
+                        <td>{% if image.is_thumbnail %}Sí{% else %}No{% endif %}</td>
+
+                        <td>
+                            <form method="POST"
+                                action="{{ url_for('mantenimiento_admin.make_cover', image_id=image.id_site_image) }}">
+                                <button type="submit" class="btn btn-edit" {{ 'disabled' if image.is_thumbnail }}>
+                                    Hacer Portada
+                                </button>
+                            </form>
+                        </td>
+
+                        <td>
+                            <form method="POST"
+                                action="{{ url_for('mantenimiento_admin.delete_image', image_id=image.id_site_image) }}"
+                                onsubmit="return confirm('¿Estás seguro de que querés eliminar esta imagen?');">
+                                <button type="submit" class="btn btn-delete" {{ 'disabled' if image.is_thumbnail }}
+                                    title="{{ 'No se puede borrar una portada' if image.is_thumbnail else 'Eliminar imagen' }}">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Este sitio no tiene imágenes cargadas.</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const selector = document.getElementById('site_selector');
+        const container = document.getElementById('image-management-container');
+
+        selector.addEventListener('change', function () {
+            const selectedSiteId = this.value;
+
+            // 1. Ocultamos todas las listas de imágenes
+            const allLists = container.querySelectorAll('.site-image-list');
+            allLists.forEach(function (list) {
+                list.style.display = 'none';
+            });
+
+            // 2. Si se seleccionó un sitio, mostramos solo su lista
+            if (selectedSiteId) {
+                const listToShow = document.getElementById('images-for-site-' + selectedSiteId);
+                if (listToShow) {
+                    listToShow.style.display = 'block';
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}
