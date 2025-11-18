@@ -181,7 +181,6 @@ def create_app(env="development", static_folder=None):
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",
             "api_auth.get_token",
-            "google_auth.google_login",
             "google_auth.login",
             "google_auth.auth",
             "google_auth.logout",
