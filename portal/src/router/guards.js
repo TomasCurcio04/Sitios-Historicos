@@ -20,7 +20,7 @@ export async function checkPortalMaintenance(to, from, next) {
       // Portal en mantenimiento, redirigir a página de mantenimiento
       next({
         name: 'maintenance',
-        params: { message: status.maintenance_message }
+        query: { message: status.maintenance_message }
       })
     } else {
       // Portal disponible, continuar navegación

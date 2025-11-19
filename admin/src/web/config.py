@@ -19,7 +19,9 @@ class BaseConfig:
     SESSION_FILE_DIR = "./flask_session_data"
     SESSION_PERMANENT = True
     SESSION_PERMANENT_LIFETIME = timedelta(minutes=20)
-    CORS_ORIGINS = environ.get("CORS_ORIGINS").split(",") if environ.get("CORS_ORIGINS") else []
+    CORS_ORIGINS = (
+        environ.get("CORS_ORIGINS").split(",") if environ.get("CORS_ORIGINS") else []
+    )
     CORS_RESOURCES = [r"/api/*"]
     CONF_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
@@ -34,11 +36,13 @@ class ProductionConfig(BaseConfig):
     MINIO_BUCKET = environ.get("MINIO_BUCKET")
 
     SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
-    CORS_ORIGINS = environ.get("CORS_ORIGINS").split(",") if environ.get("CORS_ORIGINS") else []
+    CORS_ORIGINS = (
+        environ.get("CORS_ORIGINS").split(",") if environ.get("CORS_ORIGINS") else []
+    )
 
-    # {"default": "postgresql+psycopg2://grupo10:GtGouFR0ONveaoqQKi31@127.0.0.1:5432/grupo10?options=-c%20search_path=postgres" }
-    GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
+    GOOGLE_CLIENT_ID = {"google-oauth": environ.get("GOOGLE_CLIENT_ID")}
+    GOOGLE_CLIENT_SECRET = {"google-oauth": environ.get("GOOGLE_CLIENT_SECRET")}
+    API_SERVER = environ.get("API_SERVER")
 
 
 class DevelopmentConfig(BaseConfig):
@@ -63,6 +67,7 @@ class DevelopmentConfig(BaseConfig):
     }
     GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
+    API_SERVER = environ.get("API_SERVER")
 
 
 config = {

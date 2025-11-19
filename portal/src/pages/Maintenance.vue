@@ -38,10 +38,9 @@ import { getPortalStatus } from '../services/featureFlags.js'
 export default {
   name: 'MaintenancePage',
   
-  props: {
-    message: {
-      type: String,
-      default: null
+  computed: {
+    message() {
+      return this.$route.query.message || null
     }
   },
   
