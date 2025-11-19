@@ -1,118 +1,218 @@
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-6">
-    <!-- LOADER -->
-    <div v-if="loading" class="text-center text-gray-600 text-lg py-10">Cargando...</div>
+  <div v-if="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando sitio histórico...</p>
+  </div>
 
-    <!-- ERROR -->
-    <p v-if="error" class="text-center text-red-600 font-semibold bg-red-100 p-3 rounded-xl">
-      {{ error }}
-    </p>
+  <div v-else-if="error" class="error-container">
+    <p>{{ error }}</p>
+    <button @click="router.push('/sites')" class="btn-back">Volver al listado</button>
+  </div>
 
-    <!-- CONTENIDO -->
-    <div v-if="site" class="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <!-- Imagen -->
-      <div class="h-64 w-full overflow-hidden">
-        <img
-          v-if="site.image_url"
-          :src="site.image_url"
-          class="w-full h-full object-cover"
-          alt="Imagen del sitio"
-        />
+  <div v-else class="detail-container">
+
+    <header class="site-header">
+      <div class="header-top">
+        <button @click="router.push('/sites')" class="back-btn">
+          ← Volver
+        </button>
       </div>
 
-      <!-- Info -->
-      <div class="p-6">
-        <h1 class="text-3xl font-bold mb-4 text-gray-800">
-          {{ site.name }}
-        </h1>
+      <div class="hero-image">
+        <img
+          :src="currentImage || site.cover_image || '/placeholder.jpg'"
+          :alt="site.name"
+          @error="handleImageError"
+        >
+        <div class="hero-overlay">
+          <h1>{{ site.name }}</h1>
+          <div class="meta-badges">
+            <span class="badge location">📍 {{ site.city }}, {{ site.province }}</span>
+            <span class="badge status" :class="statusClass">{{ site.state_of_conservation }}</span>
+          </div>
+        </div>
+      </div>
 
-        <p class="text-lg text-gray-700 leading-relaxed mb-6">
-          {{ site.description }}
-        </p>
+      <div class="gallery-thumbs" v-if="site.images && site.images.length > 0">
+        <img
+          v-for="img in site.images"
+          :key="img.id"
+          :src="img.url"
+          :alt="img.title"
+          class="thumb"
+          :class="{ active: currentImage === img.url }"
+          @click="currentImage = img.url"
+        >
+      </div>
+    </header>
 
-        <div class="space-y-2 text-gray-700">
-          <p>📍 <strong>Ubicación:</strong> {{ site.location }}</p>
+    <div class="content-grid">
+      <div class="main-content">
 
-          <p>
-            ⭐ <strong>Promedio:</strong>
-            {{ site.avg_rating ?? 'Sin calificaciones' }}
-          </p>
+        <div class="tags-list" v-if="site.tags && site.tags.length">
+          <span v-for="tag in site.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
         </div>
 
-        <!-- BOTÓN FAVORITOS -->
-        <div class="mt-6">
+        <section class="description-section">
+          <h3>Historia</h3>
+          <div class="text-content" :class="{ collapsed: !expandedDesc }">
+            {{ site.description }}
+          </div>
           <button
-            v-if="isLoggedIn"
-            @click="toggleFavorite"
-            class="w-full py-3 rounded-xl text-white font-medium shadow-md transition"
-            :class="isFavorite ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'"
+            v-if="site.description && site.description.length > 300"
+            @click="expandedDesc = !expandedDesc"
+            class="link-btn"
           >
-            {{ isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
+            {{ expandedDesc ? 'Leer menos' : 'Leer más' }}
+          </button>
+        </section>
+
+        <section class="map-section" v-if="site.lat && site.long">
+          <h3>Ubicación</h3>
+          <div id="map" class="map-container"></div>
+        </section>
+      </div>
+
+      <aside class="reviews-sidebar">
+        <div class="rating-card">
+          <div class="rating-big">{{ site.average_rating || '0.0' }}</div>
+          <div class="stars">
+            <span v-for="n in 5" :key="n" :class="{ filled: n <= Math.round(site.average_rating || 0) }">★</span>
+          </div>
+          <div class="review-count">{{ site.reviews_count }} opiniones</div>
+
+          <button @click="handleFavoriteClick" class="btn-fav" :class="{ active: site.is_favorite }">
+            {{ site.is_favorite ? '❤️ Guardado en Favoritos' : '🤍 Marcar como Favorito' }}
+          </button>
+
+          <button @click="handleWriteReview" class="btn-review">
+            ✏️ Escribir una reseña
           </button>
         </div>
-      </div>
+      </aside>
     </div>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { fetchSiteById, addFavorite, removeFavorite, isFavoriteSite } from '../api'
+<script setup>
+import { ref, onMounted, computed, nextTick } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import api from '../api'; // Usa el export default que agregamos a tu api.js
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-export default {
-  name: 'DetailPage',
+const props = defineProps({
+  id: { type: [String, Number], required: true }
+});
 
-  setup() {
-    const route = useRoute()
-    const id = route.params.id
+const route = useRoute();
+const router = useRouter();
 
-    const loading = ref(true)
-    const error = ref(null)
-    const site = ref(null)
+// Variables Reactivas
+const site = ref(null);
+const loading = ref(true);
+const error = ref(null);
+const currentImage = ref(null);
+const expandedDesc = ref(false);
+const map = ref(null);
 
-    const isLoggedIn = !!localStorage.getItem('auth_token')
-    const isFavorite = ref(false)
+// Clases para el estado (verde, amarillo, rojo)
+const statusClass = computed(() => {
+  if (!site.value) return '';
+  const status = site.value.state_of_conservation?.toLowerCase();
+  if (['bueno', 'excelente', 'muy bueno'].includes(status)) return 'status-good';
+  if (['regular'].includes(status)) return 'status-regular';
+  return 'status-bad';
+});
 
-    async function loadDetail() {
-      try {
-        site.value = await fetchSiteById(id)
+// --- MÉTODOS ---
 
-        if (!site.value) {
-          error.value = 'El sitio no existe.'
-          return
+const fetchSite = async () => {
+  try {
+    loading.value = true;
+    const siteId = props.id || route.params.id;
+
+    // Llamada a tu API usando la función fetchSiteById
+    const response = await api.fetchSiteById(siteId);
+
+    if (response.success) {
+        site.value = response.data;
+        nextTick(() => { initMap(); });
+    } else {
+        error.value = response.error || 'No se pudo cargar el sitio.';
+    }
+  } catch (err) {
+    console.error(err);
+    error.value = 'Error de conexión.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+const initMap = () => {
+  if (!site.value || !site.value.lat || !site.value.long || map.value) return;
+
+  // Fix iconos Leaflet
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  });
+
+  map.value = L.map('map').setView([site.value.lat, site.value.long], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map.value);
+
+  L.marker([site.value.lat, site.value.long])
+    .addTo(map.value)
+    .bindPopup(`<b>${site.value.name}</b><br>${site.value.city}`);
+};
+
+const handleFavoriteClick = async () => {
+  if (!api.isAuthenticated()) {
+    if(confirm("Debes iniciar sesión para guardar favoritos. ¿Ir al login?")) {
+        api.loginWithGoogle();
+    }
+    return;
+  }
+
+  const id = site.value.id;
+  let res;
+
+  try {
+    if (site.value.is_favorite) {
+        res = await api.removeFavorite(id);
+        if (res.success) site.value.is_favorite = false;
+    } else {
+        res = await api.addFavorite(id);
+        if (res.success) site.value.is_favorite = true;
+    }
+
+    if (!res.success) alert('Error: ' + (res.error || 'No se pudo actualizar favorito'));
+  } catch (e) {
+    alert('Error de conexión al guardar favorito');
+  }
+};
+
+const handleWriteReview = () => {
+    if (!api.isAuthenticated()) {
+        if(confirm("Debes iniciar sesión para opinar. ¿Ir al login?")) {
+            api.loginWithGoogle();
         }
-
-        if (isLoggedIn) {
-          isFavorite.value = await isFavoriteSite(id)
-        }
-      } catch {
-        error.value = 'Error cargando los datos.'
-      } finally {
-        loading.value = false
-      }
+    } else {
+        alert("Formulario de reseña pendiente.");
     }
+};
 
-    async function toggleFavorite() {
-      if (isFavorite.value) {
-        await removeFavorite(id)
-        isFavorite.value = false
-      } else {
-        await addFavorite(id)
-        isFavorite.value = true
-      }
-    }
+const handleImageError = (e) => {
+  e.target.src = 'https://via.placeholder.com/800x400?text=Sin+Imagen';
+};
 
-    onMounted(loadDetail)
-
-    return {
-      loading,
-      error,
-      site,
-      isLoggedIn,
-      isFavorite,
-      toggleFavorite,
-    }
-  },
-}
+onMounted(() => {
+  fetchSite();
+});
 </script>
+
+<style scoped src="../assets/detail.css"></style>
