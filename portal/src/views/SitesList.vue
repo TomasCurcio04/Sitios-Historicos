@@ -1,0 +1,592 @@
+<template>
+  <div class="container">
+    <h1 class="title">Listado de sitios</h1>
+
+    <!-- BUSCADOR Y FILTROS -->
+    <div class="filters-wrapper">
+      <button class="filters-toggle" @click="filtersOpen = !filtersOpen">
+        <span>{{ filtersOpen ? '✕' : '' }} Filtros</span>
+      </button>
+
+      <div class="filters-section" :class="{ active: filtersOpen }">
+
+        <!-- Búsqueda por nombre o descripción -->
+        <div class="filter-group">
+          <label class="filter-label">Búsqueda por nombre o descripción:</label>
+          <input type="text" v-model="searchNameDesc" class="filter-input">
+        </div>
+
+        <!-- Tags -->
+        <div class="filter-group">
+          <label class="filter-label">Tags:</label>
+          <select multiple v-model="selectedTags" class="filter-input">
+            <option v-for="tag in tags" :key="tag.id" :value="tag.name">
+              {{ tag.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Provincias -->
+        <div class="filter-group">
+          <label class="filter-label">Provincias:</label>
+          <select v-model="selectedProvince" class="filter-input">
+            <option value="">--Cualquiera--</option>
+            <option v-for="state in states" :key="state.id" :value="state.name">
+              {{ state.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Favoritos -->
+        <div class="filter-group">
+          <label class="filter-label checkbox-label">
+            <input type="checkbox" v-model="favorites" class="checkbox-input">
+            Favoritos
+          </label>
+        </div>
+
+        <!-- Ciudad -->
+        <div class="filter-group">
+          <label class="filter-label">Búsqueda por ciudad:</label>
+          <input type="text" v-model="searchCity" class="filter-input">
+        </div>
+
+        <!-- Orden -->
+        <div class="filter-group">
+          <label class="filter-label">Ordenar por:</label>
+
+          <select v-model="sortBy" class="filter-input">
+            <option value="fecha">Fecha de registro</option>
+            <option value="nombre">Nombre</option>
+            <option value="rank">Mejor rankeados</option>
+          </select>
+
+          <select v-model="sortOrder" class="filter-input">
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+        </div>
+
+        <!-- Botones -->
+        <div class="buttons-group">
+          <button type="button" @click="buscarSitios(1)" class="btn btn-primary">Buscar</button>
+          <button type="button" @click="borrarFiltros" class="btn btn-secondary">Borrar</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- GRID DE TARJETAS -->
+    <div class="sites-grid">
+      <div v-for="site in sites" :key="site.id" class="site-card">
+        <div class="card-header">
+          <h2 class="card-title">{{ site.name }}</h2>
+        </div>
+        <div class="card-body">
+          <div class="card-info">
+            <span class="label">Ciudad:</span>
+            <span class="value">{{ site.city }}</span>
+          </div>
+          <div class="card-info">
+            <span class="label">Provincia:</span>
+            <span class="value">{{ site.province }}</span>
+          </div>
+          <div class="card-info">
+            <span class="label">Estado de conservación:</span>
+            <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
+          </div>
+          <div>
+            <span class="label">Tags:</span>
+            <span class="value">{{ site.tags.join(', ') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay resultados -->
+    <div v-if="hasSearched && sites.length === 0" class="no-results">
+      No se encontraron sitios con los filtros seleccionados.
+    </div>
+
+    <!-- PAGINACIÓN -->
+    <div v-if="meta.total > 0" class="pagination">
+      <button
+        class="btn"
+        :disabled="meta.page === 1"
+        @click="cambiarPagina(meta.page - 1)"
+      >
+        ◀ Anterior
+      </button>
+
+      <span class="page-info">
+        Página {{ meta.page }} de {{ meta.pages }}
+      </span>
+
+      <button
+        class="btn"
+        :disabled="meta.page === meta.pages"
+        @click="cambiarPagina(meta.page + 1)"
+      >
+        Siguiente ▶
+      </button>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import api from '../Services/api.js';
+
+export default {
+  data() {
+    return {
+      sites: [],
+      meta: {
+        page: 1,
+        per_page: 20,
+        total: 0,
+        pages: 1
+      },
+      searchNameDesc: '',
+      tags: [],
+      states: [],
+      selectedTags: [],
+      selectedProvince: '',
+      searchCity: '',
+      favorites: false,
+      hasSearched: false,
+      filtersOpen: false,
+      sortBy: 'fecha',
+      sortOrder: 'asc',
+    };
+  },
+
+  created() {
+    api.getTags().then(res => this.tags = res.data);
+    api.getStates().then(res => this.states = res.data);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageFromUrl = parseInt(urlParams.get("page")) || 1;
+
+    this.buscarSitios(pageFromUrl);
+  },
+
+  methods: {
+    buscarSitios(page = 1) {
+      this.hasSearched = true;
+
+      const params = { page, per_page: 20 };
+
+      if (this.searchCity) params.city = this.searchCity;
+      if (this.selectedProvince) params.province = this.selectedProvince;
+      if (this.selectedTags.length) params.tags = this.selectedTags.join(',');
+      if (this.favorites) params.favorites = true;
+      if (this.searchNameDesc) params.search = this.searchNameDesc;
+
+      // Orden
+      const map = {
+        nombre: { asc: "name-asc", desc: "name-desc" },
+        rank: { asc: "rating-1-5", desc: "rating-5-1" },
+        fecha: { asc: "oldest", desc: "latest" }
+      };
+
+      params.order_by = map[this.sortBy]?.[this.sortOrder] || null;
+
+      // Actualizar URL
+      this.$router.push({ query: params });
+
+      api.getSites(params)
+        .then(res => {
+          this.sites = res.data.data;
+          this.meta = res.data.meta;
+
+          const total = Number(this.meta.total || 0);
+          const perPage = Number(this.meta.per_page || 20);
+          this.meta.pages = Math.max(1, Math.ceil(total / perPage));
+
+          if (this.meta.page > this.meta.pages) {
+            this.meta.page = this.meta.pages;
+          }
+        })
+        .catch(err => console.error("Error buscando sitios:", err));
+    },
+
+    cambiarPagina(nuevaPagina) {
+      this.buscarSitios(nuevaPagina);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("page", nuevaPagina);
+      window.history.replaceState({}, '', url);
+    },
+
+    borrarFiltros() {
+      this.searchNameDesc = '';
+      this.selectedTags = [];
+      this.selectedProvince = '';
+      this.searchCity = '';
+      this.favorites = false;
+      this.sortBy = 'fecha';
+      this.sortOrder = 'asc';
+
+      this.$router.push({ query: {} });
+
+      this.buscarSitios(1);
+    }
+  }
+};
+</script>
+
+
+
+
+<style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  padding: 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.page-info {
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+}
+
+
+.title {
+  font-size: 1.8rem;
+  color: #1a3a52;
+  margin-bottom: 25px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ========== FILTROS - MOBILE FIRST ========== */
+.filters-wrapper {
+  margin-bottom: 30px;
+}
+
+/*  MOSTRAR BOTÓN EN MÓVIL */
+.filters-toggle {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.filters-toggle:active {
+  background-color: #0052a3;
+}
+
+.filters-section {
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease, padding 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.filters-section.active {
+  max-height: 1500px;
+  padding: 20px;
+  opacity: 1;
+}
+
+.filter-group {
+  margin-bottom: 16px;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-label {
+  display: block;
+  font-weight: 600;
+  color: #1a3a52;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e0e6ed;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1a3a52;
+  margin-bottom: 0;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  accent-color: #0066cc;
+}
+
+.buttons-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.btn-primary {
+  background-color: #0066cc;
+  color: white;
+}
+
+.btn-primary:active {
+  background-color: #0052a3;
+}
+
+.btn-secondary {
+  background-color: #e0e6ed;
+  color: #1a3a52;
+}
+
+.btn-secondary:active {
+  background-color: #d0d9e8;
+}
+
+/* ========== GRID DE TARJETAS - 1 COLUMNA EN MÓVIL ========== */
+.sites-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.site-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.site-card:active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  padding: 16px;
+  color: white;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card-body {
+  padding: 16px;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.card-info:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-weight: 600;
+  color: #1a3a52;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.value {
+  color: #4a5f7f;
+  font-size: 0.95rem;
+}
+
+.conservation-badge {
+  display: inline-block;
+  background-color: #e8f4fd;
+  color: #0066cc;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  width: fit-content;
+}
+
+.no-results {
+  margin-top: 20px;
+  padding: 16px;
+  background: #fff3f3;
+  color: #b30000;
+  border: 1px solid #ffcccc;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ========== TABLET (600px+) ========== */
+@media (min-width: 600px) {
+  .container {
+    padding: 30px;
+  }
+
+  .title {
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+  }
+
+  .sites-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  /*  OCULTAR BOTÓN EN TABLET */
+  .filters-toggle {
+    display: none;
+  }
+
+  .filters-section {
+    max-height: none;
+    padding: 25px;
+    opacity: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .buttons-group {
+    grid-column: 1 / -1;
+    gap: 16px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+}
+
+/* ========== DESKTOP (1024px+) ========== */
+@media (min-width: 1024px) {
+  .container {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .title {
+    font-size: 2.8rem;
+    margin-bottom: 0;
+    grid-column: 1 / -1;
+  }
+
+  .filters-wrapper {
+    grid-column: 1;
+    grid-row: 2;
+    margin-bottom: 0;
+  }
+
+  .filters-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: none;
+    padding: 25px;
+    opacity: 1;
+    position: sticky;
+    top: 20px;
+  }
+
+  .filter-group {
+    margin-bottom: 0;
+  }
+
+  .buttons-group {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .btn {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    flex: none;
+  }
+
+  .sites-grid {
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .no-results {
+    grid-column: 2;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+  }
+}
+
+/* ========== DESKTOP GRANDE (1400px+) ========== */
+@media (min-width: 1400px) {
+  .sites-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+</style>
