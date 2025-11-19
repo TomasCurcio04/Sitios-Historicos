@@ -11,11 +11,8 @@
       <h1 class="maintenance-title">Portal en Mantenimiento</h1>
       
       <div class="maintenance-message">
-        <p v-if="message">{{ message }}</p>
-        <p v-else>
-          Estamos realizando tareas de mantenimiento. 
-          Por favor, inténtalo de nuevo más tarde.
-        </p>
+        <p v-if="!loading">{{ message }}</p>
+        <p v-else>Cargando...</p>
       </div>
       
       <div class="maintenance-actions">
@@ -38,15 +35,23 @@ import { getPortalStatus } from '../services/featureFlags.js'
 export default {
   name: 'MaintenancePage',
   
-  computed: {
-    message() {
-      return this.$route.query.message || null
+  data() {
+    return {
+      checking: false,
+      message: '',
+      loading: true
     }
   },
   
-  data() {
-    return {
-      checking: false
+  async mounted() {
+    try {
+      const status = await getPortalStatus()
+      this.message = status.maintenance_message || 'El portal está en mantenimiento. Por favor, inténtalo de nuevo más tarde.'
+    } catch (error) {
+      console.error('Error loading maintenance message:', error)
+      this.message = 'El portal está en mantenimiento. Por favor, inténtalo de nuevo más tarde.'
+    } finally {
+      this.loading = false
     }
   },
   
@@ -56,7 +61,6 @@ export default {
       try {
         const status = await getPortalStatus()
         if (status.enabled) {
-          // Portal está disponible, recargar la página
           window.location.reload()
         }
       } catch (error) {

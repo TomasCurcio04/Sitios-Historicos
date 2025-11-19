@@ -136,6 +136,7 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(api_metadata_bp)
     app.register_blueprint(api_feature_flags_bp)
     app.register_blueprint(google_auth_bp)
+    app.register_blueprint(api_feature_flags_bp)
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)
@@ -191,6 +192,10 @@ def create_app(env="development", static_folder=None):
             "google_auth.auth",
             "google_auth.logout",
             "google_auth.status",
+            "api_feature_flags.get_portal_status",
+            "api_feature_flags.portal_status_options",
+            "api_feature_flags.test_endpoint",
+            "api_feature_flags.get_reviews_status",
         ]
         if request.endpoint in exempt_endpoints:
             return
