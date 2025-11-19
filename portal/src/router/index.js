@@ -16,7 +16,7 @@ const router = createRouter({
     },
     {
       path: '/sites',
-      name: 'sites-list',
+      name: 'sites-list1',
       component: List,
     },
     {
