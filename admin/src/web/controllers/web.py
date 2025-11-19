@@ -1,10 +1,12 @@
 """Controlador principal de la aplicación web."""
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, send_from_directory, current_app
 from src.web.handlers.auth import login_required
+import os
 
 # Creamos el blueprint principal
-web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
+web = Blueprint("web", __name__, template_folder="templates")
+
 
 # Rutas del blueprint
 @web.route("/", endpoint="home")
@@ -15,17 +17,16 @@ def home():
     return render_template("home.html")
 
 
-
-
 @web.route("/validacion_propuesta")
 def validacion_propuesta():
     """Página de validación de propuestas de sitios."""
     return render_template("validacion_propuesta.html")
 
 
-
-
 @web.route("/bajo_mantenimiento", endpoint="bajo_mantenimiento")
 def bajo_mantenimiento():
     """Página mostrada durante el mantenimiento administrativo."""
     return render_template("web.bajo_mantenimiento.html")
+
+
+
