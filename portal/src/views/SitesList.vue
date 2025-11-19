@@ -2,59 +2,46 @@
   <div class="container">
     <h1 class="title">Listado de sitios</h1>
 
-    <!-- FILTROS (igual que antes) -->
+    <!-- FILTROS -->
     <div class="filters-wrapper">
       <button class="filters-toggle" @click="filtersOpen = !filtersOpen">
         <span>{{ filtersOpen ? '✕' : '' }} Filtros</span>
       </button>
 
-         <div class="filters-section" :class="{ active: filtersOpen }">
-
-        <!-- Búsqueda por nombre o descripción -->
+      <div class="filters-section" :class="{ active: filtersOpen }">
         <div class="filter-group">
           <label class="filter-label">Búsqueda por nombre o descripción:</label>
           <input type="text" v-model="searchNameDesc" class="filter-input">
         </div>
 
-        <!-- Tags -->
         <div class="filter-group">
           <label class="filter-label">Tags:</label>
           <select multiple v-model="selectedTags" class="filter-input">
-            <option v-for="tag in tags" :key="tag.id" :value="tag.name">
-              {{ tag.name }}
-            </option>
+            <option v-for="tag in tags" :key="tag.id" :value="tag.name">{{ tag.name }}</option>
           </select>
         </div>
 
-        <!-- Provincias -->
         <div class="filter-group">
           <label class="filter-label">Provincias:</label>
           <select v-model="selectedProvince" class="filter-input">
             <option value="">--Cualquiera--</option>
-            <option v-for="state in states" :key="state.id" :value="state.name">
-              {{ state.name }}
-            </option>
+            <option v-for="state in states" :key="state.id" :value="state.name">{{ state.name }}</option>
           </select>
         </div>
 
-        <!-- Favoritos -->
         <div class="filter-group">
           <label class="filter-label checkbox-label">
-            <input type="checkbox" v-model="favorites" class="checkbox-input">
-            Favoritos
+            <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
           </label>
         </div>
 
-        <!-- Ciudad -->
         <div class="filter-group">
           <label class="filter-label">Búsqueda por ciudad:</label>
           <input type="text" v-model="searchCity" class="filter-input">
         </div>
 
-        <!-- Orden -->
         <div class="filter-group">
           <label class="filter-label">Ordenar por:</label>
-
           <select v-model="sortBy" class="filter-input">
             <option value="fecha">Fecha de registro</option>
             <option value="nombre">Nombre</option>
@@ -77,14 +64,7 @@
     <!-- GRID DE TARJETAS -->
     <div class="sites-grid">
       <div v-for="site in sites" :key="site.id" class="site-card">
-
-        <!-- Imagen de portada desde MinIO -->
-        <img
-          v-if="site.cover_image"
-          :src="getMinioUrl(site.cover_image)"
-          :alt="'Cover de ' + site.name"
-          class="cover-image"
-        />
+        <img v-if="site.cover_image" :src="getMinioUrl(site.cover_image)" :alt="'Cover de ' + site.name" class="cover-image" />
         <span v-else style="font-size: 0.8rem; color: #888;">Sin imagen</span>
 
         <div class="card-header">
@@ -111,12 +91,10 @@
       </div>
     </div>
 
-    <!-- Mensaje cuando no hay resultados -->
     <div v-if="hasSearched && sites.length === 0" class="no-results">
       No se encontraron sitios con los filtros seleccionados.
     </div>
 
-    <!-- PAGINACIÓN -->
     <div v-if="meta.total > 0" class="pagination">
       <button class="btn" :disabled="meta.page === 1" @click="cambiarPagina(meta.page - 1)">◀ Anterior</button>
       <span class="page-info">Página {{ meta.page }} de {{ meta.pages }}</span>
@@ -132,12 +110,7 @@ export default {
   data() {
     return {
       sites: [],
-      meta: {
-        page: 1,
-        per_page: 20,
-        total: 0,
-        pages: 1
-      },
+      meta: { page: 1, per_page: 20, total: 0, pages: 1 },
       searchNameDesc: '',
       tags: [],
       states: [],
@@ -148,9 +121,7 @@ export default {
       hasSearched: false,
       filtersOpen: false,
       sortBy: 'fecha',
-      sortOrder: 'asc',
-
-      // Configuración de MinIO
+      sortOrder: 'desc',
       minioBaseUrl: "http://minio.proyecto2025.linti.unlp.edu.ar",
       minioBucket: "grupo10"
     };
@@ -163,11 +134,31 @@ export default {
     const urlParams = new URLSearchParams(window.location.search);
     const pageFromUrl = parseInt(urlParams.get("page")) || 1;
 
+    // Aplicar filtros automáticos desde query params
+    const q = urlParams.get("q");
+    const order_by = urlParams.get("order_by");
+    const favorites = urlParams.get("favorites");
+
+    if (q) this.searchNameDesc = q;
+    if (favorites === "true") this.favorites = true;
+
+    const map = {
+      "name-asc": { sortBy: "nombre", sortOrder: "asc" },
+      "name-desc": { sortBy: "nombre", sortOrder: "desc" },
+      "rating-1-5": { sortBy: "rank", sortOrder: "asc" },
+      "rating-5-1": { sortBy: "rank", sortOrder: "desc" },
+      "oldest": { sortBy: "fecha", sortOrder: "asc" },
+      "latest": { sortBy: "fecha", sortOrder: "desc" }
+    };
+    if (order_by && map[order_by]) {
+      this.sortBy = map[order_by].sortBy;
+      this.sortOrder = map[order_by].sortOrder;
+    }
+
     this.buscarSitios(pageFromUrl);
   },
 
   methods: {
-    // Construye la URL completa de MinIO
     getMinioUrl(imagePath) {
       return `${this.minioBaseUrl}/${this.minioBucket}/${imagePath}`;
     },
@@ -190,16 +181,13 @@ export default {
       params.order_by = map[this.sortBy]?.[this.sortOrder] || null;
 
       this.$router.push({ query: params });
-      console.log("Parámetros de búsqueda:", params);
       api.getSites(params)
         .then(res => {
           this.sites = res.data.data;
           this.meta = res.data.meta;
-
           const total = Number(this.meta.total || 0);
           const perPage = Number(this.meta.per_page || 20);
           this.meta.pages = Math.max(1, Math.ceil(total / perPage));
-
           if (this.meta.page > this.meta.pages) this.meta.page = this.meta.pages;
         })
         .catch(err => console.error("Error buscando sitios:", err));
@@ -220,7 +208,6 @@ export default {
       this.favorites = false;
       this.sortBy = 'fecha';
       this.sortOrder = 'asc';
-
       this.$router.push({ query: {} });
       this.buscarSitios(1);
     }
