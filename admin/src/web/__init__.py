@@ -136,7 +136,6 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(api_metadata_bp)
     app.register_blueprint(api_feature_flags_bp)
     app.register_blueprint(google_auth_bp)
-    app.register_blueprint(api_feature_flags_bp)
 
     # Registrar manejadores de errores
     app.register_error_handler(404, error.not_found)
