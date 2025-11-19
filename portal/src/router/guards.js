@@ -7,7 +7,8 @@ import { getPortalStatus } from '../services/featureFlags.js'
  * @param {Function} next - Función para continuar la navegación
  */
 export async function checkPortalMaintenance(to, from, next) {
-  // Si ya estamos en la página de mantenimiento, permitir acceso
+  console.log('Guard ejecutándose para:', to.name)
+  
   if (to.name === 'maintenance') {
     next()
     return
@@ -15,20 +16,19 @@ export async function checkPortalMaintenance(to, from, next) {
 
   try {
     const status = await getPortalStatus()
+    console.log('Status del portal:', status)
     
     if (!status.enabled) {
-      // Portal en mantenimiento, redirigir a página de mantenimiento
+      console.log('Redirigiendo a mantenimiento')
       next({
         name: 'maintenance',
         query: { message: status.maintenance_message }
       })
     } else {
-      // Portal disponible, continuar navegación
       next()
     }
   } catch (error) {
     console.error('Error checking portal status:', error)
-    // En caso de error, permitir acceso (fail-safe)
     next()
   }
 }
