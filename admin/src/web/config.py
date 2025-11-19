@@ -40,8 +40,6 @@ class ProductionConfig(BaseConfig):
         environ.get("CORS_ORIGINS").split(",") if environ.get("CORS_ORIGINS") else []
     )
 
-    #  GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
-    #  GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
     GOOGLE_CLIENT_ID = {"google-oauth": environ.get("GOOGLE_CLIENT_ID")}
     GOOGLE_CLIENT_SECRET = {"google-oauth": environ.get("GOOGLE_CLIENT_SECRET")}
     API_SERVER = environ.get("API_SERVER")
