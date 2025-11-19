@@ -44,12 +44,8 @@ class ProductionConfig(BaseConfig):
     GOOGLE_CLIENT_SECRET = {"google-oauth": environ.get("GOOGLE_CLIENT_SECRET")}
     API_SERVER = environ.get("API_SERVER")
 
-    # reparacion estilos
     # Configuración para servir archivos estáticos en producción
-    SEND_FILE_MAX_AGE_DEFAULT = 0
-    STATIC_FOLDER = "static"
-    STATIC_URL_PATH = "/static"
-    # Fin reparacion estilos
+    SEND_FILE_MAX_AGE_DEFAULT = 31536000  # 1 año
 
 
 class DevelopmentConfig(BaseConfig):

@@ -5,7 +5,7 @@ from src.web.handlers.auth import login_required
 import os
 
 # Creamos el blueprint principal
-web = Blueprint("web", __name__, template_folder="templates", static_folder="static")
+web = Blueprint("web", __name__, template_folder="templates")
 
 
 # Rutas del blueprint
@@ -29,14 +29,4 @@ def bajo_mantenimiento():
     return render_template("web.bajo_mantenimiento.html")
 
 
-# reparacion estilos
-@web.route("/static/<path:filename>")
-def serve_static(filename):
-    """Sirve archivos estáticos explícitamente."""
-    static_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "static"
-    )
-    return send_from_directory(static_dir, filename)
 
-
-# fin reparacion estilos
