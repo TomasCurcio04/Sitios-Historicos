@@ -32,7 +32,9 @@ def listar_sitios(
     # Join con state_rel y eager loading de relaciones
     query = query.join(State, Site.state == State.id_state)
     query = query.options(
-        joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
+        joinedload(Site.state_rel), 
+        joinedload(Site.tag), 
+        joinedload(Site.images)
     )
 
     # Filtro por nombre
@@ -134,7 +136,9 @@ def get_site_by_id_service(site_id):
         db.session.query(Site)
         .filter(Site.id_site == site_id, Site.is_visible, ~Site.deleted)
         .options(
-            joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
+            joinedload(Site.state_rel), 
+            joinedload(Site.tag), 
+            joinedload(Site.images)
         )
         .first()
     )
