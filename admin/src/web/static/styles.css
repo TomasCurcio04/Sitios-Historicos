@@ -619,9 +619,11 @@ hr {
     white-space: normal !important;
 }
 
-.admin-table th:nth-child(15),
-.admin-table td:nth-child(15) {
-    width: 12% !important;
+/* Columna de acciones más ancha */
+.admin-table th:nth-child(8),
+.admin-table td:nth-child(8) {
+    width: 180px !important;
+    min-width: 180px !important;
     white-space: normal !important;
 }
 
@@ -696,15 +698,18 @@ hr {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 80px !important;
-    height: 32px !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    width: 140px !important;
+    height: 36px !important;
+    padding: 4px 8px !important;
+    margin: 2px 0 !important;
     font-size: 11px !important;
     text-align: center !important;
     box-sizing: border-box !important;
     border: none !important;
     text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 /* Estilos base para tablas administrativas */
