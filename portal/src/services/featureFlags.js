@@ -6,24 +6,31 @@ const API_BASE = 'http://localhost:5000/api/feature-flags'
  */
 export async function getPortalStatus() {
   try {
-    console.log('Consultando:', `${API_BASE}/portal-status`)
+    // Primero probar endpoint de test
+    const testResponse = await fetch(`${API_BASE}/test`, {
+      method: 'GET',
+      mode: 'cors'
+    })
+    console.log('Test endpoint status:', testResponse.status)
+    
     const response = await fetch(`${API_BASE}/portal-status`, {
       method: 'GET',
-      mode: 'cors',
-      credentials: 'include'
+      mode: 'cors'
     })
-    console.log('Response status:', response.status)
+    
+    console.log('Portal status response:', response.status, response.headers.get('content-type'))
+    
     if (!response.ok) {
-      const text = await response.text()
-      console.log('Response text:', text)
-      throw new Error(`HTTP ${response.status}: ${text}`)
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
-    const data = await response.json()
-    console.log('Respuesta del servidor:', data)
-    return data
+    
+    const text = await response.text()
+    console.log('Response text:', text)
+    
+    return JSON.parse(text)
   } catch (error) {
-    console.error('Error fetching portal status:', error)
-    return { enabled: true, maintenance_message: null }
+    console.error('getPortalStatus error:', error)
+    throw error
   }
 }
 
@@ -35,8 +42,7 @@ export async function getReviewsStatus() {
   try {
     const response = await fetch(`${API_BASE}/reviews-status`, {
       method: 'GET',
-      mode: 'cors',
-      credentials: 'include'
+      mode: 'cors'
     })
     if (!response.ok) {
       throw new Error('Error al obtener estado de reseñas')

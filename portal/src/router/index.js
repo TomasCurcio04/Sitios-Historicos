@@ -35,6 +35,19 @@ const router = createRouter({
       name: 'maintenance',
       component: MaintenancePage,
       props: true,
+      beforeEnter: async (to, from, next) => {
+        try {
+          const { getPortalStatus } = await import('../services/featureFlags.js')
+          const status = await getPortalStatus()
+          if (status.enabled) {
+            next({ name: 'home' })
+          } else {
+            next()
+          }
+        } catch (error) {
+          next()
+        }
+      }
     },
   ],
 })

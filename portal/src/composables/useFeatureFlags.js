@@ -22,9 +22,7 @@ export function useFeatureFlags() {
       maintenanceMessage.value = status.maintenance_message
     } catch (error) {
       console.error('Error checking portal status:', error)
-      // En caso de error, asumir que está disponible
-      portalEnabled.value = true
-      maintenanceMessage.value = null
+      throw error
     } finally {
       loading.value = false
     }
