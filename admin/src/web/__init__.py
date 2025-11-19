@@ -187,6 +187,8 @@ def create_app(env="development", static_folder=None):
             "google_auth.auth",
             "google_auth.logout",
             "google_auth.status",
+            "api_metadata.get_tags",
+            "api_metadata.get_states"
         ]
         if request.endpoint in exempt_endpoints:
             return
