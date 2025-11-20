@@ -1,86 +1,195 @@
 <template>
-  <div class="container mx-auto py-10">
+  <div class="container mx-auto py-10 max-w-3xl">
 
-    <!-- Cargando estado de sesión -->
-    <div v-if="loading" class="text-center">
-      <p class="text-gray-600">Cargando...</p>
+    <div v-if="loading" class="text-center py-10">
+      <p class="text-gray-600 text-lg">Cargando perfil...</p>
     </div>
 
-    <!-- SI NO ESTÁ LOGUEADO -->
-    <div v-else-if="!loggedIn" class="text-center">
-      <h2 class="text-2xl font-bold mb-4">Mi Perfil</h2>
-      <p class="mb-4 text-gray-600">
+    <div v-else-if="!loggedIn" class="text-center space-y-4">
+      <h2 class="text-3xl font-bold">Mi Perfil</h2>
+
+      <p class="text-gray-600">
         Inicia sesión para ver tu perfil, tus reseñas y tus favoritos.
       </p>
 
-      <GoogleLoginButton />
+      <div class="flex justify-center">
+        <GoogleLoginButton 
+          :logged-in="loggedIn" 
+          :user="user" 
+          @login="login" 
+          @logout="logout" 
+        />
+      </div>
     </div>
 
-    <!-- SI ESTÁ LOGUEADO -->
-    <div v-else>
+    <div v-else class="space-y-8">
 
-      <!-- Información del usuario -->
-      <div class="flex items-center gap-4 mb-8">
-        <img 
-          :src="user.picture" 
+      <div class="bg-white shadow-md rounded-xl p-6 flex items-center gap-6">
+        <img
+          :src="user.picture"
           alt="Foto de usuario"
-          class="w-16 h-16 rounded-full object-cover"
+          class="w-20 h-20 rounded-full object-cover shadow"
         />
 
-        <div>
-          <h2 class="text-xl font-bold">{{ user.name }}</h2>
+        <div class="flex-1">
+          <h2 class="text-2xl font-bold">{{ user.name }}</h2>
           <p class="text-gray-600">{{ user.email }}</p>
+        </div>
+
+        <GoogleLoginButton 
+          :logged-in="loggedIn" 
+          :user="user" 
+          @login="login"
+          @logout="logout"
+        />
+      </div>
+
+      <div class="border-b flex gap-6">
+        <button
+          @click="activeTab = 'reviews'"
+          :class="[
+            'pb-2 font-semibold transition-colors',
+            activeTab === 'reviews'
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-600 hover:text-gray-800'
+          ]"
+        >
+          Mis Reseñas
+        </button>
+
+        <button
+          @click="activeTab = 'favorites'"
+          :class="[
+            'pb-2 font-semibold transition-colors',
+            activeTab === 'favorites'
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-600 hover:text-gray-800'
+          ]"
+        >
+          Mis Favoritos
+        </button>
+      </div>
+
+      <div class="pt-4">
+        <div v-show="activeTab === 'reviews'">
+          <ReviewsList
+            :reviews="reviews"
+            :meta="reviewsMeta"
+            :loading="reviewsLoading"
+            :order="reviewsOrder"
+            @page-change="loadReviews"
+            @order-change="changeReviewsOrder"
+          />
+        </div>
+
+        <div v-show="activeTab === 'favorites'">
+          <FavoritesList
+            :favorites="favorites"
+            :meta="favoritesMeta"
+            :loading="favoritesLoading"
+            @page-change="loadFavorites"
+          />
         </div>
       </div>
 
-      <!-- Reviews -->
-      <h3 class="text-lg font-semibold mb-2">Mis Reseñas</h3>
-      <ReviewsList />
-
-      <!-- Favoritos -->
-      <h3 class="text-lg font-semibold mt-10 mb-2">Mis Favoritos</h3>
-      <FavoritesList />
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 import ReviewsList from '../components/UserReviewsList.vue'
 import FavoritesList from '../components/UserFavoritesList.vue'
+import { useAuth } from '../composables/useAuth' 
+
+
+const { loggedIn, user, loading, login, logout } = useAuth() 
 
 const API_URL = import.meta.env.VITE_API_URL
 
-const loggedIn = ref(false)
-const user = ref(null)
-const loading = ref(true)
 
-// Función de consulta reutilizable
-const checkSession = async () => {
-  const res = await fetch(`${API_URL}/google/status`, {
-    credentials: 'include'
-  })
+const activeTab = ref('reviews')
+const reviews = ref([])
+const reviewsMeta = ref({})
+const reviewsLoading = ref(false)
+const reviewsOrder = ref('desc')
+const favorites = ref([])
+const favoritesMeta = ref({})
+const favoritesLoading = ref(false)
 
-  const data = await res.json()
 
-  loggedIn.value = data.logged_in
-  user.value = data.user
+const loadReviews = async (page = 1) => {
+  if (!loggedIn.value) return; 
+  reviewsLoading.value = true
+  try {
+    const res = await fetch(
+      `${API_URL}/users/me/reviews?page=${page}&order=${reviewsOrder.value}`,
+      { credentials: 'include' }
+    )
+    const data = await res.json()
+    
+    reviews.value = data.data || data.reviews || []
+    reviewsMeta.value = data.meta || {
+      current_page: page,
+      total_pages: data.total_pages || 1,
+      total: data.total || 0
+    }
+  } catch (error) {
+    console.error('Error loading reviews:', error)
+  } finally {
+    reviewsLoading.value = false
+  }
 }
 
-onMounted(async () => {
-  // Primer llamada
-  await checkSession()
+const changeReviewsOrder = async (order) => {
+  reviewsOrder.value = order
+  await loadReviews(1)
+}
 
-  // Si no está logueado, hacer retry
-  if (!loggedIn.value) {
-    setTimeout(async () => {
-      await checkSession()
-      loading.value = false
-    }, 300)
-  } else {
-    loading.value = false
+
+const loadFavorites = async (page = 1) => {
+  if (!loggedIn.value) return;
+  favoritesLoading.value = true;
+
+  try {
+    const res = await fetch(
+      `${API_URL}/api/me/favorites?page=${page}`,
+      { credentials: 'include' }
+    );
+    
+    const data = await res.json();
+    favorites.value = data.data || [];
+
+    const meta = data.meta || {};
+
+    favoritesMeta.value = {
+      current_page: meta.page || 1,
+      total_pages: Math.ceil((meta.total || 0) / (meta.per_page || 20)),
+      total: meta.total || 0
+    };
+
+  } catch (error) {
+    console.error("Error loading favorites:", error);
+  } finally {
+    favoritesLoading.value = false;
   }
+};
+
+
+watch(loggedIn, (isLoggedIn) => {
+  if (isLoggedIn) {
+    // Si el usuario acaba de iniciar sesión, cargamos los datos
+    loadReviews()
+    loadFavorites()
+  } else {
+    // Si el usuario cierra sesión, limpiamos la lista
+    reviews.value = []
+    favorites.value = []
+  }
+}, { 
+  // 'immediate: true' garantiza que se ejecute al inicio, una vez que useAuth 
+  // ha determinado el estado inicial de la sesión.
+  immediate: true 
 })
 </script>
