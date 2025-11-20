@@ -25,9 +25,17 @@ def listar_sitios(
     per_page=20,
     conservation_state=None,
     search=None,
+    user_id=None,
+    search_favorites=False,
 ):
     """Listar sitios con filtros y paginación"""
     query = db.session.query(Site).filter(Site.is_visible, ~Site.deleted)
+    
+    # Si search_favorites es True y hay user_id, filtrar por favoritos
+    if search_favorites and user_id:
+        from src.core.entity.site_favorite import SiteFavorite
+        query = query.join(SiteFavorite, Site.id_site == SiteFavorite.id_site)
+        query = query.filter(SiteFavorite.id_user == user_id)
 
     # Join con state_rel y eager loading de relaciones
     query = query.join(State, Site.state == State.id_state)
@@ -119,6 +127,11 @@ def listar_sitios(
         query = query.order_by(Site.name.asc())
     elif order_by == "name-desc":
         query = query.order_by(Site.name.desc())
+    elif order_by == "most-visited":
+        # Ordenar por visitas descendente
+        from src.core.entity.site_visit import SiteVisit
+        query = query.outerjoin(SiteVisit, Site.id_site == SiteVisit.id_site)
+        query = query.order_by(SiteVisit.visit_count.desc().nullslast())
     else:
         query = query.order_by(Site.id_site)
 

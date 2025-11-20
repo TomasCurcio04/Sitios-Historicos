@@ -16,7 +16,7 @@ class SiteQuerySchema(Schema):
     
     order_by = fields.Str(
         load_default=None,
-        validate=validate.OneOf(['rating-5-1', 'rating-1-5', 'latest', 'oldest', 'name-asc', 'name-desc'])
+        validate=validate.OneOf(['rating-5-1', 'rating-1-5', 'latest', 'oldest', 'name-asc', 'name-desc', 'most-visited'])
     )
     
     lat = fields.Float(load_default=None, validate=validate.Range(min=-90, max=90))
@@ -25,6 +25,8 @@ class SiteQuerySchema(Schema):
     
     page = fields.Int(load_default=1, validate=validate.Range(min=1))
     per_page = fields.Int(load_default=20, validate=validate.Range(min=1, max=100))
+    
+    search_favorites = fields.Bool(load_default=False)
 
 
 class SiteResponseSchema(Schema):
