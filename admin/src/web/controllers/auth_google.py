@@ -45,5 +45,18 @@ def logout():
 
 @bp.route("/status")
 def status():
+    print("🔍 [STATUS] Iniciando status check")
+    print(f"🔍 [STATUS] Request method: {request.method}")
+    print(f"🔍 [STATUS] Request headers: {dict(request.headers)}")
+    print(f"🔍 [STATUS] Session keys: {list(session.keys())}")
+    
     user = session.get("user")
-    return {"logged_in": bool(user), "user": user}
+    print(f"🔍 [STATUS] Session user: {user}")
+    
+    logged_in = bool(user)
+    print(f"🔍 [STATUS] logged_in: {logged_in}")
+    
+    response_data = {"logged_in": logged_in, "user": user}
+    print(f"🔍 [STATUS] Response data: {response_data}")
+    
+    return response_data
