@@ -20,7 +20,7 @@
 
       <div class="hero-image">
         <img
-          :src="currentImage || site.cover_image || '/placeholder.jpg'"
+          :src="resolveUrl(currentImage || site.cover_image)"
           :alt="site.name"
           @error="handleImageError"
         >
@@ -37,37 +37,31 @@
         <img
           v-for="img in site.images"
           :key="img.id"
-          :src="img.url"
+          :src="resolveUrl(img.url)"
           :alt="img.title"
           class="thumb"
           :class="{ active: currentImage === img.url }"
           @click="currentImage = img.url"
+          @error="handleThumbError"
         >
       </div>
     </header>
 
     <div class="content-grid">
       <div class="main-content">
-
         <div class="tags-list" v-if="site.tags && site.tags.length">
           <span v-for="tag in site.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
         </div>
-
         <section class="description-section">
           <h3>Historia</h3>
           <div class="text-content" :class="{ collapsed: !expandedDesc }">
             {{ site.description }}
           </div>
-          <button
-            v-if="site.description && site.description.length > 300"
-            @click="expandedDesc = !expandedDesc"
-            class="link-btn"
-          >
+          <button v-if="site.description && site.description.length > 300" @click="expandedDesc = !expandedDesc" class="link-btn">
             {{ expandedDesc ? 'Leer menos' : 'Leer más' }}
           </button>
         </section>
-
-        <section class="map-section" v-if="site.lat && site.long">
+        <section class="map-section" v-show="site.lat && site.long">
           <h3>Ubicación</h3>
           <div id="map" class="map-container"></div>
         </section>
@@ -80,11 +74,9 @@
             <span v-for="n in 5" :key="n" :class="{ filled: n <= Math.round(site.average_rating || 0) }">★</span>
           </div>
           <div class="review-count">{{ site.reviews_count }} opiniones</div>
-
           <button @click="handleFavoriteClick" class="btn-fav" :class="{ active: site.is_favorite }">
             {{ site.is_favorite ? '❤️ Guardado en Favoritos' : '🤍 Marcar como Favorito' }}
           </button>
-
           <button @click="handleWriteReview" class="btn-review">
             ✏️ Escribir una reseña
           </button>
@@ -95,9 +87,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, onMounted, computed, nextTick, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import api from '../api'; // Usa el export default que agregamos a tu api.js
+import api from '../api';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -107,6 +99,7 @@ const props = defineProps({
 
 const route = useRoute();
 const router = useRouter();
+const placeholderImage = 'https://placehold.co/800x400?text=Sin+Imagen';
 
 // Variables Reactivas
 const site = ref(null);
@@ -116,7 +109,7 @@ const currentImage = ref(null);
 const expandedDesc = ref(false);
 const map = ref(null);
 
-// Clases para el estado (verde, amarillo, rojo)
+// Computed
 const statusClass = computed(() => {
   if (!site.value) return '';
   const status = site.value.state_of_conservation?.toLowerCase();
@@ -125,32 +118,63 @@ const statusClass = computed(() => {
   return 'status-bad';
 });
 
-// --- MÉTODOS ---
+// --- NUEVA FUNCIÓN PARA RESOLVER URLS ---
+// --- FUNCIÓN CORREGIDA PARA RESOLVER URLS ---
+const resolveUrl = (url) => {
+  // 1. Si es nulo, devuelve placeholder
+  if (!url) return placeholderImage;
+
+  // 2. Si la URL ya viene completa (empieza con http), la usamos tal cual
+  if (url.startsWith('http') || url.startsWith('https')) {
+    return url;
+  }
+
+  // 3. Si es una ruta relativa (lo que devuelve tu backend), le pegamos el dominio de la UNLP
+  // NOTA: Agregamos '/grupo10/' porque vimos que es necesario en la URL que me pasaste
+  return `http://minio.proyecto2025.linti.unlp.edu.ar/grupo10/${url}`;
+};
+
+// --- MÉTODOS EXISTENTES ---
 
 const fetchSite = async () => {
+  // Eliminamos el try/finally para controlar manualmente el loading
+  loading.value = true;
   try {
-    loading.value = true;
     const siteId = props.id || route.params.id;
-
-    // Llamada a tu API usando la función fetchSiteById
     const response = await api.fetchSiteById(siteId);
 
     if (response.success) {
-        site.value = response.data;
-        nextTick(() => { initMap(); });
+      site.value = response.data;
+
+      // CORRECCIÓN: Ocultamos el loading AHORA para que el HTML del mapa se renderice
+      loading.value = false;
+
+      // Ahora sí, esperamos a que el DOM se actualice y buscamos el mapa
+      nextTick(() => {
+        initMap();
+      });
     } else {
-        error.value = response.error || 'No se pudo cargar el sitio.';
+      error.value = response.error || 'No se pudo cargar el sitio.';
+      loading.value = false;
     }
   } catch (err) {
-    console.error(err);
+    console.error("Error fetchSite:", err);
     error.value = 'Error de conexión.';
-  } finally {
     loading.value = false;
   }
 };
 
 const initMap = () => {
-  if (!site.value || !site.value.lat || !site.value.long || map.value) return;
+  if (!site.value || !site.value.lat || !site.value.long) return;
+  const mapContainer = document.getElementById('map');
+  if (!mapContainer) {
+      console.warn("Contenedor del mapa no encontrado.");
+      return;
+  }
+  if (map.value) {
+      map.value.remove();
+      map.value = null;
+  }
 
   // Fix iconos Leaflet
   delete L.Icon.Default.prototype._getIconUrl;
@@ -161,8 +185,9 @@ const initMap = () => {
   });
 
   map.value = L.map('map').setView([site.value.lat, site.value.long], 14);
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+    attribution: '© OpenStreetMap contributors'
   }).addTo(map.value);
 
   L.marker([site.value.lat, site.value.long])
@@ -177,10 +202,8 @@ const handleFavoriteClick = async () => {
     }
     return;
   }
-
   const id = site.value.id;
   let res;
-
   try {
     if (site.value.is_favorite) {
         res = await api.removeFavorite(id);
@@ -189,7 +212,6 @@ const handleFavoriteClick = async () => {
         res = await api.addFavorite(id);
         if (res.success) site.value.is_favorite = true;
     }
-
     if (!res.success) alert('Error: ' + (res.error || 'No se pudo actualizar favorito'));
   } catch (e) {
     alert('Error de conexión al guardar favorito');
@@ -207,11 +229,20 @@ const handleWriteReview = () => {
 };
 
 const handleImageError = (e) => {
-  e.target.src = 'https://via.placeholder.com/800x400?text=Sin+Imagen';
+  e.target.src = placeholderImage;
+};
+const handleThumbError = (e) => {
+    e.target.style.display = 'none';
 };
 
 onMounted(() => {
   fetchSite();
+});
+
+onBeforeUnmount(() => {
+    if (map.value) {
+        map.value.remove();
+    }
 });
 </script>
 
