@@ -5,13 +5,13 @@
     <SectionCarousel
       title="Más visitados"
       :fetchFn="fetchMostVisited"
-      :queryParams="{ order: 'most_visited' }"
+      :queryParams="{ order: 'most_visited', sortOrder: 'desc' }"
     />
 
     <SectionCarousel
       title="Mejor puntuados"
       :fetchFn="fetchTopRated"
-      :queryParams="{ order: 'top_rated' }"
+      :queryParams="{ order_by: 'rating-5-1', sortOrder: 'desc' }"
     />
 
     <SectionCarousel
@@ -24,7 +24,7 @@
     <SectionCarousel
       title="Recientemente agregados"
       :fetchFn="fetchRecent"
-      :queryParams="{ order: 'recent' }"
+      :queryParams="{ order: 'latest', sortOrder: 'desc' }"
     />
   </div>
 </template>
