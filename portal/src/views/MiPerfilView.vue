@@ -148,16 +148,17 @@ const changeReviewsOrder = async (order) => {
   await loadReviews(1)
 }
 
+
 const loadFavorites = async (page = 1) => {
   if (!loggedIn.value) return;
-  console.log("Cargando favoritos, página:", page);
+
   favoritesLoading.value = true;
 
   try {
     const res = await Api.getMyFavorites({ page });
 
-    const data = res.data; 
-    console.log("Datos de favoritos recibidos:", data);
+    const data = res.data;
+
     favorites.value = data.data || [];
 
     const meta = data.meta || {};
@@ -173,6 +174,7 @@ const loadFavorites = async (page = 1) => {
     favoritesLoading.value = false;
   }
 };
+
 
 watch(loggedIn, (isLoggedIn) => {
   if (isLoggedIn) {

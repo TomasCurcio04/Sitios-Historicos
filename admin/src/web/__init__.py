@@ -72,7 +72,16 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
-    CORS(app, supports_credentials=True)
+    CORS(app, 
+     origins=['http://localhost:5173'],
+     supports_credentials=True,
+     allow_headers=['Content-Type', 'Authorization'],
+     expose_headers=['Authorization'])
+
+    # Configuración de sesión
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = False 
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
@@ -87,8 +96,7 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
-    # inicializo cors
-    CORS(app)
+
 
     init_oauth(app)
 
@@ -196,8 +204,7 @@ def create_app(env="development", static_folder=None):
             "api_feature_flags.test_endpoint",
             "api_feature_flags.get_reviews_status",
             "api_metadata.get_tags",
-            "api_metadata.get_states",
-            "get_my_favorites"
+            "api_metadata.get_states"
         ]
         if request.endpoint in exempt_endpoints:
             return
