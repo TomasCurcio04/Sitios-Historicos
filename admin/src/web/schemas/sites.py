@@ -16,7 +16,7 @@ class SiteQuerySchema(Schema):
     
     order_by = fields.Str(
         load_default=None,
-        validate=validate.OneOf(['rating-5-1', 'rating-1-5', 'latest', 'oldest', 'name-asc', 'name-desc'])
+        validate=validate.OneOf(['rating-5-1', 'rating-1-5', 'latest', 'oldest', 'name-asc', 'name-desc', 'most-visited'])
     )
     
     lat = fields.Float(load_default=None, validate=validate.Range(min=-90, max=90))

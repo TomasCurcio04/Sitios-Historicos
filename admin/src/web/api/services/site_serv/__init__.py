@@ -127,6 +127,11 @@ def listar_sitios(
         query = query.order_by(Site.name.asc())
     elif order_by == "name-desc":
         query = query.order_by(Site.name.desc())
+    elif order_by == "most-visited":
+        # Ordenar por visitas descendente
+        from src.core.entity.site_visit import SiteVisit
+        query = query.outerjoin(SiteVisit, Site.id_site == SiteVisit.id_site)
+        query = query.order_by(SiteVisit.visit_count.desc().nullslast())
     else:
         query = query.order_by(Site.id_site)
 
