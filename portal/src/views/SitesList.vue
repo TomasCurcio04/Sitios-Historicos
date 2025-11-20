@@ -104,7 +104,6 @@
           :alt="'Cover de ' + site.name"
           class="cover-image"
         />
-
         <span v-else style="font-size: 0.8rem; color: #888;">Sin imagen</span>
 
         <div class="card-header">
@@ -116,17 +115,14 @@
             <span class="label">Ciudad:</span>
             <span class="value">{{ site.city }}</span>
           </div>
-
           <div class="card-info">
             <span class="label">Provincia:</span>
             <span class="value">{{ site.province }}</span>
           </div>
-
           <div class="card-info">
             <span class="label">Estado de conservación:</span>
             <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
           </div>
-
           <div>
             <span class="label">Tags:</span>
             <span class="value">{{ site.tags.join(', ') }}</span>
@@ -167,7 +163,6 @@
 import api from '../Services/api.js';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-// Desactivar por completo la animación de zoom en popups
 L.Popup.prototype.options.zoomAnimation = false;
 
 export default {
@@ -213,7 +208,21 @@ export default {
 
     if (urlParams.get("q")) this.searchNameDesc = urlParams.get("q");
     if (urlParams.get("favorites") === "true") this.favorites = true;
-    if (urlParams.get("order_by")) this.order_by = urlParams.get("order_by");
+
+    // Inicializar selects según order_by del query
+    const orderParam = urlParams.get("order_by");
+    if (orderParam) {
+      switch(orderParam) {
+        case "most-visited": this.sortBy = "visitas"; this.sortOrder = "asc"; break;
+        case "name-asc": this.sortBy = "nombre"; this.sortOrder = "asc"; break;
+        case "name-desc": this.sortBy = "nombre"; this.sortOrder = "desc"; break;
+        case "rating-1-5": this.sortBy = "rank"; this.sortOrder = "asc"; break;
+        case "rating-5-1": this.sortBy = "rank"; this.sortOrder = "desc"; break;
+        case "latest": this.sortBy = "fecha"; this.sortOrder = "desc"; break;
+        case "oldest": this.sortBy = "fecha"; this.sortOrder = "asc"; break;
+        default: break;
+      }
+    }
 
     this.buscarSitios(pageFromUrl);
   },
@@ -235,22 +244,16 @@ export default {
       this.selectedLat = lat;
       this.selectedLong = long;
 
-      if (this.marker) {
-        this.marker.setLatLng([lat, long]);
-      } else {
-        this.marker = L.marker([lat, long]).addTo(this.map);
-      }
+      if (this.marker) this.marker.setLatLng([lat, long]);
+      else this.marker = L.marker([lat, long]).addTo(this.map);
 
-      if (this.circle) {
-        this.circle.setLatLng([lat, long]);
-      } else {
-        this.circle = L.circle([lat, long], {
-          radius: this.radius*1000,
-          color: 'blue',
-          fillColor: 'blue',
-          fillOpacity: 0.2
-        }).addTo(this.map);
-      }
+      if (this.circle) this.circle.setLatLng([lat, long]);
+      else this.circle = L.circle([lat, long], {
+        radius: this.radius*1000,
+        color: 'blue',
+        fillColor: 'blue',
+        fillOpacity: 0.2
+      }).addTo(this.map);
     });
   },
 
@@ -260,34 +263,25 @@ export default {
     },
 
     actualizarRadio() {
-      if (this.circle) {
-        this.circle.setRadius(this.radius*1000);
-      }
+      if (this.circle) this.circle.setRadius(this.radius*1000);
     },
 
     actualizarMarcadores() {
       if (!this.map) return;
-
       this.map.closePopup();
       this.markersLayer.clearLayers();
-
-      this.sites.forEach((site) => {
+      this.sites.forEach(site => {
         const lat = Number(site.lat);
         const long = Number(site.long);
-
         if (!isNaN(lat) && !isNaN(long)) {
           const marker = L.marker([lat, long]).addTo(this.markersLayer);
-          marker.bindPopup(`
-            <b>${site.name}</b><br>
-            ${site.city}, ${site.province}
-          `);
+          marker.bindPopup(`<b>${site.name}</b><br>${site.city}, ${site.province}`);
         }
       });
     },
 
     buscarSitios(page = 1) {
       this.hasSearched = true;
-
       const params = { page, per_page: 20 };
 
       if (this.searchCity) params.city = this.searchCity;
@@ -302,42 +296,34 @@ export default {
       }
       if (this.radius) params.radius = this.radius;
 
-      if (this.$route.query.order_by) {
-        params.order_by = this.$route.query.order_by;
-      } else {
-        const map = {
-          nombre: { asc: "name-asc", desc: "name-desc" },
-          rank: { asc: "rating-1-5", desc: "rating-5-1" },
-          fecha: { asc: "oldest", desc: "latest" },
-          visitas: { asc: "most-visited", desc: "most-visited" }
-        };
-        params.order_by = map[this.sortBy]?.[this.sortOrder] || null;
-      }
+      // Generar order_by según selects
+      const map = {
+        nombre: { asc: "name-asc", desc: "name-desc" },
+        rank: { asc: "rating-1-5", desc: "rating-5-1" },
+        fecha: { asc: "oldest", desc: "latest" },
+        visitas: { asc: "most-visited", desc: "most-visited" }
+      };
+      params.order_by = map[this.sortBy][this.sortOrder];
 
       this.$router.push({ query: params });
       console.log("Parámetros de búsqueda:", params);
+
       api.getSites(params)
         .then(res => {
           this.sites = res.data.data;
           this.meta = res.data.meta;
-
           this.actualizarMarcadores();
 
           const total = Number(this.meta.total || 0);
           const perPage = Number(this.meta.per_page || 20);
-
           this.meta.pages = Math.max(1, Math.ceil(total / perPage));
-
-          if (this.meta.page > this.meta.pages) {
-            this.meta.page = this.meta.pages;
-          }
+          if (this.meta.page > this.meta.pages) this.meta.page = this.meta.pages;
         })
         .catch(err => console.error("Error buscando sitios:", err));
     },
 
     cambiarPagina(nuevaPagina) {
       this.buscarSitios(nuevaPagina);
-
       const url = new URL(window.location.href);
       url.searchParams.set("page", nuevaPagina);
       window.history.replaceState({}, '', url);
