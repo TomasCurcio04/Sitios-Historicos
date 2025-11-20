@@ -5,6 +5,7 @@ import HomePage from '../pages/Home.vue'
 import List from '../pages/List.vue'
 import Detail from '../pages/Detail.vue'
 import MaintenancePage from '../pages/Maintenance.vue'
+import MiPerfilView from '../views/MiPerfilView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,10 +55,14 @@ const router = createRouter({
         }
       }
     },
+    {
+      path: '/mi-perfil',
+      name: 'Profile',
+      component: MiPerfilView  
+    }
   ],
 })
-
-// Aplicar guard global para verificar mantenimiento
+  
 router.beforeEach(checkPortalMaintenance)
 
 export default router
