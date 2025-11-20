@@ -25,6 +25,8 @@ class SiteQuerySchema(Schema):
     
     page = fields.Int(load_default=1, validate=validate.Range(min=1))
     per_page = fields.Int(load_default=20, validate=validate.Range(min=1, max=100))
+    
+    search_favorites = fields.Bool(load_default=False)
 
 
 class SiteResponseSchema(Schema):

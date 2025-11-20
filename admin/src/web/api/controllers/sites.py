@@ -27,8 +27,16 @@ def all_sites():
                 }
             }), 400
         
+        # Verificar si necesita buscar en favoritos
+        user_id = None
+        if params.get('search_favorites'):
+            user, auth_error = require_auth()
+            if auth_error:
+                return auth_error
+            user_id = user['user_id']
+        
         # Obtener sitios
-        sites_data = all_sites_to_json(**params)
+        sites_data = all_sites_to_json(user_id=user_id, **params)
         
         # Serializar respuesta usando schema
         response_schema = SitesListResponseSchema()

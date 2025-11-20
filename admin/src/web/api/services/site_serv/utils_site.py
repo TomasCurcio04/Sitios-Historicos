@@ -117,9 +117,9 @@ def site_to_dict(site, include_full_data=False):
     return result
 
 
-def all_sites_to_json(**kwargs):
+def all_sites_to_json(user_id=None, **kwargs):
     """Listar sitios en formato json con filtros según especificación API"""
-    result = listar_sitios(**kwargs)
+    result = listar_sitios(user_id=user_id, **kwargs)
 
     # Convertir sitios a formato JSON
     data = [site_to_dict(site) for site in result["items"]]
