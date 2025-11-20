@@ -1,7 +1,9 @@
 <template>
   <main>
+    <!-- Barra de búsqueda -->
     <SearchHero @search="goToSearch" />
 
+    <!-- Resultados de búsqueda -->
     <div v-if="hasSearched" class="mt-8">
       <h2 class="text-xl mb-4">Resultados de búsqueda</h2>
 
@@ -37,7 +39,7 @@
       </div>
 
       <div v-else>
-        No se encontraron sitios con ese nombre.
+        No se encontraron sitios con ese nombre o contenido.
       </div>
     </div>
 
@@ -88,6 +90,7 @@ export default {
     async buscarSitio(q) {
       try {
         this.hasSearched = true
+        // Igual que en SitesList.vue
         const params = { search: q, per_page: 20, page: 1 }
         const res = await api.getSites(params)
         this.searchResults = res.data.data
