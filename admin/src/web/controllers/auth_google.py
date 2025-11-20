@@ -18,7 +18,7 @@ def auth():
     userinfo = token["userinfo"]
     email = userinfo.get("email")
 
-    user  = buscar_usuario_public(email)
+    user = buscar_usuario_public(email)
     if not user:
         crear_user_public(
             google_id = userinfo.get("sub"),
@@ -45,18 +45,5 @@ def logout():
 
 @bp.route("/status")
 def status():
-    print("🔍 [STATUS] Iniciando status check")
-    print(f"🔍 [STATUS] Request method: {request.method}")
-    print(f"🔍 [STATUS] Request headers: {dict(request.headers)}")
-    print(f"🔍 [STATUS] Session keys: {list(session.keys())}")
-    
     user = session.get("user")
-    print(f"🔍 [STATUS] Session user: {user}")
-    
-    logged_in = bool(user)
-    print(f"🔍 [STATUS] logged_in: {logged_in}")
-    
-    response_data = {"logged_in": logged_in, "user": user}
-    print(f"🔍 [STATUS] Response data: {response_data}")
-    
-    return response_data
+    return {"logged_in": bool(user), "user": user}
