@@ -1,7 +1,47 @@
 <template>
-  <div>
+  <main>
     <SearchHero @search="goToSearch" />
 
+    <div v-if="hasSearched" class="mt-8">
+      <h2 class="text-xl mb-4">Resultados de búsqueda</h2>
+
+      <div v-if="searchResults.length > 0" class="sites-grid">
+        <div v-for="site in searchResults" :key="site.id" class="site-card">
+          <img
+            v-if="site.cover_image"
+            :src="`http://minio.proyecto2025.linti.unlp.edu.ar/grupo10/${site.cover_image}`"
+            :alt="site.name"
+            class="cover-image"
+          />
+          <span v-else style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+
+          <div class="card-header">
+            <h2 class="card-title">{{ site.name }}</h2>
+          </div>
+
+          <div class="card-body">
+            <div class="card-info">
+              <span class="label">Ciudad:</span>
+              <span class="value">{{ site.city }}</span>
+            </div>
+            <div class="card-info">
+              <span class="label">Provincia:</span>
+              <span class="value">{{ site.province }}</span>
+            </div>
+            <div>
+              <span class="label">Tags:</span>
+              <span class="value">{{ site.tags.join(', ') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else>
+        No se encontraron sitios con ese nombre.
+      </div>
+    </div>
+
+    <!-- Secciones del Home -->
     <SectionCarousel
       title="Más visitados"
       :fetchFn="fetchMostVisited"
@@ -26,55 +66,38 @@
       :fetchFn="fetchRecent"
       :queryParams="{ order: 'latest' }"
     />
-  </div>
+  </main>
 </template>
 
 <script>
 import SectionCarousel from '../components/SectionCarousel.vue'
 import SearchHero from '../components/SearchHero.vue'
-import { fetchSites } from '../api.js'
+import api from '../Services/api.js'  
 
 export default {
   name: 'HomePage',
-
   components: { SectionCarousel, SearchHero },
-
-  setup() {
-    const isLoggedIn = !!localStorage.getItem('auth_token')
-
-    // Adaptamos las funciones de fetch
-    const fetchMostVisited = async (params) => {
-      const result = await fetchSites({ order: 'most_visited', limit: 4, ...params })
-      return result.success ? result.data : []
-    }
-
-    const fetchTopRated = async (params) => {
-      const result = await fetchSites({ order: 'top_rated', limit: 4, ...params })
-      return result.success ? result.data : []
-    }
-
-    const fetchFavorites = async (params) => {
-      const result = await fetchSites({ filter: 'favorites', limit: 4, ...params })
-      return result.success ? result.data : []
-    }
-
-    const fetchRecent = async (params) => {
-      const result = await fetchSites({ order: 'recent', limit: 4, ...params })
-      return result.success ? result.data : []
-    }
-
-    function goToSearch(q) {
-      window.location.href = `/sites?q=${encodeURIComponent(q)}`
-    }
-
+  data() {
     return {
-      isLoggedIn,
-      fetchMostVisited,
-      fetchTopRated,
-      fetchFavorites,
-      fetchRecent,
-      goToSearch,
+      isLoggedIn: !!localStorage.getItem('auth_token'),
+      searchResults: [],
+      hasSearched: false
     }
   },
+  methods: {
+    async buscarSitio(q) {
+      try {
+        this.hasSearched = true
+        const params = { search: q, per_page: 20, page: 1 }
+        const res = await api.getSites(params)
+        this.searchResults = res.data.data
+      } catch (err) {
+        console.error("Error buscando sitio:", err)
+      }
+    },
+    goToSearch(q) {
+      this.buscarSitio(q)
+    }
+  }
 }
 </script>
