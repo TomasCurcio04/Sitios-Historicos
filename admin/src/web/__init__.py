@@ -72,12 +72,13 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
-    CORS(app, supports_credentials=True)
-
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
     app.config.from_object(config[env])
+
+    # Configurar CORS con credentials
+    CORS(app, supports_credentials=True, origins=app.config.get('CORS_ORIGINS', []))
 
     # Inicialización de la base de datos
     database.init_db(app)
@@ -87,8 +88,6 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
-    # inicializo cors
-    CORS(app)
 
     init_oauth(app)
 
