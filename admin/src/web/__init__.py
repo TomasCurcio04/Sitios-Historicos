@@ -196,7 +196,8 @@ def create_app(env="development", static_folder=None):
             "api_feature_flags.test_endpoint",
             "api_feature_flags.get_reviews_status",
             "api_metadata.get_tags",
-            "api_metadata.get_states"
+            "api_metadata.get_states",
+            "get_my_favorites"
         ]
         if request.endpoint in exempt_endpoints:
             return

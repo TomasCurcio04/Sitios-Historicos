@@ -101,7 +101,8 @@ import { ref, watch } from 'vue'
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 import ReviewsList from '../components/UserReviewsList.vue'
 import FavoritesList from '../components/UserFavoritesList.vue'
-import { useAuth } from '../composables/useAuth' 
+import { useAuth } from '../composables/useAuth'
+import Api from '../services/api.js'
 
 
 const { loggedIn, user, loading, login, logout } = useAuth() 
@@ -147,18 +148,16 @@ const changeReviewsOrder = async (order) => {
   await loadReviews(1)
 }
 
-
 const loadFavorites = async (page = 1) => {
   if (!loggedIn.value) return;
+  console.log("Cargando favoritos, página:", page);
   favoritesLoading.value = true;
 
   try {
-    const res = await fetch(
-      `${API_URL}/api/me/favorites?page=${page}`,
-      { credentials: 'include' }
-    );
-    
-    const data = await res.json();
+    const res = await Api.getMyFavorites({ page });
+
+    const data = res.data; 
+    console.log("Datos de favoritos recibidos:", data);
     favorites.value = data.data || [];
 
     const meta = data.meta || {};
@@ -168,14 +167,12 @@ const loadFavorites = async (page = 1) => {
       total_pages: Math.ceil((meta.total || 0) / (meta.per_page || 20)),
       total: meta.total || 0
     };
-
   } catch (error) {
     console.error("Error loading favorites:", error);
   } finally {
     favoritesLoading.value = false;
   }
 };
-
 
 watch(loggedIn, (isLoggedIn) => {
   if (isLoggedIn) {
