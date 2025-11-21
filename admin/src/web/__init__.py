@@ -155,12 +155,6 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(OperationalError, error.database_connection_error)
 
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
-    
-    @app.after_request
-    def fix_css_content_type(response):
-        if request.path.endswith('.css'):
-            response.headers['Content-Type'] = 'text/css'
-        return response
 
     @app.before_request
     def check_admin_maintenance():
