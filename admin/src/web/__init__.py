@@ -73,7 +73,7 @@ def create_app(env="development", static_folder=None):
     )
 
     CORS(app, 
-     origins=['http://localhost:5173'],
+     origins=['http://localhost:5173', 'https://grupo10.proyecto2025.linti.unlp.edu.ar'],
      supports_credentials=True,
      allow_headers=['Content-Type', 'Authorization'],
      expose_headers=['Authorization'])
