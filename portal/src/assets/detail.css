@@ -32,7 +32,15 @@
     background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
     padding: 15px 20px; color: white;
 }
-.hero-overlay h1 { margin: 0 0 5px 0; font-size: 1.6rem; }
+.hero-overlay h1 { 
+  margin: 0 0 5px 0; 
+  font-size: 1.6rem; 
+  color: #1a1a1a;
+  -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.9);
+  text-stroke: 0.5px rgba(255, 255, 255, 0.9);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  font-weight: 800;
+}
 
 /* Badges */
 .meta-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
