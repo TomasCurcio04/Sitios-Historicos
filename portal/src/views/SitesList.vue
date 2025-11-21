@@ -46,7 +46,7 @@
         </div>
 
         <!-- Favoritos -->
-      <div class="filter-group" v-if="isLoggedIn">
+      <div class="filter-group" v-if="loggedIn">
         <label class="filter-label checkbox-label">
           <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
         </label>
@@ -162,14 +162,23 @@
 
 <script>
 import {useApi } from '../composables/useApi.js';
+import { useAuth } from '../composables/useAuth.js';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { watch } from 'vue';
 L.Popup.prototype.options.zoomAnimation = false;
 
 export default {
   setup() {
     const api = useApi();
-    return { api };
+    const { loggedIn } = useAuth();
+
+    // Reaccionar a cambios de sesión
+    watch(loggedIn, async (isLoggedIn) => {
+      console.log("Estado de sesión cambió:", isLoggedIn);
+    }, { immediate: true });
+
+    return { api, loggedIn }; // lo exponemos al template
   },
   data() {
     return {
@@ -201,16 +210,12 @@ export default {
       markersLayer: null,
       circle: null,
       radius: 100,
-
-      isLoggedIn: false
     };
   },
 
   created() {
     this.api.getTags().then(res => this.tags = res.data);
     this.api.getStates().then(res => this.states = res.data);
-    this.isLoggedIn = !!localStorage.getItem('auth_token');
-    console.log("Usuario logueado:", this.isLoggedIn);
     const urlParams = new URLSearchParams(window.location.search);
     const pageFromUrl = parseInt(urlParams.get("page")) || 1;
 
