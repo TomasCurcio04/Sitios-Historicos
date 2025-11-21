@@ -7,6 +7,10 @@ def app():
     """Crear app Flask para tests."""
     os.environ['FLASK_ENV'] = 'testing'
     os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
+    os.environ['DB_HOST'] = 'localhost'
+    os.environ['DB_USER'] = 'test'
+    os.environ['DB_PASSWORD'] = 'test'
+    os.environ['DB_NAME'] = 'test'
     app = create_app('testing')
     app.config['TESTING'] = True
     return app
