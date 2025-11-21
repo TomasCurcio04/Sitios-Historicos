@@ -6,22 +6,6 @@ const loggedIn = ref(false)
 const user = ref(null)
 const loading = ref(true)
 
-import Api from '../services/api.js'
-
-const saveToken = async () => {
-  try {
-    const res = await Api.getToken();
-    const token = res.data.access_token;
-
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    }
-  } catch (e) {
-    console.warn('No se pudo obtener el token', e);
-  }
-};
-
-
 
 /**
  * Verifica el estado de la sesión con el backend

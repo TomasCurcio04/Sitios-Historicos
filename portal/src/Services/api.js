@@ -6,14 +6,6 @@ const apiClient = axios.create({
   withCredentials: true
 });
 
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token'); // donde guardes el token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 
 export default {
   getSites(params) {
@@ -28,10 +20,22 @@ export default {
   searchFilter(params) {
     return apiClient.get('/search/filter', { params });
   },
-  getMyFavorites(params) {
-    return apiClient.get('/me/favorites', { params });
-  },
+  getMyFavorites(params = {}) {
+    const token = localStorage.getItem('auth_token');
+
+    return apiClient.get('/me/favorites', {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }, 
   getToken() {
-    return apiClient.post('/auth/token', {});
+    return apiClient.post('/auth/token', {})
+      .then(res => {
+        const token = res.data.access_token;
+        localStorage.setItem('auth_token', token);
+        return token;
+      });
   }
 };
