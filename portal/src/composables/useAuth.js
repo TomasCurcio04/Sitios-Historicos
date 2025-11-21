@@ -43,10 +43,6 @@ const logout = (nextUrl) => {
 export function useAuth() {
   onMounted(async () => {
   await checkSession()
-
-  if (loggedIn.value) {
-    await saveToken()
-  }
   })
 
   return {
