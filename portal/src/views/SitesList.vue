@@ -1,132 +1,138 @@
 <template>
-  <div class="container">
-    <h1 class="title">Listado de sitios</h1>
+  <div>
+    <SearchHero @search="handleHeroSearch" />
+    
+    <div class="container">
+      <h1 class="title">Listado de sitios</h1>
 
-    <!-- FILTROS -->
-    <div class="filters-wrapper">
-      <button class="filters-toggle" @click="filtersOpen = !filtersOpen">
-        <span>{{ filtersOpen ? '✕' : '' }} Filtros</span>
-      </button>
+    <div class="main-layout">
+      <!-- FILTROS -->
+      <div class="filters-wrapper">
+        <button class="filters-toggle" @click="filtersOpen = !filtersOpen">
+          <span>{{ filtersOpen ? '✕' : '' }} Filtros</span>
+        </button>
 
-      <div class="filters-section" :class="{ active: filtersOpen }">
+        <div class="filters-section" :class="{ active: filtersOpen }">
 
-        <!-- Búsqueda por nombre o descripción -->
-        <div class="filter-group">
-          <label class="filter-label">Búsqueda por nombre o descripción:</label>
-          <input type="text" v-model="searchNameDesc" class="filter-input">
+          <!-- Búsqueda por nombre o descripción -->
+          <div class="filter-group">
+            <label class="filter-label">Búsqueda por nombre o descripción:</label>
+            <input type="text" v-model="searchNameDesc" class="filter-input">
+          </div>
+
+          <!-- Tags -->
+          <div class="filter-group">
+            <label class="filter-label">Tags:</label>
+            <select multiple v-model="selectedTags" class="filter-input">
+              <option
+                v-for="tag in tags"
+                :key="tag.id"
+                :value="tag.name"
+              >
+                {{ tag.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Provincias -->
+          <div class="filter-group">
+            <label class="filter-label">Provincias:</label>
+            <select v-model="selectedProvince" class="filter-input">
+              <option value="">--Cualquiera--</option>
+              <option
+                v-for="state in states"
+                :key="state.id"
+                :value="state.name"
+              >
+                {{ state.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Favoritos -->
+          <div class="filter-group">
+            <label class="filter-label checkbox-label">
+              <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
+            </label>
+          </div>
+
+          <!-- Ciudad -->
+          <div class="filter-group">
+            <label class="filter-label">Búsqueda por ciudad:</label>
+            <input type="text" v-model="searchCity" class="filter-input">
+          </div>
+
+          <!-- Orden -->
+          <div class="filter-group">
+            <label class="filter-label">Ordenar por:</label>
+            <select v-model="sortBy" class="filter-input">
+              <option value="fecha">Fecha de registro</option>
+              <option value="nombre">Nombre</option>
+              <option value="rank">Mejor rankeados</option>
+              <option value="visitas">Más visitados</option>
+            </select>
+
+            <select v-model="sortOrder" class="filter-input">
+              <option value="asc">Ascendente</option>
+              <option value="desc">Descendente</option>
+            </select>
+          </div>
+
+          <!-- Radio mapa -->
+          <div class="filter-group">
+            <label class="filter-label">Radio (Km):</label>
+            <input type="number" v-model.number="radius" @input="actualizarRadio" class="filter-input">
+          </div>
+
+          <!-- MAPA -->
+          <div id="map" style="height: 300px; margin: 1rem 0; border-radius: 8px;"></div>
+
+          <div class="buttons-group">
+            <button type="button" @click="buscarSitios(1)" class="btn btn-primary">Buscar</button>
+            <button type="button" @click="borrarFiltros" class="btn btn-secondary">Borrar</button>
+          </div>
+
         </div>
-
-        <!-- Tags -->
-        <div class="filter-group">
-          <label class="filter-label">Tags:</label>
-          <select multiple v-model="selectedTags" class="filter-input">
-            <option
-              v-for="tag in tags"
-              :key="tag.id"
-              :value="tag.name"
-            >
-              {{ tag.name }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Provincias -->
-        <div class="filter-group">
-          <label class="filter-label">Provincias:</label>
-          <select v-model="selectedProvince" class="filter-input">
-            <option value="">--Cualquiera--</option>
-            <option
-              v-for="state in states"
-              :key="state.id"
-              :value="state.name"
-            >
-              {{ state.name }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Favoritos -->
-        <div class="filter-group">
-          <label class="filter-label checkbox-label">
-            <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
-          </label>
-        </div>
-
-        <!-- Ciudad -->
-        <div class="filter-group">
-          <label class="filter-label">Búsqueda por ciudad:</label>
-          <input type="text" v-model="searchCity" class="filter-input">
-        </div>
-
-        <!-- Orden -->
-        <div class="filter-group">
-          <label class="filter-label">Ordenar por:</label>
-          <select v-model="sortBy" class="filter-input">
-            <option value="fecha">Fecha de registro</option>
-            <option value="nombre">Nombre</option>
-            <option value="rank">Mejor rankeados</option>
-            <option value="visitas">Más visitados</option>
-          </select>
-
-          <select v-model="sortOrder" class="filter-input">
-            <option value="asc">Ascendente</option>
-            <option value="desc">Descendente</option>
-          </select>
-        </div>
-
-        <!-- Radio mapa -->
-        <div class="filter-group">
-          <label class="filter-label">Radio (Km):</label>
-          <input type="number" v-model.number="radius" @input="actualizarRadio" class="filter-input">
-        </div>
-
-        <!-- MAPA -->
-        <div id="map" style="height: 300px; margin: 1rem 0; border-radius: 8px;"></div>
-
-        <div class="buttons-group">
-          <button type="button" @click="buscarSitios(1)" class="btn btn-primary">Buscar</button>
-          <button type="button" @click="borrarFiltros" class="btn btn-secondary">Borrar</button>
-        </div>
-
       </div>
-    </div>
 
-    <!-- GRID DE TARJETAS -->
-    <div class="sites-grid">
-      <div
-        v-for="site in sites"
-        :key="site.id"
-        class="site-card"
-      >
-        <img
-          v-if="site.cover_image"
-          :src="getMinioUrl(site.cover_image)"
-          :alt="'Cover de ' + site.name"
-          class="cover-image"
-        />
-        <span v-else style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+      <!-- CONTENIDO PRINCIPAL -->
+      <div class="content-area">
+        <!-- GRID DE TARJETAS -->
+        <div class="sites-grid">
+          <router-link
+            v-for="site in sites"
+            :key="site.id"
+            :to="`/sites/${site.id}`"
+            class="site-card"
+          >
+            <div class="card-image">
+              <img
+                v-if="site.cover_image"
+                :src="getMinioUrl(site.cover_image)"
+                :alt="'Cover de ' + site.name"
+                class="cover-image"
+              />
+              <div v-else class="no-image-placeholder">Sin Portada</div>
+            </div>
 
-        <div class="card-header">
-          <h2 class="card-title">{{ site.name }}</h2>
-        </div>
-
-        <div class="card-body">
-          <div class="card-info">
-            <span class="label">Ciudad:</span>
-            <span class="value">{{ site.city }}</span>
-          </div>
-          <div class="card-info">
-            <span class="label">Provincia:</span>
-            <span class="value">{{ site.province }}</span>
-          </div>
-          <div class="card-info">
-            <span class="label">Estado de conservación:</span>
-            <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
-          </div>
-          <div>
-            <span class="label">Tags:</span>
-            <span class="value">{{ site.tags.join(', ') }}</span>
-          </div>
+            <div class="card-content">
+              <h2 class="card-title">{{ site.name }}</h2>
+              <div class="card-body">
+                <div class="card-info">
+                  <span class="label">Ciudad:</span>
+                  <span class="value">{{ site.city }}</span>
+                </div>
+                <div class="card-info">
+                  <span class="label">Provincia:</span>
+                  <span class="value">{{ site.province }}</span>
+                </div>
+                <div class="card-info">
+                  <span class="label">Estado:</span>
+                  <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
+                </div>
+              </div>
+            </div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -156,16 +162,21 @@
         Siguiente ▶
       </button>
     </div>
+    </div>
   </div>
 </template>
 
 <script>
 import api from '../Services/api.js';
+import SearchHero from '../components/SearchHero.vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 L.Popup.prototype.options.zoomAnimation = false;
 
 export default {
+  components: {
+    SearchHero
+  },
   data() {
     return {
       sites: [],
@@ -258,6 +269,11 @@ export default {
   },
 
   methods: {
+    handleHeroSearch(query) {
+      this.searchNameDesc = query;
+      this.buscarSitios(1);
+    },
+
     getMinioUrl(imagePath) {
       return `${this.minioBaseUrl}/${this.minioBucket}/${imagePath}`;
     },
