@@ -55,7 +55,19 @@ def all_sites():
 def get_site(site_id):
     """Obtiene detalles de un sitio específico por ID."""
     try:
-        site_data = get_site_by_id(site_id)
+        # Verificar si hay usuario autenticado para mostrar favoritos
+        user_id = None
+        from flask import request
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            try:
+                user, auth_error = require_auth()
+                if not auth_error and user:
+                    user_id = user.get('public_user_id') or user.get('user_id')
+            except Exception as e:
+                pass  # Token inválido, continuar sin user_id
+            
+        site_data = get_site_by_id(site_id, user_id=user_id)
         
         if not site_data:
             return jsonify({
