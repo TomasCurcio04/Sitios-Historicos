@@ -124,37 +124,35 @@ const favoritesOrder = ref('desc')
 
 
 const loadReviews = async (page = 1) => {
-  if (!loggedIn.value) {
-    return;
-  }
-  reviewsLoading.value = true
+  if (!loggedIn.value) return;
+
+  reviewsLoading.value = true;
 
   try {
-
-    const res = await Api.getMyReviews({ 
-      page, 
-    })
-
-    const data = res.data
+    console.log("Llamando a getMyReviews...")
+    const res = await Api.getMyReviews({ page });
+    console.log("Respuesta de reviews:", res)
     
+    const data = res.data || {}
     reviews.value = (data.data || []).map(r => ({
       ...r,
       date: r.inserted_at
     }))
-
+    console.log("Mapped reviews:", reviews.value)
+    
     const meta = data.meta || {}
-
     reviewsMeta.value = {
       current_page: meta.page || 1,
       total_pages: Math.ceil((meta.total || 0) / (meta.per_page || 20)),
       total: meta.total || 0
     }
   } catch (error) {
-    console.error('Error loading reviews:', error)
+    console.error("Error loading reviews:", error)
   } finally {
     reviewsLoading.value = false
   }
 }
+
 
 const changeReviewsOrder = (order) => {
   reviewsOrder.value = order

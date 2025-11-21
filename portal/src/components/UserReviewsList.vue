@@ -67,7 +67,7 @@ const props = defineProps({
   reviews: Array,
   meta: Object,
   loading: Boolean,
-  order: {         
+  order: {
     type: String,
     default: "desc" 
   }
