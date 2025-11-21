@@ -189,6 +189,7 @@ def create_app(env="development", static_folder=None):
             "api_reviews.delete_site_review",
             "api_favorites.toggle_site_favorite_endpoint",
             "api_me.get_my_favorites",
+            "api_me.get_my_reviews",
             "api_search.search_nearby",
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",

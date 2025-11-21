@@ -76,7 +76,6 @@
             :reviews="reviews"
             :meta="reviewsMeta"
             :loading="reviewsLoading"
-            :order="reviewsOrder"
             @page-change="loadReviews"
             @order-change="changeReviewsOrder"
           />
@@ -121,20 +120,31 @@ const favoritesLoading = ref(false)
 
 
 const loadReviews = async (page = 1) => {
-  if (!loggedIn.value) return; 
+  console.log("🟢 loadReviews ejecutándose");
+  console.log("loggedIn:", loggedIn.value);
+  if (!loggedIn.value) {
+    console.log("⛔ No está logueado, corta acá");
+    return;
+  }
   reviewsLoading.value = true
+
   try {
-    const res = await fetch(
-      `${API_URL}/users/me/reviews?page=${page}&order=${reviewsOrder.value}`,
-      { credentials: 'include' }
-    )
-    const data = await res.json()
+
+    console.log("📡 Llamando a Api.getMyReviews...");
+    const res = await Api.getMyReviews({ 
+      page, 
+    })
+
+    const data = res.data
     
-    reviews.value = data.data || data.reviews || []
-    reviewsMeta.value = data.meta || {
-      current_page: page,
-      total_pages: data.total_pages || 1,
-      total: data.total || 0
+    reviews.value = data.data || []
+
+    const meta = data.meta || {}
+
+    reviewsMeta.value = {
+      current_page: meta.page || 1,
+      total_pages: Math.ceil((meta.total || 0) / (meta.per_page || 20)),
+      total: meta.total || 0
     }
   } catch (error) {
     console.error('Error loading reviews:', error)

@@ -37,5 +37,15 @@ export default {
         localStorage.setItem('auth_token', token);
         return token;
       });
+  },
+  getMyReviews(params = {}) {
+    const token = localStorage.getItem('auth_token');
+
+    return apiClient.get('/me/reviews', {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }); 
   }
 };

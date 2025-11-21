@@ -77,8 +77,23 @@ watch(() => props.order, (newVal) => {
   localOrder.value = newVal;
 });
 
-function formatDate(date) {
-  return new Date(date).toLocaleDateString("es-AR");
+function formatDate(dateStr) {
+  if (!dateStr) return 'Sin fecha'
+
+  // Si viene ISO: 2025-11-21
+  if (dateStr.includes('-')) {
+    const [y, m, d] = dateStr.split('-')
+    return `${d}/${m}/${y}`
+  }
+
+  // Si ya viene como 21/11/2025
+  if (dateStr.includes('/')) {
+    return dateStr
+  }
+
+  return 'Fecha inválida'
 }
+
+
 </script>
   
