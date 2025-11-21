@@ -8,16 +8,19 @@
       <SectionCarousel
         title="🔥 Los más visitados"
         :fetchFn="fetchMostVisited"
+        :queryParams="{ order_by: 'most-visited' }"
       />
 
       <SectionCarousel
         title="⭐ Mejor puntuados"
         :fetchFn="fetchTopRated"
+        :queryParams="{ order_by: 'rating-5-1' }"
       />
 
       <SectionCarousel
         title="🆕 Recientemente agregados"
         :fetchFn="fetchRecent"
+        :queryParams="{ order_by: 'latest' }"
       />
 
       </div>
