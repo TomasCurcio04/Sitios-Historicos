@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="flex justify-between mt-4">
     <button
       class="px-3 py-1 border rounded disabled:opacity-40"
@@ -30,4 +30,4 @@ const props = defineProps({
 const totalPages = computed(() =>
   Math.ceil(props.meta.total / props.meta.per_page)
 );
-</script>
+</script> -->

@@ -31,7 +31,7 @@ def get_authenticated_user():
         if not user:
             return None
 
-        return {"public_user_id": user.id, "user_id": user.id, "email": user.email}
+        return {"public_user_id": user.id_public_user, "user_id": user.id_public_user, "email": user.email}
     except jwt.InvalidTokenError:
         return None
     except Exception as e:

@@ -72,6 +72,17 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
+    CORS(app, 
+     origins=['http://localhost:5173'],
+     supports_credentials=True,
+     allow_headers=['Content-Type', 'Authorization'],
+     expose_headers=['Authorization'])
+
+    # Configuración de sesión
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = False 
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
