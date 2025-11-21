@@ -51,7 +51,6 @@ from src.web.api.controllers.metadata import bp as api_metadata_bp
 from src.web.api.controllers.feature_flags import bp as api_feature_flags_bp
 from flask_cors import CORS
 from src.web.controllers.auth_google import bp as google_auth_bp
-from whitenoise import WhiteNoise
 
 
 server_session = Session()
@@ -100,10 +99,6 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
-    
-    # Configurar WhiteNoise para servir archivos estáticos en producción
-    if env == "production":
-        app.wsgi_app = WhiteNoise(app.wsgi_app, root=static_folder, prefix='/static/')
 
     init_oauth(app)
 
@@ -160,6 +155,12 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(OperationalError, error.database_connection_error)
 
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
+    
+    @app.after_request
+    def fix_css_content_type(response):
+        if request.path.endswith('.css'):
+            response.headers['Content-Type'] = 'text/css'
+        return response
 
     @app.before_request
     def check_admin_maintenance():
