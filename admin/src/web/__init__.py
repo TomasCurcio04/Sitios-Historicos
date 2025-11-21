@@ -155,6 +155,11 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(OperationalError, error.database_connection_error)
 
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
+    
+    # Servir archivos estáticos en producción
+    @app.route('/static/<path:filename>')
+    def static_files(filename):
+        return app.send_static_file(filename)
 
     @app.before_request
     def check_admin_maintenance():
