@@ -70,10 +70,37 @@ def create_app(env="development", static_folder=None):
         __name__,
         template_folder=os.path.join(base_dir, "templates"),
         static_folder=static_folder,
+        static_url_path='/static'
     )
+    
+    # Configuración específica para archivos estáticos en producción
+    if env == "production":
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 año
+        
+    # Asegurar que los archivos estáticos se sirvan correctamente
+    @app.route('/static/<path:filename>')
+    def serve_static(filename):
+        from flask import make_response
+        response = make_response(app.send_static_file(filename))
+        
+        # Configurar Content-Type específico para archivos CSS
+        if filename.endswith('.css'):
+            response.headers['Content-Type'] = 'text/css; charset=utf-8'
+        elif filename.endswith('.js'):
+            response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
+        elif filename.endswith('.png'):
+            response.headers['Content-Type'] = 'image/png'
+        elif filename.endswith('.jpg') or filename.endswith('.jpeg'):
+            response.headers['Content-Type'] = 'image/jpeg'
+            
+        # Headers de cache para producción
+        if env == "production":
+            response.headers['Cache-Control'] = 'public, max-age=31536000'
+            
+        return response
 
     CORS(app, 
-     origins=['http://localhost:5173'],
+     origins=['http://localhost:5173', 'https://grupo10.proyecto2025.linti.unlp.edu.ar'],
      supports_credentials=True,
      allow_headers=['Content-Type', 'Authorization'],
      expose_headers=['Authorization'])
@@ -155,6 +182,23 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(OperationalError, error.database_connection_error)
 
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
+    
+    # Middleware para asegurar headers correctos en archivos estáticos
+    @app.after_request
+    def after_request(response):
+        # Asegurar headers correctos para archivos CSS
+        if request.path.endswith('.css'):
+            response.headers['Content-Type'] = 'text/css; charset=utf-8'
+        elif request.path.endswith('.js'):
+            response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
+        
+        # Headers de seguridad para producción
+        if env == "production":
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            response.headers['X-Frame-Options'] = 'DENY'
+            response.headers['X-XSS-Protection'] = '1; mode=block'
+            
+        return response
 
     @app.before_request
     def check_admin_maintenance():
