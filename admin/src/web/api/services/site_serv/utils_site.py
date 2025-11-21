@@ -6,7 +6,7 @@ from src.core.database import db
 from src.core.entity.site_image import SiteImage
 
 
-def site_to_dict(site, include_full_data=False):
+def site_to_dict(site, include_full_data=False, user_id=None):
     """Convierte un objeto Site a diccionario según especificación API."""
     # Para listado: limitar tags a 5, para detalle: todos los tags
     tags = (
@@ -104,6 +104,21 @@ def site_to_dict(site, include_full_data=False):
         ),
     }
 
+    # Verificar si es favorito del usuario
+    is_favorite = False
+    if user_id:
+        try:
+            from src.core.entity.site_favorite import SiteFavorite
+            favorite = db.session.query(SiteFavorite).filter(
+                SiteFavorite.id_site == site.id_site,
+                SiteFavorite.id_public_user == user_id
+            ).first()
+            is_favorite = favorite is not None
+        except Exception:
+            pass
+    
+    result["is_favorite"] = is_favorite
+
     # Agregar datos adicionales para detalle completo
     if include_full_data:
         result.update(
@@ -134,14 +149,14 @@ def all_sites_to_json(**kwargs):
     }
 
 
-def get_site_by_id(site_id):
+def get_site_by_id(site_id, user_id=None):
     """Obtiene un sitio por ID y registra la visita"""
     site = get_site_by_id_service(site_id)
 
     if not site:
         return None
 
-    return site_to_dict(site, include_full_data=True)
+    return site_to_dict(site, include_full_data=True, user_id=user_id)
 
 
 def create_site(site_data, user_id):

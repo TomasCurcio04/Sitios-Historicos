@@ -47,6 +47,7 @@ class SiteResponseSchema(Schema):
     review_count = fields.Int()
     inserted_at = fields.Str(allow_none=True)
     updated_at = fields.Str(allow_none=True)
+    is_favorite = fields.Bool(load_default=False)
 
 
 class SiteCreateSchema(Schema):
