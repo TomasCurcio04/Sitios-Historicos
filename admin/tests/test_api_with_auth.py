@@ -5,10 +5,11 @@ import requests
 import json
 
 
+@pytest.mark.integration
 class TestAPIWithAuth:
     """Tests que requieren autenticación real."""
     
-    BASE_URL = "http://localhost:5000"  # Cambia por tu URL
+    BASE_URL = "https://admin-grupo10.proyecto2025.linti.unlp.edu.ar"
     
     @pytest.fixture
     def auth_token(self):

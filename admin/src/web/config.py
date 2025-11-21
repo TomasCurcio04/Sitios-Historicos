@@ -54,6 +54,15 @@ class ProductionConfig(BaseConfig):
     APPLICATION_ROOT = '/'
 
 
+class TestingConfig(BaseConfig):
+    """Testing configuration class."""
+    
+    TESTING = True
+    SQLALCHEMY_ENGINES = {"default": "sqlite:///:memory:"}
+    SECRET_KEY = "test_secret_key"
+    JWT_SECRET_KEY = "test_jwt_secret"
+    
+
 class DevelopmentConfig(BaseConfig):
     """Development configuration class."""
 
@@ -82,5 +91,6 @@ class DevelopmentConfig(BaseConfig):
 config = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
+    "testing": TestingConfig,
     "default": DevelopmentConfig,
 }

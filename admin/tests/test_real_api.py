@@ -5,10 +5,11 @@ import requests
 import json
 
 
+@pytest.mark.integration
 class TestRealAPI:
     """Tests que hacen requests HTTP reales a la API."""
 
-    BASE_URL = "http://localhost:5000"
+    BASE_URL = "https://admin-grupo10.proyecto2025.linti.unlp.edu.ar"
 
     def test_public_get_sites(self):
         """Test del endpoint público GET /api/sites/"""
