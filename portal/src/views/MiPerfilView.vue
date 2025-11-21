@@ -176,11 +176,12 @@ const loadFavorites = async (page = 1) => {
 };
 
 
-watch(loggedIn, (isLoggedIn) => {
+watch(loggedIn, async (isLoggedIn) => {
   if (isLoggedIn) {
     // Si el usuario acaba de iniciar sesión, cargamos los datos
-    loadReviews()
-    loadFavorites()
+    await Api.getToken();
+    await loadReviews()
+    await loadFavorites()
   } else {
     // Si el usuario cierra sesión, limpiamos la lista
     reviews.value = []
