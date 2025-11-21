@@ -1,106 +1,62 @@
 <template>
-  <main>
-    <!-- Barra de búsqueda -->
-    <SearchHero @search="goToSearch" />
+  <main class="min-h-screen bg-gray-50">
 
-    <!-- Resultados de búsqueda -->
-    <div v-if="hasSearched" class="mt-8">
-      <h2 class="text-xl mb-4">Resultados de búsqueda</h2>
+    <SearchHero @search="handleSearch" />
 
-      <div v-if="searchResults.length > 0" class="sites-grid">
-        <div v-for="site in searchResults" :key="site.id" class="site-card">
-          <img
-            v-if="site.cover_image"
-            :src="`http://minio.proyecto2025.linti.unlp.edu.ar/grupo10/${site.cover_image}`"
-            :alt="site.name"
-            class="cover-image"
-          />
-          <span v-else style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+    <div class="max-w-7xl mx-auto px-4 py-12 space-y-16">
 
-          <div class="card-header">
-            <h2 class="card-title">{{ site.name }}</h2>
-          </div>
+      <SectionCarousel
+        title="🔥 Los más visitados"
+        :fetchFn="fetchMostVisited"
+      />
 
-          <div class="card-body">
-            <div class="card-info">
-              <span class="label">Ciudad:</span>
-              <span class="value">{{ site.city }}</span>
-            </div>
-            <div class="card-info">
-              <span class="label">Provincia:</span>
-              <span class="value">{{ site.province }}</span>
-            </div>
-            <div>
-              <span class="label">Tags:</span>
-              <span class="value">{{ site.tags.join(', ') }}</span>
-            </div>
-          </div>
-        </div>
+      <SectionCarousel
+        title="⭐ Mejor puntuados"
+        :fetchFn="fetchTopRated"
+      />
+
+      <SectionCarousel
+        title="🆕 Recientemente agregados"
+        :fetchFn="fetchRecent"
+      />
+
       </div>
-
-      <div v-else>
-        No se encontraron sitios con ese nombre o contenido.
-      </div>
-    </div>
-
-    <!-- Secciones del Home -->
-    <SectionCarousel
-      title="Más visitados"
-      :fetchFn="fetchMostVisited"
-      :queryParams="{ order_by: 'most-visited'}"
-    />
-
-    <SectionCarousel
-      title="Mejor puntuados"
-      :fetchFn="fetchTopRated"
-      :queryParams="{ order_by: 'rating-5-1' }"
-    />
-
-    <SectionCarousel
-      v-if="isLoggedIn"
-      title="Favoritos"
-      :fetchFn="fetchFavorites"
-      :queryParams="{ filter: 'favorites' }"
-    />
-
-    <SectionCarousel
-      title="Recientemente agregados"
-      :fetchFn="fetchRecent"
-      :queryParams="{ order: 'latest' }"
-    />
   </main>
 </template>
 
-<script>
-import SectionCarousel from '../components/SectionCarousel.vue'
-import SearchHero from '../components/SearchHero.vue'
-import api from '../Services/api.js'  
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-export default {
-  name: 'HomePage',
-  components: { SectionCarousel, SearchHero },
-  data() {
-    return {
-      isLoggedIn: !!localStorage.getItem('auth_token'),
-      searchResults: [],
-      hasSearched: false
-    }
-  },
-  methods: {
-    async buscarSitio(q) {
-      try {
-        this.hasSearched = true
-        // Igual que en SitesList.vue
-        const params = { search: q, per_page: 20, page: 1 }
-        const res = await api.getSites(params)
-        this.searchResults = res.data.data
-      } catch (err) {
-        console.error("Error buscando sitio:", err)
-      }
-    },
-    goToSearch(q) {
-      this.buscarSitio(q)
-    }
-  }
-}
+// Componentes
+import SectionCarousel from '../components/SectionCarousel.vue';
+import SearchHero from '../components/SearchHero.vue';
+
+// API: Importamos las funciones INDIVIDUALMENTE para usarlas en el template
+import {
+  fetchMostVisited,
+  fetchTopRated,
+  fetchRecent,
+  isAuthenticated // Si tienes esta función helper en api.js
+} from '../api.js'; // <--- OJO: Asegúrate que la ruta sea correcta (../api.js o ../Services/api.js)
+
+const router = useRouter();
+const isLoggedIn = ref(false);
+
+// --- LÓGICA DE BÚSQUEDA ---
+const handleSearch = (query) => {
+  // En lugar de buscar aquí, mandamos al usuario a la página de lista
+  // que ya está programada para buscar y mostrar resultados lindos.
+  router.push({
+    name: 'sites-list1', // Asegúrate que este nombre coincida con router/index.js
+    query: { q: query }
+  });
+};
+
+onMounted(() => {
+  // Verificamos si hay usuario (ajusta según tu lógica de auth real)
+  // isLoggedIn.value = isAuthenticated();
+  // O chequeando token:
+  isLoggedIn.value = !!localStorage.getItem('auth_token');
+});
 </script>
