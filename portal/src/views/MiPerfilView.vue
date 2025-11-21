@@ -102,7 +102,9 @@ import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 import ReviewsList from '../components/UserReviewsList.vue'
 import FavoritesList from '../components/UserFavoritesList.vue'
 import { useAuth } from '../composables/useAuth'
-import Api from '@/services/api'
+import { useApi } from '../composables/useApi'
+
+const Api = useApi()
 
 
 const { loggedIn, user, loading, login, logout } = useAuth() 
