@@ -2,13 +2,29 @@ import { ref, onMounted } from 'vue'
 
 const API_URL = import.meta.env.VITE_API_URL || '' 
 
-
 const loggedIn = ref(false)
 const user = ref(null)
 const loading = ref(true)
 
+import Api from '../services/api.js'
+
+const saveToken = async () => {
+  try {
+    const res = await Api.getToken();
+    const token = res.data.access_token;
+
+    if (token) {
+      localStorage.setItem('auth_token', token);
+    }
+  } catch (e) {
+    console.warn('No se pudo obtener el token', e);
+  }
+};
+
+
+
 /**
- * Verifica el estado de la sesión con el endpoint de Flask /google/status.
+ * Verifica el estado de la sesión con el backend
  */
 const checkSession = async () => {
   loading.value = true
@@ -16,8 +32,9 @@ const checkSession = async () => {
     const res = await fetch(`${API_URL}/google/status`, {
       credentials: 'include'
     })
+
     const data = await res.json()
-    
+
     loggedIn.value = data.logged_in
     user.value = data.user
   } catch (error) {
@@ -29,7 +46,6 @@ const checkSession = async () => {
   }
 }
 
-
 const login = (nextUrl) => {
   const current = nextUrl || window.location.href
   window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
@@ -40,24 +56,19 @@ const logout = (nextUrl) => {
   window.location.href = `${API_URL}/google/logout?next=${encodeURIComponent(current)}`
 }
 
-
 export function useAuth() {
-  
-  // hook de ciclo de vida: Se ejecuta cuando un componente usa este composable
-  onMounted(() => {
-    // Solo verifica la sesión si no se ha cargado previamente, 
-    // para evitar llamadas API innecesarias en cada componente.
-    if (loading.value) {
-      checkSession()
-    }
+  onMounted(async () => {
+  await checkSession()
+
+  if (loggedIn.value) {
+    await saveToken()
+  }
   })
 
   return {
-    // Estado
     loggedIn,
     user,
     loading,
-    // Acciones
     login,
     logout,
     checkSession
