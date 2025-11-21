@@ -1,6 +1,6 @@
 """Controlador de autenticación para la API"""
 
-from flask import Blueprint, jsonify, session, current_app
+from flask import Blueprint, jsonify, session, current_app, request
 import jwt
 from datetime import datetime, timedelta
 

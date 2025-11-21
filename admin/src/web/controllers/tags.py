@@ -60,7 +60,9 @@ def edit_tag(tag_id):
     if not name:
         flash("El nombre es obligatorio", "error")
         return redirect(url_for("tags.edit_all_tags"))
-
+    if len(name) < 3:
+        flash("El nombre debe tener al menos 3 caracteres", "error")
+        return redirect(url_for("tags.edit_all_tags"))
     tag, error = actualizar_tag(tag_id, name)
     if error:
         flash(error, "error")

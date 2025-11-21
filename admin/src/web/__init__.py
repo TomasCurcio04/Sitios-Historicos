@@ -47,6 +47,8 @@ from src.web.api.controllers.favorites import bp as api_favorites_bp
 from src.web.api.controllers.me import bp as api_me_bp
 from src.web.api.controllers.search import bp as api_search_bp
 from src.web.api.controllers.auth import bp as api_auth_bp
+from src.web.api.controllers.metadata import bp as api_metadata_bp
+from src.web.api.controllers.feature_flags import bp as api_feature_flags_bp
 from flask_cors import CORS
 from src.web.controllers.auth_google import bp as google_auth_bp
 
@@ -62,7 +64,7 @@ def create_app(env="development", static_folder=None):
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     if static_folder is None:
-        static_folder = os.path.abspath(os.path.join(base_dir, "..", "..", "static"))
+        static_folder = os.path.join(base_dir, "static")
 
     app = Flask(
         __name__,
@@ -70,12 +72,24 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
-    CORS(app, supports_credentials=True)
+    CORS(app, 
+     origins=['http://localhost:5173'],
+     supports_credentials=True,
+     allow_headers=['Content-Type', 'Authorization'],
+     expose_headers=['Authorization'])
+
+    # Configuración de sesión
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = False 
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
     app.config.from_object(config[env])
+
+    # Configurar CORS con credentials
+    CORS(app, supports_credentials=True, origins=app.config.get('CORS_ORIGINS', []))
 
     # Inicialización de la base de datos
     database.init_db(app)
@@ -85,8 +99,6 @@ def create_app(env="development", static_folder=None):
     bcrypt.init_app(app)
     # inicializo storage
     storage.init_app(app)
-    # inicializo cors
-    CORS(app)
 
     init_oauth(app)
 
@@ -131,6 +143,8 @@ def create_app(env="development", static_folder=None):
     app.register_blueprint(api_search_bp)
     app.register_blueprint(api_auth_bp)
     app.register_blueprint(gestion_resenas_bp)
+    app.register_blueprint(api_metadata_bp)
+    app.register_blueprint(api_feature_flags_bp)
     app.register_blueprint(google_auth_bp)
 
     # Registrar manejadores de errores
@@ -181,10 +195,18 @@ def create_app(env="development", static_folder=None):
             "api_search.search_by_filters",
             "api_search.autocomplete_cities",
             "api_auth.get_token",
+            "api_feature_flags.get_portal_status",
+            "api_feature_flags.get_reviews_status",
             "google_auth.login",
             "google_auth.auth",
             "google_auth.logout",
             "google_auth.status",
+            "api_feature_flags.get_portal_status",
+            "api_feature_flags.portal_status_options",
+            "api_feature_flags.test_endpoint",
+            "api_feature_flags.get_reviews_status",
+            "api_metadata.get_tags",
+            "api_metadata.get_states"
         ]
         if request.endpoint in exempt_endpoints:
             return

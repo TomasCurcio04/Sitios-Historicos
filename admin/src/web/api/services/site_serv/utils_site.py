@@ -24,7 +24,7 @@ def site_to_dict(site, include_full_data=False):
         if include_full_data:
             all_images = (
                 db.session.query(SiteImage)
-                .filter(SiteImage.id_site == site.id_site)
+                .filter(SiteImage.site_id == site.id_site)
                 .order_by(SiteImage.display_order, SiteImage.id_site_image)
                 .all()
             )
@@ -44,7 +44,7 @@ def site_to_dict(site, include_full_data=False):
         # Buscar imagen thumbnail
         thumbnail = (
             db.session.query(SiteImage)
-            .filter(SiteImage.id_site == site.id_site, SiteImage.is_thumbnail)
+            .filter(SiteImage.site_id == site.id_site, SiteImage.is_thumbnail)
             .first()
         )
 
@@ -54,7 +54,7 @@ def site_to_dict(site, include_full_data=False):
             # Si no hay thumbnail, tomar la primera imagen
             first_image = (
                 db.session.query(SiteImage)
-                .filter(SiteImage.id_site == site.id_site)
+                .filter(SiteImage.site_id == site.id_site)
                 .first()
             )
             if first_image:
@@ -117,9 +117,9 @@ def site_to_dict(site, include_full_data=False):
     return result
 
 
-def all_sites_to_json(**kwargs):
+def all_sites_to_json(user_id=None, **kwargs):
     """Listar sitios en formato json con filtros según especificación API"""
-    result = listar_sitios(**kwargs)
+    result = listar_sitios(user_id=user_id, **kwargs)
 
     # Convertir sitios a formato JSON
     data = [site_to_dict(site) for site in result["items"]]

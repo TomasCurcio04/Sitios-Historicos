@@ -153,13 +153,9 @@
                 </form>
 
                 
-               <button type="button" 
-                     class="btn btn-edit js-requires-permission" 
-                      data-permission="site_history_view"
-                       data-action="show-history"
-                        data-site-id="{{ r.id }}">
-                             Historial de cambios
-               </button>
+               <button onclick="showHistoryModal({{ r.id }})" class="btn btn-sm btn-outline-info">
+                       <i class="fas fa-history"></i> Historial
+                </button>
                 
 
                 
@@ -238,10 +234,11 @@
 </form>
 
 
-{% if usuario_es_admin %}
-<form action="{{ url_for('mantenimiento_admin.upload_image') }}" method="get" style="display:inline-block; margin-right: 10px;">    <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_edit">Gestionar Imágenes</button>
+<form action="{{ url_for('mantenimiento_admin.upload_image') }}" method="get" style="display:inline-block; margin-right: 10px;">
+    <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_edit">
+        Gestionar Imágenes
+    </button>
 </form>
-{% endif %}
 
 <!-- Botón volver -->
 <form action="{{ url_for('web.home') }}" method="get">
@@ -250,28 +247,33 @@
 
 
 <script>
-    // --- LÓGICA DEL MODAL DE HISTORIAL (SIN CAMBIOS) ---
+    // --- LÓGICA DEL MODAL DE HISTORIAL (CORREGIDA) ---
     const modal = document.getElementById('historyModal');
     const modalContent = document.getElementById('historyContent');
-    const closeButton = document.querySelector('.close-button');
+    const closeButton = document.querySelector('#historyModal .close-button');
 
     function showHistoryModal(siteId) {
-        
-        // 1. Verificamos el permiso para "Historial"
-        {% if not has_permission("site_history_view") %}
-            alert('No tiene permiso de ver el historial de modificaciones');
-            return;
-        {% endif %}
+        // 1. Obtenemos los permisos del usuario (inyectados de forma segura desde Flask)
+        const userPermissions = {{ session.get("permissions", []) | tojson }};
 
-        // 2. Si tiene permiso, abre el modal
-        modalContent.innerHTML = '<p>Cargando...</p>';
+        // 2. Verificamos el permiso necesario
+        if (!userPermissions.includes("site_history_view")) {
+            alert('No tiene permiso para ver el historial de modificaciones');
+            return;
+        }
+
+        // 3. Si tiene permiso → abrir modal y cargar contenido
+        modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
         modal.style.display = 'block';
 
-        // 3. Fetch
+        // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
         fetch(`/sitios/${siteId}/historial`)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('No se pudo cargar el historial. Inténtalo de nuevo.');
+                    if (response.status === 403) {
+                        throw new Error('Acceso denegado (403)');
+                    }
+                    throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
                 }
                 return response.text();
             })
@@ -279,8 +281,8 @@
                 modalContent.innerHTML = html;
             })
             .catch(error => {
-                modalContent.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-                console.error('Error en fetch:', error);
+                modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
+                console.error('Error cargando historial:', error);
             });
     }
 
@@ -288,59 +290,16 @@
         modal.style.display = 'none';
     }
 
+    // Cerrar con la X
     if (closeButton) {
         closeButton.onclick = closeModal;
     }
 
-    window.onclick = function (event) {
-        if (event.target == modal) {
+    // Cerrar clic fuera del modal
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
             closeModal();
         }
-    }
-
-    
-    // --- NUEVA LÓGICA PARA BLOQUEAR OTROS BOTONES ---
-    document.addEventListener('DOMContentLoaded', function() {
-        
-        // 1. Obtenemos la lista de permisos del usuario desde la sesión
-        // (Esto es seguro porque 'session' solo existe en el servidor)
-        const userPermissions = {{ session.get("permissions", []) | tojson }};
-
-        // 2. Definimos los mensajes de error
-        const permissionMessages = {
-            "site_create": "No tiene permiso para crear sitios.",
-            "site_edit": "No tiene permiso para editar.",
-            "site_delete": "No tiene permiso para eliminar.",
-            "site_export_CSV": "No tiene permiso para exportar.",
-            "tag_list": "No tiene permiso para gestionar etiquetas."
-        };
-
-        // 3. Seleccionamos TODOS los botones que marcamos con la clase
-        const protectedButtons = document.querySelectorAll('.js-requires-permission');
-
-        protectedButtons.forEach(function(button) {
-            // 4. Añadimos un listener a cada botón.
-            // 'true' (useCapture) asegura que se ejecute ANTES que el 'onclick="confirm(...)"' del botón Eliminar.
-            button.addEventListener('click', function(event) {
-                
-                // 5. Obtenemos el permiso que este botón necesita
-                const requiredPermission = button.dataset.permission;
-
-                // 6. Verificamos si el usuario TIENE ese permiso
-                if (!userPermissions.includes(requiredPermission)) {
-                    
-                    // 7. Si NO lo tiene:
-                    event.preventDefault(); // Detiene el clic (ej: el submit del form)
-                    event.stopPropagation(); // Detiene otros clics
-                    event.stopImmediatePropagation(); // Detiene todo lo demás (incluido el 'confirm')
-
-                    // Mostramos el mensaje de error
-                    const message = permissionMessages[requiredPermission] || "No tiene permisos para esta acción.";
-                    alert(message);
-                }
-                // Si SÍ lo tiene, el script no hace nada y el clic continúa.
-            }, true); 
-        });
     });
 </script>
 

@@ -1,57 +1,87 @@
 <template>
   <div>
-    <button v-if="!loggedIn" @click="loginWithGoogle">
+    <button 
+      v-if="!loggedIn" 
+      @click="$emit('login')" 
+      class="btn-google btn-login"
+    >
       Registrarse / Iniciar sesión con Google
     </button>
 
-    <div v-else>
-      <p>Sesión iniciada como: {{ user?.email }}</p>
+    <div v-else class="flex items-center space-x-2">
+      
 
-      <img 
-        v-if="user?.picture" 
-        :src="user.picture" 
-        alt="Foto de perfil"
-        style="width: 40px; height: 40px; border-radius: 50%;"
-      />
-
-      <button @click="logout">
+      <button 
+        @click="$emit('logout')" 
+        class="btn-google btn-logout"
+      >
         Cerrar sesión
-      </button>
+      </button> 
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
-const loggedIn = ref(false)
-const user = ref(null)
 
-onMounted(async () => {
-  const res = await fetch('http://localhost:5000/google/status', {
-    credentials: 'include'
-  })
-  const data = await res.json()
-
-  loggedIn.value = data.logged_in
-  user.value = data.user || null
+const props = defineProps({
+  // Estado de la sesión, manejado por useAuth y pasado por el padre
+  loggedIn: {
+    type: Boolean,
+    default: false
+  },
+  // Información del usuario, manejada por useAuth y pasada por el padre
+  user: {
+    type: Object,
+    default: null
+  }
 })
 
-const loginWithGoogle = () => {
-  window.location.href = 'http://localhost:5000/google/login'
-}
 
-const logout = () => {
-  const current = window.location.href;
-  window.location.href = `http://localhost:5000/google/logout?next=${encodeURIComponent(current)}`;
-};
+const emit = defineEmits([
+  'login', 
+  'logout' 
+])
 
 </script>
 
-<style scoped>
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+<style scoped> 
+.btn-google {
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 10px 16px; 
+  border: 1px solid #ccc; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-weight: 500;
+  transition: all 0.2s;
+} 
+.btn-login {
+  background: white; 
+  color: #4285F4; /* Azul de Google */
+}
+.btn-login:hover { 
+  background: #f5f5f5; 
+} 
+.btn-logout {
+  background: #DB4437; /* Rojo para Logout */
+  color: white;
+  border-color: #DB4437;
+}
+.btn-logout:hover {
+  background: #c33a32;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 </style>
