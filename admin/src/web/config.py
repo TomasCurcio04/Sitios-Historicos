@@ -46,6 +46,12 @@ class ProductionConfig(BaseConfig):
 
     # Configuración para servir archivos estáticos en producción
     SEND_FILE_MAX_AGE_DEFAULT = 31536000  # 1 año
+    STATIC_FOLDER = 'static'
+    STATIC_URL_PATH = '/static'
+    
+    # Configuración adicional para CI/CD
+    PREFERRED_URL_SCHEME = 'https'
+    APPLICATION_ROOT = '/'
 
 
 class DevelopmentConfig(BaseConfig):
