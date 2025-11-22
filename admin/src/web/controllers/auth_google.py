@@ -4,7 +4,7 @@ from src.web.oauth import oauth
 
 
 bp = Blueprint("google_auth", __name__, url_prefix="/google")
-
+# Prueba despues de agregar google_id
 @bp.route("/login")
 def login():
     session['next'] = request.args.get('next') or request.referrer
