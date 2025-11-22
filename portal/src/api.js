@@ -5,10 +5,16 @@ async function handleFetch(res) {
     const errorData = await res.json().catch(() => ({}));
     // Si el backend devuelve un mensaje de error detallado, lo usamos
     const msg = errorData.error && errorData.error.message
-                ? `${errorData.error.message}: ${JSON.stringify(errorData.error.details || '')}`
-                : 'Error en la solicitud';
+      ? `${errorData.error.message}: ${JSON.stringify(errorData.error.details || '')}`
+      : 'Error en la solicitud';
     throw new Error(msg);
   }
+  
+  // Si es 204 No Content o no hay contenido, devolver objeto vacío
+  if (res.status === 204 || res.headers.get('content-length') === '0') {
+    return {};
+  }
+  
   return res.json();
 }
 
@@ -31,15 +37,15 @@ export async function fetchSites(params = {}) {
     let orderValue = params.order || params.order_by;
 
     if (orderValue) {
-        const orderMap = {
-            'most_visited': 'most-visited', // Corrige el guion bajo
-            'top_rated': 'rating-5-1',      // Mapea nombres amigables
-            'latest': 'latest',
-            'az': 'name-asc',
-            'za': 'name-desc'
-        };
-        // Si existe en el mapa usamos ese, si no, enviamos lo que vino
-        apiParams.append('order_by', orderMap[orderValue] || orderValue);
+      const orderMap = {
+        'most_visited': 'most-visited', // Corrige el guion bajo
+        'top_rated': 'rating-5-1',      // Mapea nombres amigables
+        'latest': 'latest',
+        'az': 'name-asc',
+        'za': 'name-desc'
+      };
+      // Si existe en el mapa usamos ese, si no, enviamos lo que vino
+      apiParams.append('order_by', orderMap[orderValue] || orderValue);
     }
 
     // Otros filtros directos
@@ -57,11 +63,11 @@ export async function fetchSites(params = {}) {
     // Adaptamos la respuesta para que el frontend siempre reciba { data: { items: [], total: 0 } }
 
     return {
-        success: true,
-        data: {
-            items: json.data || [],
-            total: json.meta ? json.meta.total : 0
-        }
+      success: true,
+      data: {
+        items: json.data || [],
+        total: json.meta ? json.meta.total : 0
+      }
     };
 
   } catch (error) {
@@ -88,7 +94,7 @@ export async function addFavorite(id) {
   try {
     const token = localStorage.getItem('auth_token');
     const res = await fetch(`${API_BASE}/sites/${id}/favorite`, {
-      method: 'POST',
+      method: 'PUT',
       headers: { 'Authorization': `Bearer ${token}` }
     });
     await handleFetch(res);
@@ -103,7 +109,7 @@ export async function removeFavorite(id) {
   try {
     const token = localStorage.getItem('auth_token');
     const res = await fetch(`${API_BASE}/sites/${id}/favorite`, {
-      method: 'DELETE',
+      method: 'PUT',
       headers: { 'Authorization': `Bearer ${token}` }
     });
     await handleFetch(res);
@@ -118,7 +124,7 @@ export async function isFavoriteSite(id) {
   try {
     const token = localStorage.getItem('auth_token');
     const res = await fetch(`${API_BASE}/favorites/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await handleFetch(res);
     return { success: true, data: data.is_favorite };
@@ -130,45 +136,45 @@ export async function isFavoriteSite(id) {
 
 // --- FUNCIONES DE AUTH ---
 export function isAuthenticated() {
-    return !!localStorage.getItem('auth_token');
+  return localStorage.getItem('auth_token');
 }
 
 export function loginWithGoogle() {
-    window.location.href = `${API_BASE}/auth/login/google`;
+  window.location.href = `${API_BASE}/auth/login/google`;
 }
 
 // --- FUNCIONES ESPECÍFICAS PARA EL HOME (Usando valores correctos) ---
 
 export async function fetchMostVisited() {
-    // Backend espera: 'most-visited'
-    return fetchSites({ order: 'most-visited', limit: 4 });
+  // Backend espera: 'most-visited'
+  return fetchSites({ order: 'most-visited', limit: 4 });
 }
 
 export async function fetchTopRated() {
-    // Backend espera: 'rating-5-1'
-    return fetchSites({ order: 'rating-5-1', limit: 4 });
+  // Backend espera: 'rating-5-1'
+  return fetchSites({ order: 'rating-5-1', limit: 4 });
 }
 
 export async function fetchRecent() {
-    // Backend espera: 'latest'
-    return fetchSites({ order: 'latest', limit: 4 });
+  // Backend espera: 'latest'
+  return fetchSites({ order: 'latest', limit: 4 });
 }
 
 export async function fetchFavorites() {
-    // Si tienes filtro de favoritos implementado
-    return fetchSites({ search_favorites: true, limit: 4 });
+  // Si tienes filtro de favoritos implementado
+  return fetchSites({ search_favorites: true, limit: 4 });
 }
 
 export default {
-    fetchSites,
-    fetchSiteById,
-    addFavorite,
-    removeFavorite,
-    isFavoriteSite,
-    isAuthenticated,
-    loginWithGoogle,
-    fetchMostVisited,
-    fetchTopRated,
-    fetchRecent,
-    fetchFavorites
+  fetchSites,
+  fetchSiteById,
+  addFavorite,
+  removeFavorite,
+  isFavoriteSite,
+  isAuthenticated,
+  loginWithGoogle,
+  fetchMostVisited,
+  fetchTopRated,
+  fetchRecent,
+  fetchFavorites
 };
