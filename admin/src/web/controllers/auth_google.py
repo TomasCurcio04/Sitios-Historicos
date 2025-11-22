@@ -11,7 +11,10 @@ def login():
     redirect_uri = url_for("google_auth.auth", _external=True)
 
     print("Redirect URI:", url_for("google_auth.auth", _external=True))
-    return oauth.google.authorize_redirect(redirect_uri)
+    return oauth.google.authorize_redirect(
+        redirect_uri,
+        prompt="select_account"
+    )
 
 @bp.route("/login/callback")
 def auth():
