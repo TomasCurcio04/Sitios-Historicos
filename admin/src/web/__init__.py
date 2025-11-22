@@ -161,12 +161,6 @@ def create_app(env="development", static_folder=None):
     def static_files(filename):
         return app.send_static_file(filename)
 
-    # Ruta explícita para archivos estáticos
-    @app.route('/static/<path:filename>')
-    def serve_static(filename):
-        from flask import send_from_directory
-        return send_from_directory(app.static_folder, filename)
-
     @app.before_request
     def check_admin_maintenance():
         """Verifica si el panel administrativo está en modo de mantenimiento.
@@ -191,7 +185,6 @@ def create_app(env="development", static_folder=None):
             "auth.logout",
             "auth.authenticate",
             "static",
-            "serve_static",
             "feature_flags.feature_flags",
             "mantenimiento_admin.mantenimiento_admin",
             "api_sites.all_sites",

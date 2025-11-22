@@ -43,25 +43,17 @@ class ProductionConfig(BaseConfig):
     GOOGLE_CLIENT_ID = {"google-oauth": environ.get("GOOGLE_CLIENT_ID")}
     GOOGLE_CLIENT_SECRET = {"google-oauth": environ.get("GOOGLE_CLIENT_SECRET")}
     API_SERVER = environ.get("API_SERVER")
-
-    # Configuración para servir archivos estáticos en producción
-    SEND_FILE_MAX_AGE_DEFAULT = 31536000  # 1 año
-    STATIC_FOLDER = 'static'
-    STATIC_URL_PATH = '/static'
-    
-    # Configuración adicional para CI/CD
-    PREFERRED_URL_SCHEME = 'https'
-    APPLICATION_ROOT = '/'
+    STATIC_FOLDER = "static"
 
 
 class TestingConfig(BaseConfig):
     """Testing configuration class."""
-    
+
     TESTING = True
     SQLALCHEMY_ENGINES = {"default": "sqlite:///:memory:"}
     SECRET_KEY = "test_secret_key"
     JWT_SECRET_KEY = "test_jwt_secret"
-    
+
 
 class DevelopmentConfig(BaseConfig):
     """Development configuration class."""
@@ -86,11 +78,6 @@ class DevelopmentConfig(BaseConfig):
     GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
     API_SERVER = environ.get("API_SERVER")
-    
-    # Configuración para servir archivos estáticos en desarrollo
-    SEND_FILE_MAX_AGE_DEFAULT = 0
-    STATIC_FOLDER = "static"
-    STATIC_URL_PATH = "/static"
 
 
 config = {
