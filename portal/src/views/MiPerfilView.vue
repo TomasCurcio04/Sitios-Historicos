@@ -219,8 +219,10 @@ watch(loggedIn, async (isLoggedIn) => {
     await loadFavorites()
   } else {
     // Si el usuario cierra sesión, limpiamos la lista
+    console.log("Usuario ha cerrado sesión, limpiando datos...")
     reviews.value = []
     favorites.value = []
+    console.log("Datos limpiados.")
   }
 }, { 
   // 'immediate: true' garantiza que se ejecute al inicio, una vez que useAuth 

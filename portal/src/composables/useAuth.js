@@ -12,17 +12,23 @@ const loading = ref(true)
  */
 const checkSession = async () => {
   loading.value = true
+
   try {
     const res = await fetch(`${API_URL}/google/status`, {
       credentials: 'include'
     })
 
-    const data = await res.json()
+    let data = {}
+    try {
+      data = await res.json()
+    } catch {
+      data = {}
+    }
 
-    loggedIn.value = data.logged_in
-    user.value = data.user
-  } catch (error) {
-    console.error('Error verificando la sesión:', error)
+    loggedIn.value = !!data.logged_in
+    user.value = data.user ?? null
+
+  } catch (err) {
     loggedIn.value = false
     user.value = null
   } finally {
@@ -30,19 +36,42 @@ const checkSession = async () => {
   }
 }
 
+
 const login = (nextUrl) => {
   const current = nextUrl || window.location.href
   window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
 }
 
-const logout = (nextUrl) => {
-  const current = nextUrl || window.location.href
-  window.location.href = `${API_URL}/google/logout?next=${encodeURIComponent(current)}`
-}
+const logout = async (nextUrl) => {
+  try {
+    await fetch(`${API_URL}/google/logout`, {
+      method: 'GET',
+      credentials: 'include'
+    })
+  } catch (e) {
+    console.error('Error en logout backend', e)
+  }
 
+  // LIMPIEZA TOTAL FRONTEND
+  loggedIn.value = false
+  user.value = null
+
+  localStorage.clear()
+  sessionStorage.clear()
+
+  // Si usas caches
+  if ('caches' in window) {
+    const names = await caches.keys()
+    await Promise.all(names.map(n => caches.delete(n)))
+  }
+
+  const current = nextUrl || window.location.href
+  window.location.href = current
+}
 export function useAuth() {
   onMounted(async () => {
   await checkSession()
+
   })
 
   return {
