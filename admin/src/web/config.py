@@ -36,8 +36,9 @@ class ProductionConfig(BaseConfig):
     MINIO_BUCKET = environ.get("MINIO_BUCKET")
 
     SQLALCHEMY_ENGINES = {"default": environ.get("DATABASE_URL")}
-    CORS_ORIGINS = ["https://grupo10.proyecto2025.linti.unlp.edu.ar",
-        "https://admin-grupo10.proyecto2025.linti.unlp.edu.ar"]
+    CORS_ORIGINS = (
+        environ.get("CORS_ORIGINS").split(",") if environ.get("CORS_ORIGINS") else []
+    )
 
     GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
