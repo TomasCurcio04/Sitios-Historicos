@@ -14,7 +14,7 @@ const checkSession = async () => {
   loading.value = true
 
   try {
-    const res = await fetch(`${API_URL}/google/status`, {
+    const res = await fetch(`${API_URL}/api/auth/google/status`, {
       credentials: 'include'
     })
 
@@ -39,12 +39,12 @@ const checkSession = async () => {
 
 const login = (nextUrl) => {
   const current = nextUrl || window.location.href
-  window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
+  window.location.href = `${API_URL}/api/auth/google/login?next=${encodeURIComponent(current)}`
 }
 
 const logout = async (nextUrl) => {
   try {
-    await fetch(`${API_URL}/google/logout`, {
+    await fetch(`${API_URL}/api/auth/google/logout`, {
       method: 'GET',
       credentials: 'include'
     })

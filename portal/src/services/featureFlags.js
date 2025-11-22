@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api/feature-flags'
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://admin-grupo10.proyecto2025.linti.unlp.edu.ar') + '/api/feature-flags'
 
 /**
  * Obtiene el estado del portal público
