@@ -31,7 +31,7 @@ const checkSession = async () => {
     // Si está logueado pero no tiene token JWT, obtenerlo
     if (loggedIn.value && !localStorage.getItem('auth_token')) {
       try {
-        const tokenRes = await fetch(`${API_URL}/auth/token`, {
+        const tokenRes = await fetch(`${API_URL}/api/auth/token`, {
           method: 'POST',
           credentials: 'include'
         });

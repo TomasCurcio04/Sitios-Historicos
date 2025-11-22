@@ -217,6 +217,7 @@ watch(loggedIn, async (isLoggedIn) => {
     await Api.getToken();
     await loadReviews()
     await loadFavorites()
+    console.log("Datos cargados tras inicio de sesión.")
   } else {
     // Si el usuario cierra sesión, limpiamos la lista
     console.log("Usuario ha cerrado sesión, limpiando datos...")
