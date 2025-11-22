@@ -27,6 +27,22 @@ const checkSession = async () => {
 
     loggedIn.value = !!data.logged_in
     user.value = data.user ?? null
+    
+    // Si está logueado pero no tiene token JWT, obtenerlo
+    if (loggedIn.value && !localStorage.getItem('auth_token')) {
+      try {
+        const tokenRes = await fetch(`${API_URL}/auth/token`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        if (tokenRes.ok) {
+          const tokenData = await tokenRes.json();
+          localStorage.setItem('auth_token', tokenData.access_token);
+        }
+      } catch (tokenErr) {
+        console.error('Error obteniendo token:', tokenErr);
+      }
+    }
 
   } catch (err) {
     loggedIn.value = false
