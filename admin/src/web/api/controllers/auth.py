@@ -37,52 +37,52 @@ def get_token():
     return jsonify({"access_token": token, "token_type": "Bearer"})
 
 
-@bp.route("/google/login")
-def google_login():
-    """Iniciar login con Google."""
-    session['next'] = request.args.get('next') or request.referrer
-    redirect_uri = url_for("api_auth.google_callback", _external=True)
-    return oauth.google.authorize_redirect(redirect_uri)
+# @bp.route("/google/login")
+# def google_login():
+#     """Iniciar login con Google."""
+#     session['next'] = request.args.get('next') or request.referrer
+#     redirect_uri = url_for("api_auth.google_callback", _external=True)
+#     return oauth.google.authorize_redirect(redirect_uri)
 
 
-@bp.route("/google/callback")
-def google_callback():
-    """Callback de Google OAuth."""
-    token = oauth.google.authorize_access_token()
-    userinfo = token["userinfo"]
-    email = userinfo.get("email")
+# @bp.route("/google/callback")
+# def google_callback():
+#     """Callback de Google OAuth."""
+#     token = oauth.google.authorize_access_token()
+#     userinfo = token["userinfo"]
+#     email = userinfo.get("email")
 
-    user = buscar_usuario_public(email)
-    if not user:
-        crear_user_public(
-            google_id=userinfo.get("sub"),
-            email=userinfo.get("email"),
-            name=userinfo.get("name"),
-            picture=userinfo.get("picture")
-        )
+#     user = buscar_usuario_public(email)
+#     if not user:
+#         crear_user_public(
+#             google_id=userinfo.get("sub"),
+#             email=userinfo.get("email"),
+#             name=userinfo.get("name"),
+#             picture=userinfo.get("picture")
+#         )
     
-    session['user'] = {
-        "id": userinfo.get("sub"),
-        "email": userinfo.get("email"),
-        "name": userinfo.get("name"),
-        "picture": userinfo.get("picture"),
-        "type": "google"
-    }
+#     session['user'] = {
+#         "id": userinfo.get("sub"),
+#         "email": userinfo.get("email"),
+#         "name": userinfo.get("name"),
+#         "picture": userinfo.get("picture"),
+#         "type": "google"
+#     }
     
-    next_url = session.get('next') or '/'
-    return redirect(next_url)
+#     next_url = session.get('next') or '/'
+#     return redirect(next_url)
 
 
-@bp.route("/google/logout")
-def google_logout():
-    """Logout de Google."""
-    session.pop("user", None)
-    next_url = request.args.get("next", "/")
-    return redirect(next_url)
+# @bp.route("/google/logout")
+# def google_logout():
+#     """Logout de Google."""
+#     session.pop("user", None)
+#     next_url = request.args.get("next", "/")
+#     return redirect(next_url)
 
 
-@bp.route("/google/status")
-def google_status():
-    """Estado de autenticación."""
-    user = session.get("user")
-    return jsonify({"logged_in": bool(user), "user": user})
+# @bp.route("/google/status")
+# def google_status():
+#     """Estado de autenticación."""
+#     user = session.get("user")
+#     return jsonify({"logged_in": bool(user), "user": user})
