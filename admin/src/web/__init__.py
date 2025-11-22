@@ -74,27 +74,14 @@ def create_app(env="development", static_folder=None):
 
     CORS(
         app,
-        origins=[
-            "http://localhost:5173",
-            "https://grupo10.proyecto2025.linti.unlp.edu.ar",
-        ],
-        supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization"],
-        expose_headers=["Authorization"],
+        resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
+        supports_credentials=True
     )
-
-    # Configuración de sesión
-    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-    app.config["SESSION_COOKIE_SECURE"] = False
-    app.config["SESSION_COOKIE_HTTPONLY"] = True
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
     app.config.from_object(config[env])
-
-    # Configurar CORS con credentials
-    CORS(app, supports_credentials=True, origins=app.config.get("CORS_ORIGINS", []))
 
     # Inicialización de la base de datos
     database.init_db(app)
