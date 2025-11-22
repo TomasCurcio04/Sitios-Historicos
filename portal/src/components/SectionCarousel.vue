@@ -23,7 +23,7 @@
     </div>
 
     <!-- Grid -->
-    <div v-else class="sites-grid">
+    <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <SiteCard v-for="site in items" :key="site.id" :site="site" />
     </div>
   </section>

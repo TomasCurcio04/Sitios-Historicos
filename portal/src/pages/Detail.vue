@@ -13,7 +13,7 @@
 
     <header class="site-header">
       <div class="header-top">
-        <button @click="router.back()" class="back-btn">
+        <button @click="router.push('/sites')" class="back-btn">
           ← Volver
         </button>
       </div>

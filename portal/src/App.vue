@@ -4,8 +4,8 @@
     <header class="w-full bg-white shadow-md p-4 sticky top-0 z-10">
       <div class="flex justify-between items-center max-w-7xl mx-auto">
         
-        <router-link to="/" class="btn btn-primary">
-          Inicio
+        <router-link to="/" class="text-2xl font-bold text-blue-600">
+          Mi Aplicación
         </router-link>
 
         <div class="flex items-center space-x-4">
