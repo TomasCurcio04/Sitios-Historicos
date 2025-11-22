@@ -72,14 +72,6 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
-    CORS(
-        app,
-        resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS", [])}},
-        supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization"],
-        expose_headers=["Authorization"],
-    )
-
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
     # Configuración
@@ -150,6 +142,17 @@ def create_app(env="development", static_folder=None):
 
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
 
+    CORS(
+        app,
+        resources={
+            r"/api/*": {"origins": app.config.get("CORS_ORIGINS", [])},
+            r"/google/*": {"origins": app.config.get("CORS_ORIGINS", [])}
+        },
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Authorization"],
+    )
+    
     @app.before_request
     def check_admin_maintenance():
         """Verifica si el panel administrativo está en modo de mantenimiento.
