@@ -74,8 +74,10 @@ def create_app(env="development", static_folder=None):
 
     CORS(
         app,
-        resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
-        supports_credentials=True
+        resources={r"/api/*": {"origins": app.config.get("CORS_ORIGINS", [])}},
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Authorization"],
     )
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
