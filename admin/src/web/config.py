@@ -25,7 +25,7 @@ class BaseConfig:
     CORS_RESOURCES = [r"/api/*"]
     CONF_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-
+#cambio en google secret
 class ProductionConfig(BaseConfig):
     """Production configuration class."""
 
