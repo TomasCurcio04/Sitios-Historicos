@@ -63,6 +63,7 @@ def create_app(env="development", static_folder=None):
     env = os.environ.get("FLASK_ENV", "development")
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    print(f"Base directory: {base_dir}")
     if static_folder is None:
         static_folder = os.path.join(base_dir, "static")
 
@@ -72,16 +73,21 @@ def create_app(env="development", static_folder=None):
         static_folder=static_folder,
     )
 
-    CORS(app, 
-     origins=['http://localhost:5173', 'https://grupo10.proyecto2025.linti.unlp.edu.ar'],
-     supports_credentials=True,
-     allow_headers=['Content-Type', 'Authorization'],
-     expose_headers=['Authorization'])
+    CORS(
+        app,
+        origins=[
+            "http://localhost:5173",
+            "https://grupo10.proyecto2025.linti.unlp.edu.ar",
+        ],
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Authorization"],
+    )
 
     # Configuración de sesión
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    app.config['SESSION_COOKIE_SECURE'] = False 
-    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["SESSION_COOKIE_SECURE"] = False
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
 
     app.secret_key = "supersecreto123"  # 🔒 Necesario para usar sesiones y flash()
 
@@ -89,7 +95,7 @@ def create_app(env="development", static_folder=None):
     app.config.from_object(config[env])
 
     # Configurar CORS con credentials
-    CORS(app, supports_credentials=True, origins=app.config.get('CORS_ORIGINS', []))
+    CORS(app, supports_credentials=True, origins=app.config.get("CORS_ORIGINS", []))
 
     # Inicialización de la base de datos
     database.init_db(app)
@@ -155,11 +161,6 @@ def create_app(env="development", static_folder=None):
     app.register_error_handler(OperationalError, error.database_connection_error)
 
     app.jinja_env.globals["is_authenticated"] = template_is_authenticated
-    
-    # Servir archivos estáticos en producción
-    @app.route('/static/<path:filename>')
-    def static_files(filename):
-        return app.send_static_file(filename)
 
     @app.before_request
     def check_admin_maintenance():
@@ -212,7 +213,7 @@ def create_app(env="development", static_folder=None):
             "api_feature_flags.test_endpoint",
             "api_feature_flags.get_reviews_status",
             "api_metadata.get_tags",
-            "api_metadata.get_states"
+            "api_metadata.get_states",
         ]
         if request.endpoint in exempt_endpoints:
             return
