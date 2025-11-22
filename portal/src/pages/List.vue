@@ -1,42 +1,32 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-      <h1 class="text-3xl font-bold text-gray-800">Sitios Históricos</h1>
+  <div>
+    <SearchHero @search="handleSearch" />
+    
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h1 class="text-3xl font-bold text-gray-800">Sitios Históricos</h1>
 
-      <div class="flex gap-2 w-full md:w-auto">
-        <input
-          v-model="search"
-          @keyup.enter="fetchData"
-          type="text"
-          placeholder="Buscar sitio..."
-          class="border rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
-        />
-
-        <select
-          v-model="order"
-          @change="fetchData"
-          class="border rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-blue-500 outline-none"
-        >
-          <option value="">Más recientes</option>
-          <option value="az">A-Z</option>
-          <option value="za">Z-A</option>
-        </select>
-
-        <button
-          @click="fetchData"
-          class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Buscar
-        </button>
+        <div class="flex gap-2 w-full md:w-auto">
+          <select
+            v-model="order"
+            @change="fetchData"
+            class="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="">Más recientes</option>
+            <option value="az">A-Z</option>
+            <option value="za">Z-A</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <div v-if="loading" class="flex justify-center py-20">
+    <hr class="my-16 border-gray-200">
+
+    <div v-if="loading" class="flex justify-center py-20 ml-6">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
 
-    <div v-else>
-      <div v-if="sites.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-else class="ml-6">
+      <div v-if="sites.length > 0" class="sites-grid">
         <SiteCard
           v-for="site in sites"
           :key="site.id"
@@ -52,7 +42,7 @@
       </div>
     </div>
 
-    <div v-if="!loading && sites.length > 0" class="mt-10 flex justify-center items-center gap-4">
+    <div v-if="!loading && sites.length > 0" class="mt-10 flex justify-center items-center gap-4 ml-6">
       <button
         @click="prevPage"
         :disabled="page === 1"
@@ -73,6 +63,7 @@
         Siguiente
       </button>
     </div>
+    </div>
   </div>
 </template>
 
@@ -80,6 +71,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SiteCard from '../components/SiteCard.vue'
+import SearchHero from '../components/SearchHero.vue'
 import { fetchSites } from '../api.js'
 
 // Router y Route
@@ -96,6 +88,13 @@ const loading = ref(false)
 const page = ref(Number(route.query.page) || 1)
 const pageSize = 9
 const totalPages = ref(1)
+
+// Manejar búsqueda desde SearchHero
+const handleSearch = (query) => {
+  search.value = query
+  page.value = 1
+  fetchData()
+}
 
 // Función principal de carga
 async function fetchData() {
