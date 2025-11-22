@@ -43,7 +43,6 @@ class ProductionConfig(BaseConfig):
     GOOGLE_CLIENT_ID = {"google-oauth": environ.get("GOOGLE_CLIENT_ID")}
     GOOGLE_CLIENT_SECRET = {"google-oauth": environ.get("GOOGLE_CLIENT_SECRET")}
     API_SERVER = environ.get("API_SERVER")
-    STATIC_FOLDER = "static"
 
 
 class TestingConfig(BaseConfig):
