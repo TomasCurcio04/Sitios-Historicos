@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api'
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://admin-grupo10.proyecto2025.linti.unlp.edu.ar') + '/api'
 
 async function handleFetch(res) {
   if (!res.ok) {

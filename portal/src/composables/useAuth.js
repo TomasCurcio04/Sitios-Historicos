@@ -1,6 +1,6 @@
 import { ref, onMounted } from 'vue'
 
-const API_URL = import.meta.env.VITE_API_URL || ''
+const API_URL = import.meta.env.VITE_API_URL || 'https://admin-grupo10.proyecto2025.linti.unlp.edu.ar'
 console.log("API_URL:", API_URL)
 const loggedIn = ref(false)
 const user = ref(null)
