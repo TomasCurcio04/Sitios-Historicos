@@ -30,19 +30,18 @@ def listar_sitios(
 ):
     """Listar sitios con filtros y paginación"""
     query = db.session.query(Site).filter(Site.is_visible, ~Site.deleted)
-    
+
     # Si search_favorites es True y hay user_id, filtrar por favoritos
     if search_favorites and user_id:
         from src.core.entity.site_favorite import SiteFavorite
+
         query = query.join(SiteFavorite, Site.id_site == SiteFavorite.id_site)
-        query = query.filter(SiteFavorite.id_user == user_id)
+        query = query.filter(SiteFavorite.id_public_user == user_id)
 
     # Join con state_rel y eager loading de relaciones
     query = query.join(State, Site.state == State.id_state)
     query = query.options(
-        joinedload(Site.state_rel), 
-        joinedload(Site.tag), 
-        joinedload(Site.images)
+        joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
     )
 
     # Filtro por nombre
@@ -130,6 +129,7 @@ def listar_sitios(
     elif order_by == "most-visited":
         # Ordenar por visitas descendente
         from src.core.entity.site_visit import SiteVisit
+
         query = query.outerjoin(SiteVisit, Site.id_site == SiteVisit.id_site)
         query = query.order_by(SiteVisit.visit_count.desc().nullslast())
     else:
@@ -149,9 +149,7 @@ def get_site_by_id_service(site_id):
         db.session.query(Site)
         .filter(Site.id_site == site_id, Site.is_visible, ~Site.deleted)
         .options(
-            joinedload(Site.state_rel), 
-            joinedload(Site.tag), 
-            joinedload(Site.images)
+            joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
         )
         .first()
     )
@@ -167,58 +165,58 @@ def get_site_by_id_service(site_id):
 
     return site
 
+
 def create_site_service(site_data, user_id):
     """Crea un nuevo sitio histórico en la base de datos"""
     from datetime import datetime, timezone
-    
+
     # Buscar provincia por nombre
-    state = db.session.query(State).filter(
-        State.name.ilike(site_data['province'])
-    ).first()
-    
+    state = (
+        db.session.query(State).filter(State.name.ilike(site_data["province"])).first()
+    )
+
     if not state:
         raise ValueError(f"Province '{site_data['province']}' not found")
-    
+
     # Crear sitio (inicialmente no visible hasta aprobación)
     site = Site(
-        name=site_data['name'],
-        short_description=site_data['short_description'],
-        full_description=site_data['description'],
-        city=site_data['city'],
+        name=site_data["name"],
+        short_description=site_data["short_description"],
+        full_description=site_data["description"],
+        city=site_data["city"],
         state=state.id_state,
-        latitude=site_data['lat'],
-        longitude=site_data['long'],
-        conservation_state=site_data['state_of_conservation'],
+        latitude=site_data["lat"],
+        longitude=site_data["long"],
+        conservation_state=site_data["state_of_conservation"],
         category=1,  # Categoría por defecto
         created_by=user_id,
         is_visible=False,  # Requiere aprobación
-        date_registered=datetime.now(timezone.utc)
+        date_registered=datetime.now(timezone.utc),
     )
-    
+
     db.session.add(site)
     db.session.flush()  # Para obtener el ID
-    
+
     # Procesar tags
-    for tag_name in site_data['tags']:
-        tag = db.session.query(Tag).filter(
-            Tag.name.ilike(tag_name.strip())
-        ).first()
-        
+    for tag_name in site_data["tags"]:
+        tag = db.session.query(Tag).filter(Tag.name.ilike(tag_name.strip())).first()
+
         if not tag:
             # Crear tag si no existe
             tag = Tag(name=tag_name.strip())
             db.session.add(tag)
             db.session.flush()
-        
+
         site.tag.append(tag)
-    
+
     db.session.commit()
-    
+
     # Recargar con relaciones
-    return db.session.query(Site).filter(
-        Site.id_site == site.id_site
-    ).options(
-        joinedload(Site.state_rel),
-        joinedload(Site.tag),
-        joinedload(Site.images)
-    ).first()
+    return (
+        db.session.query(Site)
+        .filter(Site.id_site == site.id_site)
+        .options(
+            joinedload(Site.state_rel), joinedload(Site.tag), joinedload(Site.images)
+        )
+        .first()
+    )

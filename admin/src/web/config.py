@@ -86,6 +86,11 @@ class DevelopmentConfig(BaseConfig):
     GOOGLE_CLIENT_ID = environ.get("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = environ.get("GOOGLE_CLIENT_SECRET")
     API_SERVER = environ.get("API_SERVER")
+    
+    # Configuración para servir archivos estáticos en desarrollo
+    SEND_FILE_MAX_AGE_DEFAULT = 0
+    STATIC_FOLDER = "static"
+    STATIC_URL_PATH = "/static"
 
 
 config = {

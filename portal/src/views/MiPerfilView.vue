@@ -71,23 +71,23 @@
       </div>
 
       <div class="pt-4">
-        <div v-show="activeTab === 'reviews'">
+        <div v-if="activeTab === 'reviews'">
           <ReviewsList
-            :reviews="reviews"
+            :reviews="sortedReviews"
             :meta="reviewsMeta"
             :loading="reviewsLoading"
-            :order="reviewsOrder"
             @page-change="loadReviews"
             @order-change="changeReviewsOrder"
           />
         </div>
 
-        <div v-show="activeTab === 'favorites'">
+        <div v-if="activeTab === 'favorites'">
           <FavoritesList
-            :favorites="favorites"
+            :favorites="sortedFavorites"
             :meta="favoritesMeta"
             :loading="favoritesLoading"
             @page-change="loadFavorites"
+            @order-change="changeFavoritesOrder"
           />
         </div>
       </div>
@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 import ReviewsList from '../components/UserReviewsList.vue'
 import FavoritesList from '../components/UserFavoritesList.vue'
@@ -120,34 +120,42 @@ const reviewsOrder = ref('desc')
 const favorites = ref([])
 const favoritesMeta = ref({})
 const favoritesLoading = ref(false)
+const favoritesOrder = ref('desc')
 
 
 const loadReviews = async (page = 1) => {
-  if (!loggedIn.value) return; 
-  reviewsLoading.value = true
+  if (!loggedIn.value) return;
+
+  reviewsLoading.value = true;
+
   try {
-    const res = await fetch(
-      `${API_URL}/users/me/reviews?page=${page}&order=${reviewsOrder.value}`,
-      { credentials: 'include' }
-    )
-    const data = await res.json()
+    console.log("Llamando a getMyReviews...")
+    const res = await Api.getMyReviews({ page });
+    console.log("Respuesta de reviews:", res)
     
-    reviews.value = data.data || data.reviews || []
-    reviewsMeta.value = data.meta || {
-      current_page: page,
-      total_pages: data.total_pages || 1,
-      total: data.total || 0
+    const data = res.data || {}
+    reviews.value = (data.data || []).map(r => ({
+      ...r,
+      date: r.inserted_at
+    }))
+    console.log("Mapped reviews:", reviews.value)
+    
+    const meta = data.meta || {}
+    reviewsMeta.value = {
+      current_page: meta.page || 1,
+      total_pages: Math.ceil((meta.total || 0) / (meta.per_page || 20)),
+      total: meta.total || 0
     }
   } catch (error) {
-    console.error('Error loading reviews:', error)
+    console.error("Error loading reviews:", error)
   } finally {
     reviewsLoading.value = false
   }
 }
 
-const changeReviewsOrder = async (order) => {
+
+const changeReviewsOrder = (order) => {
   reviewsOrder.value = order
-  await loadReviews(1)
 }
 
 
@@ -161,8 +169,11 @@ const loadFavorites = async (page = 1) => {
 
     const data = res.data;
 
-    favorites.value = data.data || [];
-
+    favorites.value = (data.data || []).map(f => ({
+        ...f,
+      date: f.inserted_at
+    }))
+    
     const meta = data.meta || {};
 
     favoritesMeta.value = {
@@ -176,6 +187,28 @@ const loadFavorites = async (page = 1) => {
     favoritesLoading.value = false;
   }
 };
+
+const changeFavoritesOrder = (order) => {
+  favoritesOrder.value = order
+}
+
+
+const sortedReviews = computed(() => {
+  return [...reviews.value].sort((a, b) => {
+    const d1 = new Date(a.date)
+    const d2 = new Date(b.date)
+    return reviewsOrder.value === 'desc' ? d2 - d1 : d1 - d2
+  })
+})
+
+const sortedFavorites = computed(() => {
+  return [...favorites.value].sort((a, b) => {
+    const d1 = new Date(a.date)
+    const d2 = new Date(b.date)
+    return favoritesOrder.value === 'desc' ? d2 - d1 : d1 - d2
+  })
+})
+
 
 
 watch(loggedIn, async (isLoggedIn) => {

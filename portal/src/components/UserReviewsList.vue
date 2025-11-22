@@ -26,7 +26,7 @@
       >
         <p class="font-semibold">{{ r.site_name }}</p>
         <p class="text-sm text-yellow-600">⭐ {{ r.rating }}/5</p>
-        <p class="text-xs text-gray-500">Fecha: {{ formatDate(r.date_created) }}</p>
+        <p class="text-xs text-gray-500">Fecha: {{ formatDate(r.inserted_at) }}</p>
         <p class="mt-1 text-sm line-clamp-2">
           {{ r.comment }}
         </p>
@@ -60,7 +60,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, watch } from "vue";
 
@@ -68,17 +67,31 @@ const props = defineProps({
   reviews: Array,
   meta: Object,
   loading: Boolean,
-  order: String
+  order: {
+    type: String,
+    default: "desc" 
+  }
 });
 
-const localOrder = ref(props.order);
+// Inicializamos con la prop "order" o 'desc' por defecto
+const localOrder = ref(props.order || "desc");
 
+// Si la prop cambia desde el padre, actualizamos localOrder
 watch(() => props.order, (newVal) => {
-  localOrder.value = newVal;
+  localOrder.value = newVal || "desc";
 });
 
-function formatDate(date) {
-  return new Date(date).toLocaleDateString("es-AR");
+function formatDate(dateStr) {
+  if (!dateStr) return 'Sin fecha';
+
+  const date = new Date(dateStr);
+
+  if (isNaN(date)) return 'Fecha inválida';
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
 }
 </script>
-  

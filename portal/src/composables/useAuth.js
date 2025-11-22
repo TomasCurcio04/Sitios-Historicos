@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
 
-const API_URL = import.meta.env.VITE_API_URL || '' 
-
+const API_URL = import.meta.env.VITE_API_URL || ''
+console.log("API_URL:", API_URL)
 const loggedIn = ref(false)
 const user = ref(null)
 const loading = ref(true)
@@ -43,10 +43,6 @@ const logout = (nextUrl) => {
 export function useAuth() {
   onMounted(async () => {
   await checkSession()
-
-  if (loggedIn.value) {
-    await saveToken()
-  }
   })
 
   return {

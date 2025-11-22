@@ -46,11 +46,12 @@
         </div>
 
         <!-- Favoritos -->
-        <div class="filter-group">
-          <label class="filter-label checkbox-label">
-            <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
-          </label>
-        </div>
+      <div class="filter-group" v-if="loggedIn">
+        <label class="filter-label checkbox-label">
+          <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
+        </label>
+      </div>
+
 
         <!-- Ciudad -->
         <div class="filter-group">
@@ -160,12 +161,25 @@
 </template>
 
 <script>
-import api from '../Services/api.js';
+import {useApi } from '../composables/useApi.js';
+import { useAuth } from '../composables/useAuth.js';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { watch } from 'vue';
 L.Popup.prototype.options.zoomAnimation = false;
 
 export default {
+  setup() {
+    const api = useApi();
+    const { loggedIn } = useAuth();
+
+    // Reaccionar a cambios de sesión
+    watch(loggedIn, async (isLoggedIn) => {
+      console.log("Estado de sesión cambió:", isLoggedIn);
+    }, { immediate: true });
+
+    return { api, loggedIn }; // lo exponemos al template
+  },
   data() {
     return {
       sites: [],
@@ -195,14 +209,13 @@ export default {
       marker: null,
       markersLayer: null,
       circle: null,
-      radius: 100
+      radius: 100,
     };
   },
 
   created() {
-    api.getTags().then(res => this.tags = res.data);
-    api.getStates().then(res => this.states = res.data);
-
+    this.api.getTags().then(res => this.tags = res.data);
+    this.api.getStates().then(res => this.states = res.data);
     const urlParams = new URLSearchParams(window.location.search);
     const pageFromUrl = parseInt(urlParams.get("page")) || 1;
 
@@ -287,7 +300,7 @@ export default {
       if (this.searchCity) params.city = this.searchCity;
       if (this.selectedProvince) params.province = this.selectedProvince;
       if (this.selectedTags.length) params.tags = this.selectedTags.join(',');
-      if (this.favorites) params.favorites = true;
+      if (this.favorites) params.search_favorites = true;
       if (this.searchNameDesc) params.search = this.searchNameDesc;
 
       if (this.selectedLat && this.selectedLong) {
@@ -308,7 +321,7 @@ export default {
       this.$router.push({ query: params });
       console.log("Parámetros de búsqueda:", params);
 
-      api.getSites(params)
+      this.api.getSites(params)
         .then(res => {
           this.sites = res.data.data;
           this.meta = res.data.meta;

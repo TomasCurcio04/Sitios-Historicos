@@ -1,7 +1,6 @@
 """Controlador para endpoints del usuario autenticado (/me)"""
 
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
 from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema
 from src.core.services.board.site_favorites import get_user_favorites
