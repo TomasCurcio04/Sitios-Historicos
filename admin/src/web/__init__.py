@@ -65,7 +65,7 @@ def create_app(env="development", static_folder=None):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     print(f"Base directory: {base_dir}")
     if static_folder is None:
-        static_folder = os.path.join(base_dir, "/static")
+        static_folder = os.path.abspath(os.path.join(base_dir, "..", "..", "static"))
 
     app = Flask(
         __name__,
