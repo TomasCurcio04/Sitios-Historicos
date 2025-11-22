@@ -1,0 +1,1080 @@
+/* Reset y tipografía */
+body {
+     font-family: 'Montserrat', Arial, sans-serif;
+     background: #f4f6f8;
+     margin: 0; 
+     padding: 0; 
+     color: #222;  
+     box-sizing: border-box;
+     }
+
+/* Wrapper */     
+.wrapper { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; /* altura completa de la pantalla */ 
+    box-shadow: none;
+}
+
+/* Header / Topbar */
+header, .topbar {
+    background-color: #1a237e; /* azul oscuro */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px; /* MÁS espacio lateral */
+    height: 60px;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: none;
+    box-shadow: none;
+    flex-wrap: wrap; /* permite que los elementos se muevan a otra línea si hace falta */
+}
+
+/* Logo + título */
+.topbar-left {
+    display: flex;
+    align-items: center;       /* Centrado vertical */
+    gap: 12px;
+}
+ 
+/* Header y menú */
+header {
+    border-bottom: none;   /* quita cualquier línea inferior */
+    box-shadow: none;      /* elimina sombras */
+    padding: 10px 20px;    /* espacio interno */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* logo a la izquierda, usuario a la derecha */
+}
+
+/* Logo */
+header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* separación entre logo y nombre */
+}
+
+/* Contenedor del logo + texto */
+.logo-container {
+    display: flex;             /* logo y texto en línea */
+    align-items: center;       /* centrado vertical */
+    gap: 12px;                 /* espacio entre logo y texto */
+}
+
+/* Imagen del logo */
+.logo-img {
+    max-height: clamp(40px, 8vw, 80px);         /* tamaño máximo del logo */
+    width: auto;
+    transition: all 0.3s ease;              
+}
+
+/* Texto del título */
+.logo-text {
+    font-size: clamp(1.2rem, 2.5vw, 2.5rem);
+    font-weight: 700;
+    color: #fff;
+    transition: all 0.3s ease
+}
+
+/* Dropdown usuario */
+.user-dropdown { 
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px; 
+    padding: 6px 10px; 
+    transition: background 0.3s ease; 
+    position: relative;
+    margin-right: 40px; /* separa del borde derecho */
+}
+.user-dropdown:hover { 
+    background: rgba(255,255,255,0.3); 
+} 
+.user-dropdown span { 
+    color: #fff; 
+    cursor: pointer;
+}
+.user-dropdown-content { 
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
+    color: #333;
+    min-width: 140px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    z-index: 10;
+    border-radius: 6px;
+} 
+.user-dropdown:hover .user-dropdown-content { 
+    display: block; 
+} 
+.user-dropdown-content a { 
+    color: #333; 
+    padding: 8px 12px; 
+    text-decoration: none; 
+    display: block; 
+} 
+.user-dropdown-content a:hover { 
+    background: hsl(273, 85%, 32%); 
+    color: #fff;
+}
+
+/* Contenedor principal */
+.container { 
+    display: flex; 
+    flex: 1; 
+    margin-top: 60px; 
+    width: 100%; 
+    min-height: calc(100vh - 60px);
+} 
+
+/* Menú lateral */
+nav.sidenav { 
+    width: 220px; 
+    background: #2c3e50; 
+    color: #fff; 
+    padding: 24px 16px; /* MÁS padding interior */ 
+    box-sizing: border-box; 
+    transition: transform 0.3s ease;
+} 
+nav.sidenav a { 
+    display: block; 
+    color: #fff; 
+    padding: 10px 14px; 
+    text-decoration: none; 
+    border-radius: 6px; 
+    transition: background 0.3s ease, color 0.3s ease; 
+} 
+nav.sidenav a:hover { 
+    background: #1e90ff; /* azul eléctrico, mismo que header */ 
+    color: #fff; 
+    font-weight: bold; 
+}
+/* Estado activo */
+nav.sidenav a.active {
+    background: #0d47a1; /* azul más oscuro para diferenciar */
+    font-weight: bold;
+}
+
+/* Contenido principal */
+main { 
+    flex: 1; 
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0f8ff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(173, 216, 230, 0.1) 10px, rgba(173, 216, 230, 0.1) 20px);
+    border-radius: 12px; 
+    box-shadow: 0 8px 12px rgba(44, 62, 80, 0.12); 
+    padding: 2rem; 
+    margin: 1.5rem; /* más separación del sidebar */
+    max-width: 100%; /* ancho más equilibrado */
+    min-height: 400px; /* altura más compacta */ 
+    overflow: auto; /* permite scroll interno si es necesario */
+} 
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f4f6f8;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f4f6f8;
+}
+
+/* Footer */
+footer { 
+    background: #1e90ff; 
+    color: #fff; 
+    padding: 20px 0; 
+    text-align: center; 
+} 
+footer hr { 
+    border: none; 
+    border-top: 2px solid #e0e0e0; 
+    margin: 16px 0; 
+} 
+footer p { 
+    margin: 0;
+    font-size: 1em;
+    letter-spacing: 1px;
+}
+
+/* Encabezados */
+h1, h2, h3 { 
+    font-weight: 600; /* usa el peso 600 que pediste en Google Fonts */ 
+} 
+h2 { 
+    color: #b71cc8; 
+    margin-top: 0; 
+} 
+hr {
+    display: none;
+}
+
+/* Botón menú móvil */
+.menu-toggle { 
+    display: none; 
+    cursor: pointer; 
+    font-size: 1.5rem; 
+    color: #fff; }
+
+/* Desktop normal: 1025px+ */
+@media (min-width: 1025px) {
+    .sidenav {
+        display: block;
+        position: relative;
+        transform: translateX(0);
+        width: 220px;
+    }
+}
+
+/* Tablet: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    .menu-toggle {
+        display: inline-block;
+    }
+    nav.sidenav {
+        position: fixed;
+        top: 60px;
+        left: -220px;
+        width: 220px;
+        height: calc(100% - 60px);
+        background: #2c3e50;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+        z-index: 999;
+    }
+    nav.sidenav.open {
+        transform: translateX(0);
+    }
+}
+
+/* Móvil: <768px */
+@media (max-width: 767px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.5rem 1rem;
+    }
+    .logo-container { 
+        gap: 8px;
+     }
+    .logo-img {
+        max-height: 40px;
+    }
+    .logo-text {
+        font-size: 1.2rem;
+    }
+    .menu-toggle {
+        display: inline-block;
+    }
+    .container { 
+        flex-direction: column;
+    }
+    /* Menú colapsable */
+    nav.sidenav {
+        position: fixed;
+        top: 60px;
+        left: -100;
+        transform: translateX(-100%);
+        width: 200px;
+        height: calc(100% - 60px);
+        flex-direction: column;
+        z-index: 999;
+        padding: 1rem;
+    }
+     nav.sidenav.open {
+        transform: translateX(0);
+    }
+
+    main {
+        margin-top: 50px;
+        padding: 1rem;
+    }
+}
+
+/* Media query: responsivo */
+@media (max-width: 768px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.5rem 1rem;
+    }
+    .topbar-left {
+        gap: 8px;
+    }
+    .logo-container {
+        gap: 8px;
+    }
+
+    .logo-img {
+        max-height: 40px;      /* logo más pequeño en móvil */
+    }
+
+    .logo-text {
+        font-size: 1.2rem;     /* título más pequeño en móvil */
+    }
+    .container { 
+        flex-direction: column; 
+    } 
+    #menu-toggle {
+        display: inline-block;
+    }
+    nav.sidenav { 
+        position: fixed;
+        top: 60px;
+        left: 0;
+        height: calc(100% - 60px);
+        transform: translateX(-100%);
+        width: 200px;
+        padding: 1rem;
+        z-index: 999;
+    } 
+    nav.sidenav a { 
+        flex: 1; 
+        text-align: center; 
+        padding: 10px 0; 
+    } 
+    nav.sidenav.open {
+        transform: translateX(0);
+    }
+    main { 
+        padding: 1rem; 
+        margin-top: 50px; 
+    } 
+    /* Dropdown usuario con click */
+    .user-dropdown-content {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        display: none; /* se mostrará con JS */
+    }
+
+/* Botón de login con el mismo estilo que user-dropdown */
+.login-button {
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px; 
+    padding: 6px 10px; 
+    transition: background 0.3s ease; 
+    position: relative;
+    margin-right: 40px;
+}
+
+.login-button:hover {
+    background: rgba(255,255,255,0.3); 
+}
+
+.login-button a {
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 1em;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+    /* --- Ajuste para el botón de usuario actual --- */
+
+    /* Es importante ajustar el estilo del botón original para que el texto sea blanco */
+    .user-dropdown button {
+        color: #fff; 
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1em;
+    }
+
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #fff;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.btn-google:hover {
+    background-color: #f7f7f7;
+}
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* --- ESTILOS DE TABLA (MOVIDOS DEL MEDIA QUERY) --- */
+
+.table-responsive {
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    border-radius: 8px; /* Esquinas redondeadas al contenedor */
+    overflow: hidden; /* Importante para que las esquinas redondeadas funcionen */
+}
+
+.table th, .table td {
+    padding: 12px 15px; /* Más padding vertical y horizontal */
+    vertical-align: middle; /* Centra verticalmente el contenido */
+}
+
+/* 3. Resaltar la fila al pasar el mouse (Mejora la interactividad) */
+.table-hover tbody tr:hover {
+    background-color: #f1f8ff; /* Un azul muy suave al hacer hover */
+    transition: background-color 0.3s ease; /* Transición suave */
+}
+
+/* 4. Estilo de los encabezados de columna (Clickeables) */
+.table-dark th a {
+    text-decoration: none; 
+    color: white !important;
+    display: block;
+}
+
+/* --- ESTILOS DE FORMULARIO (MOVIDOS DEL MEDIA QUERY) --- */
+
+.form-container {
+    max-width: 500px;
+    margin: auto;
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.form-container form > div {
+    margin-bottom: 1.2rem;
+}
+
+.form-control, .form-select {
+    width: 100%;
+    min-width: 200px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- ESTILOS FLASH MESSAGES (MOVIDOS DEL MEDIA QUERY) --- */
+
+.flashes {
+    list-style: none; 
+    /* The padding is what creates the margin between the text and the border/color */
+    padding: 15px 25px; 
+    margin: 20px 0; 
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 500;
+    border: 1px solid; /* Solid border */
+    line-height: 1.4; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    /* Set a neutral default to prevent issues if a color class is missing */
+    background-color: #f8f8f8;
+    color: #333;
+    border-color: #ccc;
+}
+
+.flashes li {
+    padding: 0;
+    margin: 0;
+}
+
+/* 🟢 SUCCESS: Combine .flashes and .success */
+.flashes.success {
+    background-color: #d4edda; /* Light Green background */
+    color: #155724; /* Dark Green text */
+    border-color: #c3e6cb; /* Medium Green border */
+}
+
+/* 🔴 ERROR: Combine .flashes and .error */
+.flashes.error {
+    background-color: #f8d7da; /* Light Red background */
+    color: #721c24; /* Dark Red text */
+    border-color: #f5c6cb; /* Medium Red border */
+}
+
+/* 🔵 INFO: Combine .flashes and .info */
+.flashes.info {
+    background-color: #d1ecf1; /* Light Blue background */
+    color: #0c5460; /* Dark Blue text */
+    border-color: #bee5eb; /* Medium Blue border */
+}
+
+/* 🟡 WARNING: Combine .flashes and .warning */
+.flashes.warning {
+    background-color: #fff3cd; /* Light Yellow background */
+    color: #856404; /* Dark Yellow text */
+    border-color: #ffeeba; /* Medium Yellow border */
+}
+
+.badge {
+    font-size: 0.85em; /* Un poco más grandes */
+    padding: 0.4em 0.8em;
+    /* min-width: 70px; <--- RETIRA ESTA LÍNEA */
+    text-align: center;
+    font-weight: 600;
+    border-radius: 4px; /* Esquinas ligeramente redondeadas */
+}
+
+/* Ajuste específico si usas bg-info para el rol */
+.badge.bg-info {
+    background-color: #31d2f2 !important; /* Color de fondo más visible */
+    color: #055160 !important; /* Texto oscuro para contraste */
+}
+
+/* --- ESTILO DE BOTONES UNIFICADO --- */
+
+/* Clase base para botones unificados */
+.btn-unified {
+    /* Colores primarios basados en tu tema */
+    background-color: #1a237e; 
+    border-color: #1a237e;
+    color: #fff;
+    
+    /* Apariencia */
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecto Hover (al pasar el ratón) */
+.btn-unified:hover {
+    background-color: #0d47a1; /* Un azul ligeramente más oscuro */
+    border-color: #0d47a1;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Importante para sobrescribir el estilo de hover de Bootstrap */
+    opacity: 1; 
+}
+
+/* Estado Focus (al hacer clic o navegar con teclado) */
+.btn-unified:focus {
+    background-color: #0d47a1;
+    border-color: #0d47a1;
+    box-shadow: 0 0 0 0.25rem rgba(26, 35, 126, 0.5); /* Sombra de enfoque azul suave */
+}
+
+/* Asegurar que los enlaces también tengan el mismo estilo */
+.btn-unified:not(button) {
+    text-decoration: none; /* Quitar subrayado en enlaces <a> */
+    display: inline-block; /* Asegura el padding correcto */
+}
+
+/* --- ESTILOS PARA TABLAS DE FEATURE FLAGS --- */
+
+/* Contenedor de tabla responsive sin scroll */
+.table-scroll-container {
+    width: 100%;
+    margin-bottom: 20px;
+    overflow: visible;
+}
+
+/* Tabla que se ajusta al ancho disponible */
+.admin-table {
+    table-layout: fixed !important;
+    width: 100% !important;
+}
+
+.admin-table th,
+.admin-table td {
+    word-wrap: break-word !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 0 !important;
+}
+
+/* Columnas importantes más anchas */
+.admin-table th:nth-child(2),
+.admin-table td:nth-child(2) {
+    width: 15% !important;
+    white-space: normal !important;
+}
+
+/* Columna de acciones más ancha */
+.admin-table th:nth-child(8),
+.admin-table td:nth-child(8) {
+    width: 180px !important;
+    min-width: 180px !important;
+    white-space: normal !important;
+}
+
+/* --- ESTILOS PARA MODAL --- */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    max-height: 80%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* --- BOTONES DE ACCIONES UNIFORMES --- */
+
+.acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: stretch;
+}
+
+.acciones button,
+.acciones .btn {
+    width: 100% !important;
+    min-width: 120px !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+}
+
+.acciones form {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.acciones a,
+.acciones button,
+.acciones .btn-primary-action,
+.acciones .btn-danger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 140px !important;
+    height: 36px !important;
+    padding: 4px 8px !important;
+    margin: 2px 0 !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Estilos base para tablas administrativas */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Encabezados de tabla */
+.admin-table thead tr {
+    background-color: #d9ecff;
+    border-bottom: 2px solid #ddd;
+}
+
+.admin-table th {
+    padding: 12px 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-weight: 600;
+    color: #333;
+    background: linear-gradient(135deg, #d9ecff 0%, #cce6ff 50%, #d9ecff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.2) 8px, rgba(173, 216, 230, 0.2) 16px);
+}
+
+/* Celdas de tabla */
+.admin-table td {
+    padding: 12px 8px;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Centrado para checkboxes */
+.admin-table .text-center {
+    text-align: center;
+}
+
+/* Inputs dentro de tablas */
+.admin-table input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: border-color 0.2s ease;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px) !important;
+}
+
+.admin-table input[type="text"]:focus {
+    outline: none;
+    border-color: #1a237e;
+    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+}
+
+.admin-table input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Texto pequeño para fechas y usuarios */
+.admin-table .small-text {
+    font-size: 12px;
+    color: #666;
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+
+/* Botón principal (guardar) */
+.btn-primary-action {
+    background-color: #2d47a1;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary-action:hover {
+    background-color: #1a237e;
+    color: white;
+}
+
+/* Botón secundario (volver) */
+.btn-secondary-action {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    display: inline-block;
+}
+
+.btn-secondary-action:hover {
+    background-color: #5a6268;
+    color: white;
+}
+
+/* --- SOBRESCRIBIR BOOTSTRAP GLOBALMENTE --- */
+
+/* Todos los botones EXCEPTO el de login */
+.btn:not(.btn-login), button:not(.btn-login), input[type="submit"]:not(.btn-login), input[type="button"]:not(.btn-login) {
+    background-color: #2d47a1 !important;
+    border-color: #2d47a1 !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+.btn:hover, button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+    background-color: #1a237e !important;
+    color: white !important;
+}
+
+/* Botones secundarios */
+.btn-secondary, .btn-outline-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.btn-secondary:hover, .btn-outline-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #5a6268 !important;
+}
+
+/* Botones de eliminar - rojos */
+button[onclick*="eliminar"], button[onclick*="Eliminar"], .btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+button[onclick*="eliminar"]:hover, button[onclick*="Eliminar"]:hover, .btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+}
+
+/* Botón de usuario - azul unos tonos más claro que header */
+header .user-dropdown button, header #user-btn, .topbar .user-dropdown button {
+    background-color: #2d47a1 !important;
+    border-color: #2d47a1 !important;
+    color: white !important;
+}
+
+header .user-dropdown button:hover, header #user-btn:hover, .topbar .user-dropdown button:hover {
+    background-color: #1a237e !important;
+    border-color: #1a237e !important;
+}
+
+/* Botones de búsqueda */
+button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]) {
+    background-color: #2d47a1 !important;
+    border-color: #2d47a1 !important;
+}
+
+button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hover {
+    background-color: #1a237e !important;
+    border-color: #1a237e !important;
+}
+
+/* Todas las tablas */
+.table, table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 14px !important;
+    background: #fff !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.table thead tr, table thead tr {
+    background-color: #d9ecff !important;
+    border-bottom: 2px solid #ddd !important;
+}
+
+.table th, table th {
+    padding: 12px 8px !important;
+    text-align: left !important;
+    border: 1px solid #ddd !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    background-color: #d9ecff !important;
+}
+
+.table td, table td {
+    padding: 12px 8px !important;
+    border: 1px solid #ddd !important;
+    vertical-align: middle !important;
+}
+
+.table tbody tr, table tbody tr {
+    border-bottom: 1px solid #ddd !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.table tbody tr:hover, table tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Contenedores de tabla */
+.table-responsive {
+    overflow-x: auto !important;
+    margin-bottom: 20px !important;
+    max-width: 100% !important;
+}
+
+/* Inputs de texto */
+.form-control, input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], select {
+    padding: 8px 12px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s ease !important;
+    width: auto !important;
+    max-width: 300px !important;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
+                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px) !important;
+}
+
+.form-control:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus {
+    outline: none !important;
+    border-color: #1a237e !important;
+    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1) !important;
+}
+
+/* Formularios flex */
+.d-flex {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+}
+
+.d-flex .form-control, .d-flex input {
+    flex: 0 0 auto !important;
+    min-width: 200px !important;
+    max-width: 300px !important;
+}
+
+/* Botón quitar filtros - rojo cuando hay filtros */
+a[href$="user_index"], a[href$="issues"] {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+a[href$="user_index"]:hover, a[href$="issues"]:hover {
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+}
+
+/* Paginación */
+.pagination {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 20px 0 !important;
+}
+
+.pagination li {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.pagination .page-link, .page-link {
+    background-color: #2d47a1 !important;
+    border-color: #2d47a1 !important;
+    color: white !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.pagination .page-link:hover, .page-link:hover {
+    background-color: #1a237e !important;
+    border-color: #1a237e !important;
+    color: white !important;
+}
+
+.pagination .page-item.active .page-link, .page-item.active .page-link {
+    background-color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
+    color: white !important;
+}
+
+.pagination .page-item.disabled .page-link, .page-item.disabled .page-link {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+}
+
+/* Ocultar puntos de paginación */
+.pagination .page-item.disabled, .pagination li:contains("…") {
+    display: none !important;
+}
+
+
+
+/* --- RESPONSIVE PARA TABLAS ADMINISTRATIVAS --- */
+
+@media (max-width: 768px) {
+    .admin-table, .table, table {
+        font-size: 12px !important;
+    }
+    
+    .admin-table th, .admin-table td, .table th, .table td, table th, table td {
+        padding: 8px 4px !important;
+    }
+    
+    .btn, button, input[type="submit"], input[type="button"] {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .d-flex:not(.pagination) {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .d-flex:not(.pagination) .form-control, .d-flex:not(.pagination) input {
+        min-width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* Mantener paginación horizontal */
+    .pagination {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+}

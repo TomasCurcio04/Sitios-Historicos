@@ -56,7 +56,7 @@ from src.web.controllers.auth_google import bp as google_auth_bp
 server_session = Session()
 
 
-def create_app(env="development", sstatic_folder="../../static"):
+def create_app(env="development", static_folder=None):
     """Crea y devuelve la aplicación Flask según el entorno."""
 
     # Determinar entorno por variable de entorno FLASK_ENV (por defecto 'development')
@@ -69,7 +69,7 @@ def create_app(env="development", sstatic_folder="../../static"):
     app = Flask(
         __name__,
         template_folder=os.path.join(base_dir, "templates"),
-        # static_folder=static_folder,
+        static_folder=static_folder,
     )
 
     CORS(
