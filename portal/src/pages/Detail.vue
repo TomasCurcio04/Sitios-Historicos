@@ -236,16 +236,18 @@ const handleThumbError = (e) => {
 };
 
 const goBack = () => {
-  // Intentar volver a la página anterior manteniendo los filtros
-  const referrer = document.referrer;
-  if (referrer && referrer.includes('/sites-list')) {
-    // Si venimos de sites-list, usar router.back() para mantener los filtros
-    router.back();
+  // Si hay query params, volver con filtros
+  if (Object.keys(route.query).length > 0) {
+    router.push({
+      path: '/sites-list',
+      query: route.query
+    });
   } else {
-    // Si no, ir a la página de listado sin filtros
-    router.push('/sites-list');
+    // Si no hay filtros, usar history normal
+    router.back();
   }
 };
+
 
 onMounted(() => {
   fetchSite();
