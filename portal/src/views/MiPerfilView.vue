@@ -24,33 +24,25 @@
 
     <div v-else class="space-y-8">
 
-      <div class="bg-white shadow-md rounded-xl p-6 flex items-center gap-6">
-        <img
-          :src="user.picture"
-          alt="Foto de usuario"
-          class="w-20 h-20 rounded-full object-cover shadow"
-        />
-
-        <div class="flex-1">
-          <h2 class="text-2xl font-bold">{{ user.name }}</h2>
-          <p class="text-gray-600">{{ user.email }}</p>
-        </div>
-
-        <GoogleLoginButton 
-          :logged-in="loggedIn" 
-          :user="user" 
-          @login="login"
-          @logout="logout"
-        />
-      </div>
-
       <div class="border-b flex gap-6">
+        <button
+          @click="activeTab = 'profile'"
+          :class="[
+            'pb-2 font-semibold transition-colors',
+            activeTab === 'profile'
+              ? 'border-b-2 border-green-600 text-green-600'
+              : 'text-gray-600 hover:text-gray-800'
+          ]"
+        >
+          Mi Perfil
+        </button>
+
         <button
           @click="activeTab = 'reviews'"
           :class="[
             'pb-2 font-semibold transition-colors',
             activeTab === 'reviews'
-              ? 'border-b-2 border-blue-600 text-blue-600'
+              ? 'border-b-2 border-green-600 text-green-600'
               : 'text-gray-600 hover:text-gray-800'
           ]"
         >
@@ -62,7 +54,7 @@
           :class="[
             'pb-2 font-semibold transition-colors',
             activeTab === 'favorites'
-              ? 'border-b-2 border-blue-600 text-blue-600'
+              ? 'border-b-2 border-green-600 text-green-600'
               : 'text-gray-600 hover:text-gray-800'
           ]"
         >
@@ -71,6 +63,27 @@
       </div>
 
       <div class="pt-4">
+        <div v-if="activeTab === 'profile'">
+          <div class="bg-white shadow-md rounded-xl p-6 flex items-center gap-6">
+            <img
+              :src="user.picture"
+              alt="Foto de usuario"
+              class="w-20 h-20 rounded-full object-cover shadow"
+            />
+
+            <div class="flex-1">
+              <h2 class="text-2xl font-bold">{{ user.name }}</h2>
+              <p class="text-gray-600">{{ user.email }}</p>
+            </div>
+
+            <GoogleLoginButton 
+              :logged-in="loggedIn" 
+              :user="user" 
+              @login="login"
+              @logout="logout"
+            />
+          </div>
+        </div>
         <div v-if="activeTab === 'reviews'">
           <ReviewsList
             :reviews="sortedReviews"
@@ -139,7 +152,7 @@ const { loggedIn, user, loading, login, logout } = useAuth()
 const API_URL = import.meta.env.VITE_API_URL
 
 
-const activeTab = ref('reviews')
+const activeTab = ref('profile')
 const reviews = ref([])
 const reviewsMeta = ref({})
 const reviewsLoading = ref(false)

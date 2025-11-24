@@ -1,7 +1,7 @@
 <template>
   <div id="app-layout">
     
-    <header class="w-full bg-white shadow-md p-4 sticky top-0 z-10">
+    <header class="w-full shadow-md p-4 sticky top-0 z-10" style="background-color: #dcfce7;">
       <!-- Header vacío -->
     </header>
 
@@ -9,25 +9,28 @@
     <SearchHero @search="handleSearch" />
 
     <!-- Menú dropdown debajo de la portada -->
-    <div class="px-4 py-6">
+    <div class="px-4 py-6" style="background-color: #ecfdf5;">
       <div class="max-w-7xl mx-auto">
         <div style="display: grid; grid-template-columns: auto 1fr auto; align-items: center; width: 100%;">
         <!-- Menú principal -->
         <div class="relative">
           <button 
             @click="showDropdown = !showDropdown"
-            class="btn btn-primary px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            class="px-4 py-2 text-gray-700 rounded-lg"
+            style="background-color: #bbf7d0;"
+            @mouseover="$event.target.style.backgroundColor='#a7f3d0'"
+            @mouseout="$event.target.style.backgroundColor='#bbf7d0'"
           >
             Menú
           </button>
           
           <div v-if="showDropdown" class="absolute top-full mt-2 bg-white rounded-lg shadow-lg border min-w-48 z-20">
             <div class="py-2" style="display: flex; flex-direction: column;">
-              <router-link to="/" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" style="display: block; width: 100%;">
+              <router-link to="/" class="block px-4 py-2 text-gray-700 hover:bg-green-100" style="display: block; width: 100%;">
                 🏠 Inicio
               </router-link>
               
-              <router-link to="/sites" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" style="display: block; width: 100%;">
+              <router-link to="/sites" class="block px-4 py-2 text-gray-700 hover:bg-green-100" style="display: block; width: 100%;">
                 🏛️ Sitios Históricos
               </router-link>
             </div>
@@ -54,10 +57,10 @@
               
               <div v-if="showUserDropdown" class="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-lg border min-w-48 z-20">
                 <div class="py-2 user-dropdown">
-                  <router-link to="/mi-perfil" class="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-right">
+                  <router-link to="/mi-perfil" class="block w-full px-4 py-2 text-gray-700 hover:bg-green-100 text-right">
                     👤 Mi Perfil
                   </router-link>
-                  <button @click="logout" class="block w-full text-right px-4 py-2 text-gray-700 hover:bg-gray-100">
+                  <button @click="logout" class="block w-full text-right px-4 py-2 text-gray-700 hover:bg-green-100">
                     🚪 Cerrar Sesión
                   </button>
                 </div>
@@ -66,7 +69,7 @@
           </template>
           
           <template v-else>
-            <button @click="login" class="text-gray-700 hover:text-blue-600 text-sm">
+            <button @click="login" class="text-gray-700 hover:text-green-600 text-sm">
               🔑 Iniciar Sesión
             </button>
           </template>
