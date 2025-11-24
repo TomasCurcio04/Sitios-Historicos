@@ -59,7 +59,7 @@ const login = (nextUrl) => {
   window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
 }
 
-const logout = async (nextUrl) => {
+const logout = async (eventOrUrl) => {
   try {
     await fetch(`${API_URL}/google/logout`, {
       method: 'GET',
@@ -69,22 +69,22 @@ const logout = async (nextUrl) => {
     console.error('Error en logout backend', e)
   }
 
-  // LIMPIEZA TOTAL FRONTEND
   loggedIn.value = false
   user.value = null
 
   localStorage.clear()
   sessionStorage.clear()
 
-  // Si usas caches
-  if ('caches' in window) {
-    const names = await caches.keys()
-    await Promise.all(names.map(n => caches.delete(n)))
-  }
+  const currentUrl =
+    typeof eventOrUrl === 'string'
+      ? eventOrUrl
+      : window.location.pathname
 
-  const current = nextUrl || window.location.href
-  window.location.href = current
+  window.location.href = currentUrl
 }
+
+
+
 export function useAuth() {
   onMounted(async () => {
   await checkSession()

@@ -219,30 +219,33 @@ export default {
   },
 
   created() {
-    this.api.getTags().then(res => this.tags = res.data);
-    this.api.getStates().then(res => this.states = res.data);
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageFromUrl = parseInt(urlParams.get("page")) || 1;
+  this.api.getTags().then(res => this.tags = res.data);
+  this.api.getStates().then(res => this.states = res.data);
 
-    if (urlParams.get("q")) this.searchNameDesc = urlParams.get("q");
-    if (urlParams.get("favorites") === "true") this.favorites = true;
+  const q = this.$route.query;
+  const page = parseInt(q.page) || 1;
 
-    // Inicializar selects según order_by del query
-    const orderParam = urlParams.get("order_by");
-    if (orderParam) {
-      switch(orderParam) {
-        case "most-visited": this.sortBy = "visitas"; this.sortOrder = "asc"; break;
-        case "name-asc": this.sortBy = "nombre"; this.sortOrder = "asc"; break;
-        case "name-desc": this.sortBy = "nombre"; this.sortOrder = "desc"; break;
-        case "rating-1-5": this.sortBy = "rank"; this.sortOrder = "asc"; break;
-        case "rating-5-1": this.sortBy = "rank"; this.sortOrder = "desc"; break;
-        case "latest": this.sortBy = "fecha"; this.sortOrder = "desc"; break;
-        case "oldest": this.sortBy = "fecha"; this.sortOrder = "asc"; break;
-        default: break;
-      }
+  // Si hay filtros en la URL, los cargamos al estado
+  if (Object.keys(q).length > 0) {
+    this.searchNameDesc = q.search || '';
+    this.searchCity = q.city || '';
+    this.selectedProvince = q.province || '';
+    this.favorites = q.search_favorites === 'true';
+
+    if (q.tags) {
+      this.selectedTags = q.tags.split(',');
     }
 
-    this.buscarSitios(pageFromUrl);
+    if (q.radius) {
+      this.radius = Number(q.radius);
+    }
+
+    if (q.lat) this.selectedLat = Number(q.lat);
+    if (q.long) this.selectedLong = Number(q.long);
+  }
+
+  // Buscar usando SIEMPRE los datos de la URL
+  this.buscarSitios(page, false);
   },
 
   mounted() {
@@ -325,7 +328,11 @@ export default {
       };
       params.order_by = map[this.sortBy][this.sortOrder];
 
-      this.$router.push({ query: params });
+      if (
+        JSON.stringify(this.$route.query) !== JSON.stringify(params)
+      ) {
+        this.$router.push({ query: params });
+      }
       console.log("Parámetros de búsqueda:", params);
 
       this.api.getSites(params)
@@ -344,9 +351,6 @@ export default {
 
     cambiarPagina(nuevaPagina) {
       this.buscarSitios(nuevaPagina);
-      const url = new URL(window.location.href);
-      url.searchParams.set("page", nuevaPagina);
-      window.history.replaceState({}, '', url);
     },
 
     borrarFiltros() {

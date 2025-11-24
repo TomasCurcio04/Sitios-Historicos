@@ -1,8 +1,13 @@
 <template>
   <router-link
-    :to="{ name: 'site-detail', params: { id: site.id } }"
-    class="site-card"
+  :to="{ 
+    name: 'site-detail', 
+    params: { id: site.id },
+    query: $route.query
+  }"
+  class="site-card"
   >
+
     <div class="card-image">
       <div v-if="!site.cover_image && !site.image" class="no-image-placeholder">
         Sin<br>Portada
@@ -45,6 +50,8 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 const props = defineProps({
   site: { type: Object, required: true },
