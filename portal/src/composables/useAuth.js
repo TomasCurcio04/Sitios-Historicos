@@ -54,7 +54,8 @@ const checkSession = async () => {
 
 
 const login = (nextUrl) => {
-  const current = nextUrl || window.location.href
+  // Si nextUrl es un evento del DOM, ignorarlo
+  const current = (typeof nextUrl === 'string' ? nextUrl : null) || window.location.href
   window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
 }
 

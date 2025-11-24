@@ -77,14 +77,20 @@ const router = useRouter()
 
 // Estado reactivo
 const search = ref(route.query.q || '')
-const order = ref(route.query.order || '')
+const order = ref(route.query.order || route.query.order_by || '')
 const sites = ref([])
 const loading = ref(false)
 
 // Paginación
 const page = ref(Number(route.query.page) || 1)
-const pageSize = 9
+const pageSize = Number(route.query.per_page) || 9
 const totalPages = ref(1)
+
+// Otros filtros de la URL
+const radius = ref(route.query.radius || '')
+const city = ref(route.query.city || '')
+const province = ref(route.query.province || '')
+const tags = ref(route.query.tags || '')
 
 
 
@@ -107,6 +113,10 @@ async function fetchData() {
       order: order.value,
       page: page.value,
       limit: pageSize,
+      radius: radius.value,
+      city: city.value,
+      province: province.value,
+      tags: tags.value,
     })
 
     if (result.success) {
@@ -158,10 +168,15 @@ onMounted(fetchData)
 watch(
   () => route.query,
   (newQuery) => {
-    if (newQuery.q !== search.value) search.value = newQuery.q || ''
-    if (newQuery.page) page.value = Number(newQuery.page)
-    // No llamamos a fetchData aquí directamente si ya se llama por los v-models,
-    // pero es buena práctica para sincronizar historial.
+    console.log('Query params received:', newQuery); // Debug
+    search.value = newQuery.q || ''
+    order.value = newQuery.order || newQuery.order_by || ''
+    page.value = Number(newQuery.page) || 1
+    radius.value = newQuery.radius || ''
+    city.value = newQuery.city || ''
+    province.value = newQuery.province || ''
+    tags.value = newQuery.tags || ''
+    fetchData()
   }
 )
 </script>
