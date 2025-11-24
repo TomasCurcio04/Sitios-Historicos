@@ -82,13 +82,40 @@
         </div>
 
         <div v-if="activeTab === 'favorites'">
-          <FavoritesList
-            :favorites="sortedFavorites"
-            :meta="favoritesMeta"
-            :loading="favoritesLoading"
-            @page-change="loadFavorites"
-            @order-change="changeFavoritesOrder"
-          />
+          <div v-if="favoritesLoading" class="text-center py-8">
+            <p class="text-gray-600">Cargando favoritos...</p>
+          </div>
+          
+          <div v-else-if="sortedFavorites.length === 0" class="text-center py-8">
+            <p class="text-gray-600">No tienes sitios favoritos aún.</p>
+          </div>
+          
+          <div v-else>
+            <div class="sites-grid">
+              <SiteCard 
+                v-for="favorite in sortedFavorites" 
+                :key="favorite.id" 
+                :site="favorite"
+              />
+            </div>
+            
+            <!-- Paginación -->
+            <div v-if="favoritesMeta.total_pages > 1" class="flex justify-center mt-8">
+              <button 
+                v-for="page in favoritesMeta.total_pages" 
+                :key="page"
+                @click="loadFavorites(page)"
+                :class="[
+                  'px-3 py-1 mx-1 rounded',
+                  page === favoritesMeta.current_page 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ]"
+              >
+                {{ page }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,7 +127,7 @@
 import { ref, watch, computed } from 'vue'
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 import ReviewsList from '../components/UserReviewsList.vue'
-import FavoritesList from '../components/UserFavoritesList.vue'
+import SiteCard from '../components/SiteCard.vue'
 import { useAuth } from '../composables/useAuth'
 import { useApi } from '../composables/useApi'
 
@@ -231,3 +258,19 @@ watch(loggedIn, async (isLoggedIn) => {
   immediate: true 
 })
 </script>
+
+<style scoped>
+.sites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .sites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+</style>

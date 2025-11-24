@@ -1,7 +1,5 @@
 <template>
   <div>
-    <SearchHero @search="handleSearch" />
-    
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <h1 class="text-3xl font-bold text-gray-800">Sitios Históricos</h1>
@@ -71,7 +69,6 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SiteCard from '../components/SiteCard.vue'
-import SearchHero from '../components/SearchHero.vue'
 import { fetchSites } from '../api.js'
 
 // Router y Route
@@ -89,12 +86,7 @@ const page = ref(Number(route.query.page) || 1)
 const pageSize = 9
 const totalPages = ref(1)
 
-// Manejar búsqueda desde SearchHero
-const handleSearch = (query) => {
-  search.value = query
-  page.value = 1
-  fetchData()
-}
+
 
 // Función principal de carga
 async function fetchData() {
