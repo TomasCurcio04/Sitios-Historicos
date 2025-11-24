@@ -29,7 +29,14 @@
         </div>
         <div class="card-info">
           <span class="label">Rating:</span>
-          <span class="value">⭐ {{ site.average_rating || site.rating || '-' }}</span>
+          <span class="value">
+            <template v-if="site.average_rating || site.rating">
+              ⭐ {{ formatRating(site.average_rating || site.rating) }}/5
+            </template>
+            <template v-else>
+              ⭐ -/5
+            </template>
+          </span>
         </div>
       </div>
     </div>
@@ -54,6 +61,12 @@ const resolveUrl = (url) => {
 
 const handleImageError = (e) => {
   e.target.src = placeholder;
+};
+
+// Formatear rating: mostrar sin decimal si es entero
+const formatRating = (rating) => {
+  const num = parseFloat(rating);
+  return num % 1 === 0 ? num.toString() : num.toFixed(1);
 };
 
 // Clases dinámicas

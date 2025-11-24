@@ -1,7 +1,5 @@
 <template>
   <div>
-    <SearchHero @search="handleHeroSearch" />
-    
     <div class="container">
       <h1 class="title">Listado de sitios</h1>
 
@@ -168,7 +166,6 @@
 <script>
 import {useApi } from '../composables/useApi.js';
 import { useAuth } from '../composables/useAuth.js';
-import SearchHero from '../components/SearchHero.vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { watch } from 'vue';
@@ -187,9 +184,7 @@ export default {
 
     return { api, loggedIn }; // lo exponemos al template
   },
-  components: {
-    SearchHero
-  },
+  components: {},
   data() {
     return {
       sites: [],
@@ -281,10 +276,7 @@ export default {
   },
 
   methods: {
-    handleHeroSearch(query) {
-      this.searchNameDesc = query;
-      this.buscarSitios(1);
-    },
+
 
     getMinioUrl(imagePath) {
       return `${this.minioBaseUrl}/${this.minioBucket}/${imagePath}`;
