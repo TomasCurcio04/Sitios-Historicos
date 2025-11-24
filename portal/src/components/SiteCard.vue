@@ -28,6 +28,14 @@
           <span class="label">Ciudad:</span>
           <span class="value">{{ site.city }}</span>
         </div>
+         <div class="card-info">
+                  <span class="label">Provincia:</span>
+                  <span class="value">{{ site.province }}</span>
+                </div>
+                <div class="card-info">
+                  <span class="label">Tags:</span>
+                  <span class="value">{{ site.tags?.join(', ') }}</span>
+                </div>
         <div class="card-info">
           <span class="label">Estado:</span>
           <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
