@@ -92,6 +92,9 @@ import { useRoute, useRouter } from 'vue-router';
 import api from '../api';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useAuth } from '@/composables/useAuth';
+
+const { loggedIn, login } = useAuth()
 
 const props = defineProps({
   id: { type: [String, Number], required: true }
@@ -196,27 +199,34 @@ const initMap = () => {
 };
 
 const handleFavoriteClick = async () => {
-  if (!api.isAuthenticated()) {
-    if(confirm("Debes iniciar sesión para guardar favoritos. ¿Ir al login?")) {
-        api.loginWithGoogle();
+  if (!loggedIn.value) {
+    if (confirm("Debes iniciar sesión para guardar favoritos. ¿Ir al login?")) {
+      // Redirige al login de Google y vuelve a ESTA página después
+      login(window.location.href)
     }
-    return;
+    return
   }
-  const id = site.value.id;
-  let res;
+
+  const id = site.value.id
+  let res
+
   try {
     if (site.value.is_favorite) {
-        res = await api.removeFavorite(id);
-        if (res.success) site.value.is_favorite = false;
+      res = await api.removeFavorite(id)
+      if (res.success) site.value.is_favorite = false
     } else {
-        res = await api.addFavorite(id);
-        if (res.success) site.value.is_favorite = true;
+      res = await api.addFavorite(id)
+      if (res.success) site.value.is_favorite = true
     }
-    if (!res.success) alert('Error: ' + (res.error || 'No se pudo actualizar favorito'));
+
+    if (!res.success) {
+      alert('Error: ' + (res.error || 'No se pudo actualizar favorito'))
+    }
   } catch (e) {
-    alert('Error de conexión al guardar favorito');
+    alert('Error de conexión al guardar favorito')
   }
-};
+}
+
 
 const handleWriteReview = () => {
     if (!api.isAuthenticated()) {
