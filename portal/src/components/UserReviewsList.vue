@@ -30,12 +30,12 @@
           <span 
             class="status-badge"
             :class="{
-              'status-approved': (r.state || r.status) === 'approved',
-              'status-pending': (r.state || r.status) === 'pending',
-              'status-rejected': (r.state || r.status) === 'rejected'
+              'status-approved': isApproved(r.state || r.status),
+              'status-pending': isPending(r.state || r.status),
+              'status-rejected': isRejected(r.state || r.status)
             }"
           >
-            {{ getStatusText(r.state || r.status || 'pending') }}
+            {{ r.state || r.status || 'Pendiente' }}
           </span>
         </div>
         
@@ -116,14 +116,16 @@ function formatDate(dateStr) {
   return `${day}/${month}/${year}`;
 }
 
-function getStatusText(status) {
-  console.log('Status recibido:', status); // Debug temporal
-  switch(status) {
-    case 'approved': return 'Aprobada';
-    case 'pending': return 'Pendiente';
-    case 'rejected': return 'Rechazada';
-    default: return 'Pendiente';
-  }
+function isApproved(status) {
+  return status === 'approved' || status === 'Aprobada';
+}
+
+function isPending(status) {
+  return status === 'pending' || status === 'Pendiente' || !status;
+}
+
+function isRejected(status) {
+  return status === 'rejected' || status === 'Rechazada';
 }
 </script>
 
@@ -175,18 +177,18 @@ function getStatusText(status) {
 }
 
 .status-approved {
-  background-color: #22c55e;
-  color: white;
+  background-color: #22c55e !important;
+  color: white !important;
 }
 
 .status-pending {
-  background-color: #f59e0b;
-  color: white;
+  background-color: #f59e0b !important;
+  color: white !important;
 }
 
 .status-rejected {
-  background-color: #ef4444;
-  color: white;
+  background-color: #ef4444 !important;
+  color: white !important;
 }
 
 .card-body {
