@@ -42,14 +42,19 @@
 </template>
 
 <script setup>
-// --- 1. Importaciones ---
 import { RouterLink, RouterView } from 'vue-router'
 import { useAuth } from '@/composables/useAuth' 
 import GoogleLoginButton from '@/components/GoogleLoginButton.vue' 
 import ProfileDropdown from '@/components/ProfileDropDown.vue' 
+import { onMounted } from 'vue'
 
+const auth = useAuth()
 
-const { loggedIn, user, loading, login, logout } = useAuth()
+const { loggedIn, user, loading, login, logout, checkSession } = auth
+
+onMounted(() => {
+  checkSession()
+})
 </script>
 
 <style>

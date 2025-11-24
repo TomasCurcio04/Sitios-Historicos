@@ -85,10 +85,6 @@ const logout = async (nextUrl) => {
   window.location.href = current
 }
 export function useAuth() {
-  onMounted(async () => {
-  await checkSession()
-
-  })
 
   return {
     loggedIn,
