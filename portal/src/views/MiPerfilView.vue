@@ -206,13 +206,17 @@ const loadFavorites = async (page = 1) => {
 
   try {
     const res = await Api.getMyFavorites({ page });
+    console.log('Favoritos response:', res.data); // Debug
 
     const data = res.data;
 
-    favorites.value = (data.data || []).map(f => ({
+    favorites.value = (data.data || []).map(f => {
+      console.log('Favorite item:', f); // Debug cada favorito
+      return {
         ...f,
-      date: f.inserted_at
-    }))
+        date: f.inserted_at
+      }
+    })
     
     const meta = data.meta || {};
 

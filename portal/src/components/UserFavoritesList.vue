@@ -27,6 +27,7 @@
       >
         <p class="font-semibold">{{ f.name }}</p>
         <p class="text-sm text-gray-500">{{ f.description }}</p>
+        <p class="text-sm text-gray-600">⭐ {{ f.average_rating || f.rating || '-' }}</p>
         <p class="text-xs text-gray-500">Fecha: {{ formatDate(f.date) }}</p>
       </div>
 
