@@ -93,47 +93,16 @@
       </div>
 
       <!-- CONTENIDO PRINCIPAL -->
-      <div class="content-area">
-        <!-- GRID DE TARJETAS -->
-        <div class="sites-grid">
-          <router-link
-            v-for="site in sites"
-            :key="site.id"
-            :to="`/sites/${site.id}`"
-            class="site-card"
-          >
-            <div class="card-image">
-              <img
-                v-if="site.cover_image"
-                :src="getMinioUrl(site.cover_image)"
-                :alt="'Cover de ' + site.name"
-                class="cover-image"
-              />
-              <div v-else class="no-image-placeholder">Sin Portada</div>
+      <!-- CONTENIDO PRINCIPAL -->
+        <div class="content-area">
+          <div class="sites-grid">
+            <div v-for="site in sites" :key="site.id" class="site-wrapper">
+              <SiteCard :site="site" />
             </div>
-
-            <div class="card-content">
-              <h2 class="card-title">{{ site.name }}</h2>
-              <div class="card-body">
-                <div class="card-info">
-                  <span class="label">Ciudad:</span>
-                  <span class="value">{{ site.city }}</span>
-                </div>
-                <div class="card-info">
-                  <span class="label">Provincia:</span>
-                  <span class="value">{{ site.province }}</span>
-                </div>
-                <div class="card-info">
-                  <span class="label">Estado:</span>
-                  <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
-                </div>
-              </div>
-            </div>
-          </router-link>
+          </div>
         </div>
-      </div>
-    </div>
-
+        
+        </div>
     <div v-if="hasSearched && sites.length === 0" class="no-results">
       No se encontraron sitios con los filtros seleccionados.
     </div>
@@ -170,9 +139,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { watch } from 'vue';
 L.Popup.prototype.options.zoomAnimation = false;
+import SiteCard from '@/components/SiteCard.vue';
 
 export default {
-
+  name: 'SitesList',
+  components: { SiteCard },
   setup() {
     const api = useApi();
     const { loggedIn } = useAuth();
@@ -184,7 +155,6 @@ export default {
 
     return { api, loggedIn }; // lo exponemos al template
   },
-  components: {},
   data() {
     return {
       sites: [],
@@ -204,9 +174,7 @@ export default {
       sortBy: 'fecha',
       sortOrder: 'desc',
 
-      minioBaseUrl: "http://minio.proyecto2025.linti.unlp.edu.ar",
-      minioBucket: "grupo10",
-
+    
       selectedLat: null,
       selectedLong: null,
 
@@ -279,11 +247,6 @@ export default {
   },
 
   methods: {
-
-
-    getMinioUrl(imagePath) {
-      return `${this.minioBaseUrl}/${this.minioBucket}/${imagePath}`;
-    },
 
     actualizarRadio() {
       if (this.circle) this.circle.setRadius(this.radius*1000);
