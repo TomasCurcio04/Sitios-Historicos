@@ -30,7 +30,7 @@
                 🏠 Inicio
               </router-link>
               
-              <router-link to="/sites" class="block px-4 py-2 text-gray-700 hover:bg-green-100" style="display: block; width: 100%;">
+              <router-link to="/sites-list" class="block px-4 py-2 text-gray-700 hover:bg-green-100" style="display: block; width: 100%;">
                 🏛️ Sitios Históricos
               </router-link>
             </div>
@@ -100,7 +100,7 @@ const router = useRouter()
 // Función de búsqueda
 const handleSearch = (query) => {
   router.push({
-    name: 'sites-list1',
+    name: 'sites-list',
     query: { q: query }
   })
 }

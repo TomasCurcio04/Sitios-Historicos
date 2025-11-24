@@ -13,7 +13,7 @@
 
     <header class="site-header">
       <div class="header-top">
-        <button @click="router.back()" class="back-btn">
+        <button @click="goBack" class="back-btn">
           ← Volver
         </button>
       </div>
@@ -233,6 +233,18 @@ const handleImageError = (e) => {
 };
 const handleThumbError = (e) => {
     e.target.style.display = 'none';
+};
+
+const goBack = () => {
+  // Intentar volver a la página anterior manteniendo los filtros
+  const referrer = document.referrer;
+  if (referrer && referrer.includes('/sites-list')) {
+    // Si venimos de sites-list, usar router.back() para mantener los filtros
+    router.back();
+  } else {
+    // Si no, ir a la página de listado sin filtros
+    router.push('/sites-list');
+  }
 };
 
 onMounted(() => {
