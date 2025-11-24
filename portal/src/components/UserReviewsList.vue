@@ -18,19 +18,40 @@
       Aún no escribiste reseñas.
     </p>
 
-    <div v-else class="space-y-3">
-      <div
+    <div v-else class="reviews-grid">
+      <router-link
         v-for="r in reviews"
         :key="r.id"
-        class="bg-white rounded shadow p-3"
+        :to="`/sites/${r.site_id}`"
+        class="review-card"
       >
-        <p class="font-semibold">{{ r.site_name }}</p>
-        <p class="text-sm text-yellow-600">⭐ {{ r.rating }}/5</p>
-        <p class="text-xs text-gray-500">Fecha: {{ formatDate(r.inserted_at) }}</p>
-        <p class="mt-1 text-sm line-clamp-2">
-          {{ r.comment }}
-        </p>
-      </div>
+        <div class="card-header">
+          <h3 class="card-title">{{ r.site_name }}</h3>
+          <span 
+            class="status-badge"
+            :class="{
+              'status-approved': isApproved(r.state || r.status),
+              'status-pending': isPending(r.state || r.status),
+              'status-rejected': isRejected(r.state || r.status)
+            }"
+          >
+            {{ r.state || r.status || 'Pendiente' }}
+          </span>
+        </div>
+        
+        <div class="card-body">
+          <div class="rating-section">
+            <div class="stars">
+              <span v-for="n in 5" :key="n" :class="n <= r.rating ? 'star-filled' : 'star-empty'">★</span>
+            </div>
+            <span class="rating-text">{{ r.rating }}/5</span>
+          </div>
+          
+          <p class="review-comment">{{ r.comment }}</p>
+          
+          <p class="review-date">{{ formatDate(r.inserted_at) }}</p>
+        </div>
+      </router-link>
     </div>
 
     <!-- Paginación -->
@@ -94,4 +115,126 @@ function formatDate(dateStr) {
 
   return `${day}/${month}/${year}`;
 }
+
+function isApproved(status) {
+  return status === 'approved' || status === 'Aprobada';
+}
+
+function isPending(status) {
+  return status === 'pending' || status === 'Pendiente' || !status;
+}
+
+function isRejected(status) {
+  return status === 'rejected' || status === 'Rechazada';
+}
 </script>
+
+<style scoped>
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.review-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-approved {
+  background-color: #22c55e !important;
+  color: white !important;
+}
+
+.status-pending {
+  background-color: #f59e0b !important;
+  color: white !important;
+}
+
+.status-rejected {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.rating-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.stars {
+  display: flex;
+  margin-right: 0.5rem;
+}
+
+.star-filled {
+  color: #fbbf24;
+}
+
+.star-empty {
+  color: #d1d5db;
+}
+
+.rating-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.review-comment {
+  color: #374151;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+</style>
