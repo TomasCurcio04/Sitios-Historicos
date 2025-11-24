@@ -1,7 +1,5 @@
 <template>
   <div>
-    <SearchHero @search="handleHeroSearch" />
-    
     <div class="container">
       <h1 class="title">Listado de sitios</h1>
 
@@ -95,47 +93,16 @@
       </div>
 
       <!-- CONTENIDO PRINCIPAL -->
-      <div class="content-area">
-        <!-- GRID DE TARJETAS -->
-        <div class="sites-grid">
-          <router-link
-            v-for="site in sites"
-            :key="site.id"
-            :to="`/sites/${site.id}`"
-            class="site-card"
-          >
-            <div class="card-image">
-              <img
-                v-if="site.cover_image"
-                :src="getMinioUrl(site.cover_image)"
-                :alt="'Cover de ' + site.name"
-                class="cover-image"
-              />
-              <div v-else class="no-image-placeholder">Sin Portada</div>
+      <!-- CONTENIDO PRINCIPAL -->
+        <div class="content-area">
+          <div class="sites-grid">
+            <div v-for="site in sites" :key="site.id" class="site-wrapper">
+              <SiteCard :site="site" />
             </div>
-
-            <div class="card-content">
-              <h2 class="card-title">{{ site.name }}</h2>
-              <div class="card-body">
-                <div class="card-info">
-                  <span class="label">Ciudad:</span>
-                  <span class="value">{{ site.city }}</span>
-                </div>
-                <div class="card-info">
-                  <span class="label">Provincia:</span>
-                  <span class="value">{{ site.province }}</span>
-                </div>
-                <div class="card-info">
-                  <span class="label">Estado:</span>
-                  <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
-                </div>
-              </div>
-            </div>
-          </router-link>
+          </div>
         </div>
-      </div>
-    </div>
-
+        
+        </div>
     <div v-if="hasSearched && sites.length === 0" class="no-results">
       No se encontraron sitios con los filtros seleccionados.
     </div>
@@ -168,14 +135,15 @@
 <script>
 import {useApi } from '../composables/useApi.js';
 import { useAuth } from '../composables/useAuth.js';
-import SearchHero from '../components/SearchHero.vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { watch } from 'vue';
 L.Popup.prototype.options.zoomAnimation = false;
+import SiteCard from '@/components/SiteCard.vue';
 
 export default {
-
+  name: 'SitesList',
+  components: { SiteCard },
   setup() {
     const api = useApi();
     const { loggedIn } = useAuth();
@@ -186,9 +154,6 @@ export default {
     }, { immediate: true });
 
     return { api, loggedIn }; // lo exponemos al template
-  },
-  components: {
-    SearchHero
   },
   data() {
     return {
@@ -209,9 +174,7 @@ export default {
       sortBy: 'fecha',
       sortOrder: 'desc',
 
-      minioBaseUrl: "http://minio.proyecto2025.linti.unlp.edu.ar",
-      minioBucket: "grupo10",
-
+    
       selectedLat: null,
       selectedLong: null,
 
@@ -224,30 +187,33 @@ export default {
   },
 
   created() {
-    this.api.getTags().then(res => this.tags = res.data);
-    this.api.getStates().then(res => this.states = res.data);
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageFromUrl = parseInt(urlParams.get("page")) || 1;
+  this.api.getTags().then(res => this.tags = res.data);
+  this.api.getStates().then(res => this.states = res.data);
 
-    if (urlParams.get("q")) this.searchNameDesc = urlParams.get("q");
-    if (urlParams.get("favorites") === "true") this.favorites = true;
+  const q = this.$route.query;
+  const page = parseInt(q.page) || 1;
 
-    // Inicializar selects según order_by del query
-    const orderParam = urlParams.get("order_by");
-    if (orderParam) {
-      switch(orderParam) {
-        case "most-visited": this.sortBy = "visitas"; this.sortOrder = "asc"; break;
-        case "name-asc": this.sortBy = "nombre"; this.sortOrder = "asc"; break;
-        case "name-desc": this.sortBy = "nombre"; this.sortOrder = "desc"; break;
-        case "rating-1-5": this.sortBy = "rank"; this.sortOrder = "asc"; break;
-        case "rating-5-1": this.sortBy = "rank"; this.sortOrder = "desc"; break;
-        case "latest": this.sortBy = "fecha"; this.sortOrder = "desc"; break;
-        case "oldest": this.sortBy = "fecha"; this.sortOrder = "asc"; break;
-        default: break;
-      }
+  // Si hay filtros en la URL, los cargamos al estado
+  if (Object.keys(q).length > 0) {
+    this.searchNameDesc = q.search || '';
+    this.searchCity = q.city || '';
+    this.selectedProvince = q.province || '';
+    this.favorites = q.search_favorites === 'true';
+
+    if (q.tags) {
+      this.selectedTags = q.tags.split(',');
     }
 
-    this.buscarSitios(pageFromUrl);
+    if (q.radius) {
+      this.radius = Number(q.radius);
+    }
+
+    if (q.lat) this.selectedLat = Number(q.lat);
+    if (q.long) this.selectedLong = Number(q.long);
+  }
+
+  // Buscar usando SIEMPRE los datos de la URL
+  this.buscarSitios(page, false);
   },
 
   mounted() {
@@ -281,14 +247,6 @@ export default {
   },
 
   methods: {
-    handleHeroSearch(query) {
-      this.searchNameDesc = query;
-      this.buscarSitios(1);
-    },
-
-    getMinioUrl(imagePath) {
-      return `${this.minioBaseUrl}/${this.minioBucket}/${imagePath}`;
-    },
 
     actualizarRadio() {
       if (this.circle) this.circle.setRadius(this.radius*1000);
@@ -333,7 +291,11 @@ export default {
       };
       params.order_by = map[this.sortBy][this.sortOrder];
 
-      this.$router.push({ query: params });
+      if (
+        JSON.stringify(this.$route.query) !== JSON.stringify(params)
+      ) {
+        this.$router.push({ query: params });
+      }
       console.log("Parámetros de búsqueda:", params);
 
       this.api.getSites(params)
@@ -352,9 +314,6 @@ export default {
 
     cambiarPagina(nuevaPagina) {
       this.buscarSitios(nuevaPagina);
-      const url = new URL(window.location.href);
-      url.searchParams.set("page", nuevaPagina);
-      window.history.replaceState({}, '', url);
     },
 
     borrarFiltros() {

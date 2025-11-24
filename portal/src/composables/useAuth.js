@@ -31,7 +31,7 @@ const checkSession = async () => {
     // Si está logueado pero no tiene token JWT, obtenerlo
     if (loggedIn.value && !localStorage.getItem('auth_token')) {
       try {
-        const tokenRes = await fetch(`${API_URL}/auth/token`, {
+        const tokenRes = await fetch(`${API_URL}/api/auth/token`, {
           method: 'POST',
           credentials: 'include'
         });
@@ -54,11 +54,12 @@ const checkSession = async () => {
 
 
 const login = (nextUrl) => {
-  const current = nextUrl || window.location.href
+  // Si nextUrl es un evento del DOM, ignorarlo
+  const current = (typeof nextUrl === 'string' ? nextUrl : null) || window.location.href
   window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
 }
 
-const logout = async (nextUrl) => {
+const logout = async (eventOrUrl) => {
   try {
     await fetch(`${API_URL}/google/logout`, {
       method: 'GET',
@@ -68,22 +69,22 @@ const logout = async (nextUrl) => {
     console.error('Error en logout backend', e)
   }
 
-  // LIMPIEZA TOTAL FRONTEND
   loggedIn.value = false
   user.value = null
 
   localStorage.clear()
   sessionStorage.clear()
 
-  // Si usas caches
-  if ('caches' in window) {
-    const names = await caches.keys()
-    await Promise.all(names.map(n => caches.delete(n)))
-  }
+  const currentUrl =
+    typeof eventOrUrl === 'string'
+      ? eventOrUrl
+      : window.location.pathname
 
-  const current = nextUrl || window.location.href
-  window.location.href = current
+  window.location.href = currentUrl
 }
+
+
+
 export function useAuth() {
   onMounted(async () => {
   await checkSession()

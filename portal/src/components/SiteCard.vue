@@ -1,8 +1,13 @@
 <template>
   <router-link
-    :to="{ name: 'site-detail', params: { id: site.id } }"
-    class="site-card"
+  :to="{ 
+    name: 'site-detail', 
+    params: { id: site.id },
+    query: $route.query
+  }"
+  class="site-card"
   >
+
     <div class="card-image">
       <div v-if="!site.cover_image && !site.image" class="no-image-placeholder">
         Sin<br>Portada
@@ -23,13 +28,28 @@
           <span class="label">Ciudad:</span>
           <span class="value">{{ site.city }}</span>
         </div>
+         <div class="card-info">
+                  <span class="label">Provincia:</span>
+                  <span class="value">{{ site.province }}</span>
+                </div>
+                <div class="card-info">
+                  <span class="label">Tags:</span>
+                  <span class="value">{{ site.tags?.join(', ') }}</span>
+                </div>
         <div class="card-info">
           <span class="label">Estado:</span>
           <span class="value conservation-badge">{{ site.state_of_conservation }}</span>
         </div>
         <div class="card-info">
           <span class="label">Rating:</span>
-          <span class="value">⭐ {{ site.average_rating || site.rating || '-' }}</span>
+          <span class="value">
+            <template v-if="site.average_rating || site.rating">
+              ⭐ {{ formatRating(site.average_rating || site.rating) }}/5
+            </template>
+            <template v-else>
+              ⭐ -/5
+            </template>
+          </span>
         </div>
       </div>
     </div>
@@ -38,6 +58,8 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 const props = defineProps({
   site: { type: Object, required: true },
@@ -54,6 +76,12 @@ const resolveUrl = (url) => {
 
 const handleImageError = (e) => {
   e.target.src = placeholder;
+};
+
+// Formatear rating: mostrar sin decimal si es entero
+const formatRating = (rating) => {
+  const num = parseFloat(rating);
+  return num % 1 === 0 ? num.toString() : num.toFixed(1);
 };
 
 // Clases dinámicas

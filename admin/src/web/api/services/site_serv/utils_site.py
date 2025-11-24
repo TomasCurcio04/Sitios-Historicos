@@ -63,25 +63,26 @@ def site_to_dict(site, include_full_data=False, user_id=None):
         cover_image = None
         images = []
 
-    # Calcular rating promedio y cantidad de reseñas si es detalle completo
+    # Calcular rating promedio (siempre) y cantidad de reseñas (solo en detalle completo)
     average_rating = None
     review_count = 0
 
-    if include_full_data:
-        try:
-            from src.core.entity.review import Review, ReviewStatus
+    try:
+        from src.core.entity.review import Review, ReviewStatus
 
-            reviews_query = db.session.query(Review).filter(
-                Review.id_site == site.id_site,
-                Review.status == ReviewStatus.APROBADA,  # Solo reseñas aprobadas
-            )
+        reviews_query = db.session.query(Review).filter(
+            Review.id_site == site.id_site,
+            Review.status == ReviewStatus.APROBADA,  # Solo reseñas aprobadas
+        )
 
+        if include_full_data:
             review_count = reviews_query.count()
-            if review_count > 0:
-                ratings = [r.rating for r in reviews_query.all()]
-                average_rating = sum(ratings) / len(ratings)
-        except Exception:
-            pass
+        
+        ratings = [r.rating for r in reviews_query.all()]
+        if ratings:
+            average_rating = sum(ratings) / len(ratings)
+    except Exception:
+        pass
 
     result = {
         "id": site.id_site,
@@ -96,6 +97,7 @@ def site_to_dict(site, include_full_data=False, user_id=None):
         "tags": tags,
         "state_of_conservation": site.conservation_state,
         "cover_image": cover_image,
+        "average_rating": float(round(average_rating, 1)) if average_rating else None,
         "inserted_at": (
             site.date_registered.isoformat() + "Z" if site.date_registered else None
         ),
@@ -124,7 +126,6 @@ def site_to_dict(site, include_full_data=False, user_id=None):
         result.update(
             {
                 "images": images,
-                "average_rating": round(average_rating, 1) if average_rating else None,
                 "review_count": review_count,
             }
         )

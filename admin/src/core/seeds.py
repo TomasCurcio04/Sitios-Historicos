@@ -10,6 +10,8 @@ from src.core.services.auth.permission_serv import create_permission
 from src.core.entity.feature_flag import FeatureFlag
 from src.core.database import db
 from src.core.entity.site_image import SiteImage
+from src.core.entity.review import Review, ReviewStatus
+from src.core.entity.public_user import PublicUser
 from src.core.entity.review import Review
 from src.core.entity.public_user import PublicUser
 from src.core.entity.site_visit import SiteVisit
@@ -910,7 +912,101 @@ def run():
     # Crear reseñas aleatorias
     create_sample_reviews()
 
+    # Crear usuarios públicos
+    public_users = [
+        PublicUser(
+            google_id="test_user_123",
+            email="test@example.com",
+            name="Usuario Test",
+            picture=None
+        ),
+        PublicUser(
+            google_id="116917976420947408041",
+            email="javiercostas1981@gmail.com",
+            name="Javier Costas",
+            picture="https://lh3.googleusercontent.com/a/ACg8ocLLuvunPoKggx2eUwqrv-8siwyxGBtwCWFjFtJCPXbEiFgU3nI=s96-c"
+        ),
+        PublicUser(
+            google_id="116656059833616552757",
+            email="franciscogarrubba@gmail.com",
+            name="Francisco Garrubba",
+            picture="https://lh3.googleusercontent.com/a/ACg8ocI_W2P42qYa4RAsBiwcmVmq4lCfTz3cYf-KrXg245Om4jMBAg=s96-c"
+        ),
+        PublicUser(
+            google_id="100268899397354823737",
+            email="humorgf@gmail.com",
+            name="Javier Tooshort",
+            picture="https://lh3.googleusercontent.com/a/ACg8ocIaTowKY75L3nKl_QlgXCkefKTfv1gzdGNX9Lhp7MbQ5Ajrow=s96-c"
+        ),
+        PublicUser(
+            google_id="106790879917519349421",
+            email="tomicurcio1@gmail.com",
+            name="Tomas Curcio",
+            picture="https://lh3.googleusercontent.com/a/ACg8ocJvcfSBuptQmMCRxUG4aVSrrPaBU9rCaLibOyZn1Ac-FLm4uHU=s96-c"
+        ),
+        PublicUser(
+            google_id="104028065698159628576",
+            email="notevagustar7925@gmail.com",
+            name="roman riquelme",
+            picture="https://lh3.googleusercontent.com/a/ACg8ocL9etGzxn8OVqbAOeLA1kQ2JeYZdumP1jJfOkHCeV2fdYZZaw=s96-c"
+        ),
+        PublicUser(
+            google_id="104358394811490563545",
+            email="nicomontviv@gmail.com",
+            name="Nicolás Montanari",
+            picture="https://lh3.googleusercontent.com/a/ACg8ocICDHr327aTUgXYM2_Y-VrR7MAYfLlylUoxsuQEJi9vSIRXsQM=s96-c"
+        )
+    ]
+    
+    db.session.add_all(public_users)
+    db.session.commit()
+    
+    public_user4 = public_users[3]  # Javier Tooshort
+
+    # Crear reseñas excelentes para el Cerro de los 7 colores y otros 4 sitios
+    reviews = [
+        Review(
+            id_site=site1.id_site,
+            id_public_user=public_user4.id_public_user,
+            rating=5,
+            content="¡Absolutamente espectacular! El Cerro de los 7 colores es una maravilla natural que te deja sin palabras.",
+            status=ReviewStatus.APROBADA
+        ),
+        Review(
+            id_site=site2.id_site,
+            id_public_user=public_user4.id_public_user,
+            rating=5,
+            content="Una experiencia única e impresionante. Ver las pinturas rupestres de más de 9000 años es increíble.",
+            status=ReviewStatus.APROBADA
+        ),
+        Review(
+            id_site=site11.id_site,
+            id_public_user=public_user4.id_public_user,
+            rating=5,
+            content="Las cataratas del Iguazú son simplemente impresionantes. Una de las maravillas naturales más increíbles.",
+            status=ReviewStatus.APROBADA
+        ),
+        Review(
+            id_site=site6.id_site,
+            id_public_user=public_user4.id_public_user,
+            rating=5,
+            content="Ver el Glaciar Perito Moreno es una experiencia que nunca olvidarás. Simplemente mágico.",
+            status=ReviewStatus.APROBADA
+        ),
+        Review(
+            id_site=site7.id_site,
+            id_public_user=public_user4.id_public_user,
+            rating=5,
+            content="El Teatro Colón es una joya arquitectónica y cultural. Una experiencia cultural inolvidable.",
+            status=ReviewStatus.APROBADA
+        )
+    ]
+
+    db.session.add_all(reviews)
+    db.session.commit()
+
     print("✔️  Base de datos rellenada con datos de prueba.")
+    print("✔️  Agregadas 5 reseñas excelentes del usuario público Javier Tooshort.")
 
 
 def create_sample_reviews():

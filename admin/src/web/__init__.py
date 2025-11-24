@@ -239,5 +239,6 @@ def create_app(env="development", static_folder=None):
         sys.exit(0)
 
     signal.signal(signal.SIGINT, cleanup_sessions)
+    signal.signal(signal.SIGTERM, cleanup_sessions)
 
     return app
