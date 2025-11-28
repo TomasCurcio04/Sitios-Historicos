@@ -293,7 +293,7 @@ def usuario_actual():
 
         if not current_user.get("user"):
             return None
-        return buscar_usuario(current_user.get("user"))
+        return buscar_usuario(current_user["user"]["email"])
     except RuntimeError:
         # Fuera del contexto de request
         return None
