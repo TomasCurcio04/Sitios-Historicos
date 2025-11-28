@@ -57,7 +57,15 @@ server_session = Session()
 
 
 def create_app(env="development", static_folder=None):
-    """Crea y devuelve la aplicación Flask según el entorno."""
+    """Crea y devuelve la aplicación Flask configurada.
+
+    Args:
+        env (str): Entorno de ejecución (ej: "development", "production").
+        static_folder (str | None): Ruta al folder de archivos estáticos. Si None se calcula por defecto.
+
+    Returns:
+        Flask: Instancia de la aplicación Flask inicializada.
+    """
 
     # Determinar entorno por variable de entorno FLASK_ENV (por defecto 'development')
     env = os.environ.get("FLASK_ENV", "development")
@@ -146,19 +154,19 @@ def create_app(env="development", static_folder=None):
         app,
         resources={
             r"/api/*": {"origins": app.config.get("CORS_ORIGINS", [])},
-            r"/google/*": {"origins": app.config.get("CORS_ORIGINS", [])}
+            r"/google/*": {"origins": app.config.get("CORS_ORIGINS", [])},
         },
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization"],
         expose_headers=["Authorization"],
     )
-    
+
     @app.before_request
     def check_admin_maintenance():
-        """Verifica si el panel administrativo está en modo de mantenimiento.
+        """Verifica si el panel administrativo está en modo mantenimiento y redirige cuando aplica.
 
-        Redirige a los usuarios no autenticados al login y a los usuarios
-        no superusuarios a la página de mantenimiento cuando está activo.
+        Returns:
+            Response | None: Puede devolver una redirección (cuando bloquea acceso) o None para permitir continuar.
         """
         user_dict = flask_session.get("user")
         usuario = None

@@ -16,9 +16,14 @@ feature_flags_bp = Blueprint("feature_flags", __name__, url_prefix="/feature_fla
 @admin_maintenance_required
 def feature_flags():
     """Gestiona la configuración de feature flags del sistema.
-    
-    GET: Muestra el formulario de configuración
-    POST: Actualiza las configuraciones de feature flags
+
+    GET:
+        - Muestra el formulario de configuración con las flags actuales.
+    POST:
+        - Valida y actualiza las feature flags en base al formulario.
+
+    Returns:
+        Response: Plantilla renderizada (GET) o redirección tras el POST.
     """
     usuario = buscar_usuario(session["user"]["email"])
     usuario_id = usuario.id_user if usuario else 1

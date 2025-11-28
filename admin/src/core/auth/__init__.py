@@ -37,7 +37,7 @@ from src.core.services.auth.bcrypt import bcrypt
 #         query = query.order_by(Users.date_create.desc())
 #     else:
 #         query = query.order_by(Users.date_create.asc())
-    
+
 #     total = query.count()
 #     items = query.offset((page - 1) * per_page).limit(per_page).all()
 #     pages = math.ceil(total / per_page)
@@ -108,7 +108,7 @@ from src.core.services.auth.bcrypt import bcrypt
 #         rol_rel = role_obj,
 #         role = role_id
 #     )
-    
+
 #     db.session.add(new_user)
 
 #     try:
@@ -134,7 +134,7 @@ from src.core.services.auth.bcrypt import bcrypt
 
 #     if not user:
 #         return False, "Usuario no encontrado"
-    
+
 #     if "user_name" in kwargs:
 #         existing_user = buscar_username(kwargs["user_name"])
 #         if existing_user and existing_user.id_user != user_id:
@@ -167,13 +167,24 @@ from src.core.services.auth.bcrypt import bcrypt
 
 ####Funciones de roles###
 def list_roles():
-    """Función para listar todos los roles."""
+    """Lista todos los roles disponibles.
+
+    Returns:
+        list[Role]: Lista con los roles del sistema.
+    """
     session = db.session
     return session.query(Role).all()
 
 
 def create_role(**kwargs):
-    """Crea un nuevo rol."""
+    """Crea un nuevo rol.
+
+    Args:
+        **kwargs: Campos del rol.
+
+    Returns:
+        Role: Rol creado.
+    """
     session = db.session
     new_role = Role(**kwargs)
     session.add(new_role)
@@ -183,7 +194,15 @@ def create_role(**kwargs):
 
 
 def assign_role(user_id, role_id):
-    """Asigna un rol a un usuario."""
+    """Asigna un rol a un usuario.
+
+    Args:
+        user_id (int): ID del usuario.
+        role_id (int): ID del rol.
+
+    Returns:
+        Users: Usuario actualizado.
+    """
     session = db.session
     user = session.query(Users).get(user_id)
     role = session.query(Role).get(role_id)
@@ -192,20 +211,29 @@ def assign_role(user_id, role_id):
     return user
 
 
-
-
 ####Fin de funciones de roles###
 
 
 ####Funciones de permisos###
 def list_permissions():
-    """Función para listar todos los permisos."""
+    """Lista todos los permisos disponibles.
+
+    Returns:
+        list[Permission]: Permisos del sistema.
+    """
     session = db.session
     return session.query(Permission).all()
 
 
 def create_permission(**kwargs):
-    """Crea un nuevo permiso."""
+    """Crea un nuevo permiso.
+
+    Args:
+        **kwargs: Campos del permiso.
+
+    Returns:
+        Permission: Permiso creado.
+    """
     session = db.session
     perm = Permission(**kwargs)
     session.add(perm)
@@ -215,7 +243,15 @@ def create_permission(**kwargs):
 
 
 def assign_permission(role_id, permission_id):
-    """Asigna un permiso a un rol."""
+    """Asigna un permiso a un rol.
+
+    Args:
+        role_id (int): ID del rol.
+        permission_id (int): ID del permiso.
+
+    Returns:
+        Role: Rol con el permiso asignado.
+    """
     session = db.session
     role = session.query(Role).get(role_id)
     perm = session.query(Permission).get(permission_id)
@@ -229,21 +265,42 @@ def assign_permission(role_id, permission_id):
 
 ####Funciones de feature flags###
 def list_feature_flags():
-    """Función para listar todas las feature flags."""
+    """Lista todas las feature flags ordenadas por id.
+
+    Returns:
+        list[FeatureFlag]: Lista de flags.
+    """
 
     flags = db.session.query(FeatureFlag).order_by(FeatureFlag.id).all()
     return flags
 
 
 def get_feature_flag(name):
-    """Función para obtener una feature flag por su nombre."""
+    """Obtiene una feature flag por nombre.
+
+    Args:
+        name (str): Nombre de la flag.
+
+    Returns:
+        FeatureFlag | None: Flag encontrada o None.
+    """
 
     flag = db.session.query(FeatureFlag).filter_by(name=name).first()
     return flag
 
 
 def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
-    """Función para modificar una feature flag."""
+    """Modifica una feature flag existente.
+
+    Args:
+        name (str): Nombre de la flag a modificar.
+        enabled (bool): Nuevo estado.
+        updated_by (int): ID del usuario que realiza la modificación.
+        maintenance_message (str | None): Mensaje de mantenimiento (opcional).
+
+    Returns:
+        FeatureFlag | None: Flag modificada o None si no existe.
+    """
 
     flag = FeatureFlag.get_flag(name)
     if flag:
@@ -263,7 +320,15 @@ def get_feature_flag_fresh(name):
 
 
 def update_feature_flags(flags_data, updated_by):
-    """Función para actualizar múltiples feature flags."""
+    """Actualiza múltiples feature flags según un diccionario de datos.
+
+    Args:
+        flags_data (dict): Mapeo de id -> {enabled, maintenance_message}.
+        updated_by (int): ID del usuario que realiza la actualización.
+
+    Returns:
+        bool: True si hubo cambios y se guardaron, False si no hubo cambios.
+    """
     flags = list_feature_flags()
     has_changes = False
     for flag in flags:

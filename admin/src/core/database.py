@@ -13,13 +13,24 @@ db = SQLAlchemy()
 
 
 def init_db(app):
-    """Inicializa la base de datos SQLAlchemy con la aplicación Flask."""
+    """Inicializa la extensión SQLAlchemy con la aplicación Flask.
+
+    Args:
+        app (Flask): Instancia de la aplicación Flask.
+
+    Returns:
+        SQLAlchemy: Objeto db inicializado.
+    """
     db.init_app(app)
     return db
 
 
 def reset_db():
-    """Reinicia la base de datos eliminando todas las tablas y volviéndolas a crear."""
+    """Reinicia la base de datos eliminando y recreando todas las tablas.
+
+    Returns:
+        Mensaje de confirmación.
+    """
 
     from src.core.entity.users import Users  # noqa: F401
     from src.core.entity.site import Site  # noqa: F401
@@ -43,4 +54,7 @@ def reset_db():
 
 
 class Base(DeclarativeBase):
-    """Clase base para los modelos de la base de datos."""
+    """Clase base para los modelos de la base de datos.
+
+    Provee la base declarativa para los modelos SQLAlchemy.
+    """
