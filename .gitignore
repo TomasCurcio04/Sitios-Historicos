@@ -85,3 +85,7 @@ poetry.lock
 *.tmp
 *.temp
 .cache/
+
+# Structure de carpetas
+estructura.txt
+list_structure.sh
