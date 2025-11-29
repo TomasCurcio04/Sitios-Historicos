@@ -1,5 +1,5 @@
-# pylint: disable=import-error
 """Inicialización del módulo web de la aplicación Flask."""
+
 import signal
 import sys
 import shutil
@@ -231,6 +231,8 @@ def create_app(env="development", static_folder=None):
 
     def cleanup_sessions(*args):
         """Borra todas las sesiones activas cuando se detiene la app."""
+        if args:
+            pass
         session_dir = app.config.get("SESSION_FILE_DIR")
         if session_dir:
             if not os.path.isabs(session_dir):
@@ -240,8 +242,13 @@ def create_app(env="development", static_folder=None):
                     shutil.rmtree(session_dir)
                     os.makedirs(session_dir, exist_ok=True)
                     print("\n🧹 Se eliminaron todas las sesiones activas.")
-                except Exception as e:
-                    print(f"\n⚠️ Error al limpiar sesiones: {e}")
+                except FileNotFoundError:
+                    print("\n⚠️ El directorio de sesiones no existe.")
+                except PermissionError:
+                    print("\n⚠️ No hay permisos para limpiar sesiones.")
+                except OSError as e:
+                    print(f"\n⚠️ Error del sistema de archivos al limpiar sesiones: {e}")
+
         else:
             print("\n⚠️ No se encontró SESSION_FILE_DIR en la configuración.")
         sys.exit(0)

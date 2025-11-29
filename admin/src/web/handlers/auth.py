@@ -18,21 +18,20 @@ def login_required(f):
     return decorated_function
 
 
-def is_authenticated(session):
+def is_authenticated(session_db):
     """Verifica si el usuario está autenticado."""
-    return session.get("user") is not None
+    return session_db.get("user") is not None
 
 
 def template_is_authenticated():
     """Función wrapper para usar is_authenticated en templates sin parámetros."""
-    from flask import session
 
     return is_authenticated(session)
 
 
-def is_admin(session):
+def is_admin(session_db):
     """Verifica si el usuario tiene rol de administrador."""
-    return int(session.get("role", 0)) == 1
+    return int(session_db.get("role", 0)) == 1
 
 
 def admin_required(f):
