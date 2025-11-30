@@ -65,6 +65,15 @@
           <h3>Ubicación</h3>
           <div id="map" class="map-container"></div>
         </section>
+
+        <section class="reviews-section">
+          <SiteReviewsList
+            :reviews="siteReviews"
+            :meta="reviewsMeta"
+            :loading="reviewsLoading"
+            @page-change="handleReviewsPageChange"
+          />
+        </section>
       </div>
 
       <aside class="reviews-sidebar">
@@ -104,8 +113,10 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useAuth } from '@/composables/useAuth'
 import ReviewForm from '../components/ReviewForm.vue'
+import SiteReviewsList from '../components/SiteReviewsList.vue'
 
 const { loggedIn, login } = useAuth()
+const { getSiteReviews } = useApi()
 
 const props = defineProps({
   id: { type: [String, Number], required: true }
@@ -123,6 +134,9 @@ const currentImage = ref(null)
 const expandedDesc = ref(false)
 const map = ref(null)
 const showReviewForm = ref(false)
+const siteReviews = ref([])
+const reviewsLoading = ref(false)
+const reviewsMeta = ref(null)
 
 // Computed
 const statusClass = computed(() => {
@@ -167,6 +181,7 @@ const fetchSite = async () => {
       // Ahora sí, esperamos a que el DOM se actualice y buscamos el mapa
       nextTick(() => {
         initMap()
+        fetchSiteReviews()
       })
     } else {
       error.value = response.error || 'No se pudo cargar el sitio.'
@@ -177,6 +192,33 @@ const fetchSite = async () => {
     error.value = 'Error de conexión.'
     loading.value = false
   }
+}
+
+const fetchSiteReviews = async (page = 1) => {
+  if (!site.value) return
+
+  reviewsLoading.value = true
+  try {
+    const response = await getSiteReviews(site.value.id, { page, per_page: 10 })
+
+    if (response.data && response.data.data) {
+      siteReviews.value = response.data.data
+      reviewsMeta.value = response.data.meta
+    } else {
+      siteReviews.value = []
+      reviewsMeta.value = null
+    }
+  } catch (err) {
+    console.error("Error fetching site reviews:", err)
+    siteReviews.value = []
+    reviewsMeta.value = null
+  } finally {
+    reviewsLoading.value = false
+  }
+}
+
+const handleReviewsPageChange = (newPage) => {
+  fetchSiteReviews(newPage)
 }
 
 const initMap = () => {
@@ -251,9 +293,10 @@ const handleWriteReview = () => {
 }
 
 const onReviewSubmitted = (reviewData) => {
-  // Refresh the site data to show updated ratings
+  // Refresh the site data and reviews to show updated ratings
   showReviewForm.value = false
   fetchSite()
+  fetchSiteReviews()
   alert('¡Reseña enviada exitosamente!')
 }
 
@@ -290,3 +333,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped src="../assets/detail.css"></style>
+
+<style scoped>
+.reviews-section {
+  margin-top: 2rem;
+}
+</style>

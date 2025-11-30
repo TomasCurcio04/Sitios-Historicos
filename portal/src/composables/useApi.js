@@ -66,6 +66,9 @@ export function useApi() {
           Authorization: `Bearer ${token}`
         },
       });
+    },
+    getSiteReviews(siteId, params = {}) {
+      return apiClient.get(`/sites/${siteId}/reviews`, { params });
     }
   }
 };
