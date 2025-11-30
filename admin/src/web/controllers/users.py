@@ -3,7 +3,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 
 # Importamos las funciones de la capa CORE/AUTH/USER (Ubicación correcta)
-from src.core.services.auth.user_serv import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario
+from src.core.services.auth.user_serv import listar_usuarios, eliminar_usuario, create_user, obtener_usuario_por_id, actualizar_usuario, activar_usuario
 from src.core.services.auth.role_serv import list_roles
 from src.core.entity.users import Users
 import re
@@ -131,18 +131,35 @@ def user_create():
     return redirect(url_for("users.user_index"))
 
 
-# Ruta para PROCESAR la eliminación de un usuario
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
 @permissions_required("user", ["delete"])
 def user_delete(user_id):
     """Desactiva un usuario (eliminación lógica)."""
     user = obtener_usuario_por_id(user_id)
-    if user:
-        # Llama a la función para eliminar el usuario de la DB
-        eliminar_usuario(user_id)
 
-    # Redirige de vuelta a la lista de usuarios.
+    if user:
+        eliminar_usuario(user_id)
+        flash("Usuario desactivado correctamente", "success")
+    else:
+        flash("Usuario no encontrado", "danger")
+
     return redirect(url_for("users.user_index"))
+
+
+@user_bp.route("/<int:user_id>/activate", methods=["POST"])
+@permissions_required("user", ["update"])
+def user_activate(user_id):
+    """Reactiva un usuario."""
+    user = obtener_usuario_por_id(user_id)
+
+    if user:
+        activar_usuario(user_id)
+        flash("Usuario reactivado correctamente", "success")
+    else:
+        flash("Usuario no encontrado", "danger")
+
+    return redirect(url_for("users.user_index"))
+
 
 
 @user_bp.route("/<int:user_id>/edit", methods=["GET"])

@@ -104,6 +104,14 @@ def verificar_usuario(email, password):
 
     return user, None
 
+def activar_usuario(user_id):
+    """Reactiva un usuario eliminado lógicamente."""
+    user = obtener_usuario_por_id(user_id)
+    if user:
+        user.active = True
+        db.session.commit()
+        return user
+    return None
 
 def create_user(**kwargs):
     """Crea un nuevo usuario con contraseña hasheada.
