@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Módulo de autenticación y autorización."""
 
 import math

@@ -1,12 +1,8 @@
 """Módulo para la configuración y manejo de la base de datos SQLAlchemy en una aplicación Flask."""
 
-# pylint: disable=import-error
-# pylint: disable=import-outside-toplevel
-# pylint: disable=unused-import
-
-from flask_sqlalchemy_lite import SQLAlchemy  # pyright: ignore[reportMissingImports]
-from sqlalchemy.orm import DeclarativeBase  # pyright: ignore[reportMissingImports]
-from sqlalchemy import text  # pyright: ignore[reportMissingImports]
+from flask_sqlalchemy_lite import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import text
 
 db = SQLAlchemy()
 """Inicializa la base de datos SQLAlchemy."""
@@ -32,16 +28,16 @@ def reset_db():
         Mensaje de confirmación.
     """
 
-    from src.core.entity.users import Users  # noqa: F401
-    from src.core.entity.site import Site  # noqa: F401
-    from src.core.entity.category import Category  # noqa: F401
-    from src.core.entity.state import State  # noqa: F401
-    from src.core.entity.site_image import SiteImage  # noqa: F401
-    from src.core.entity.site_history import SiteHistory  # noqa: F401
-    from src.core.entity.tag import Tag  # noqa: F401
-    from src.core.entity.role import Role  # noqa: F401
-    from src.core.entity.permission import Permission  # noqa: F401
-    from src.core.entity.feature_flag import FeatureFlag  # noqa: F401
+    from src.core.entity.users import Users
+    from src.core.entity.site import Site
+    from src.core.entity.category import Category
+    from src.core.entity.state import State
+    from src.core.entity.site_image import SiteImage
+    from src.core.entity.site_history import SiteHistory
+    from src.core.entity.tag import Tag
+    from src.core.entity.role import Role
+    from src.core.entity.permission import Permission
+    from src.core.entity.feature_flag import FeatureFlag
 
     print("Reiniciando la base de datos...")
     Base.metadata.drop_all(bind=db.engine)
