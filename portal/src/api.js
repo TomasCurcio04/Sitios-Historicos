@@ -9,12 +9,12 @@ async function handleFetch(res) {
       : 'Error en la solicitud';
     throw new Error(msg);
   }
-  
+
   // Si es 204 No Content o no hay contenido, devolver objeto vacío
   if (res.status === 204 || res.headers.get('content-length') === '0') {
     return {};
   }
-  
+
   return res.json();
 }
 
@@ -135,8 +135,21 @@ export async function isFavoriteSite(id) {
 }
 
 // --- FUNCIONES DE AUTH ---
-export function isAuthenticated() {
-  return localStorage.getItem('auth_token');
+export async function isAuthenticated() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) return false;
+
+  try {
+    // Verificar el token con la API haciendo una solicitud POST a /api/auth/token
+    const res = await fetch(`${API_BASE}/auth/token`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    return res.ok;
+  } catch (error) {
+    console.error('Error verifying authentication:', error);
+    return false;
+  }
 }
 
 export function loginWithGoogle() {
