@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Controlador de feature flags para configuración del sistema."""
 
 from flask import request, render_template, redirect, url_for, flash, Blueprint, session

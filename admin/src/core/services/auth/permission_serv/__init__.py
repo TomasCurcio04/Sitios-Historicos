@@ -1,5 +1,3 @@
-# pylint: disable=import-error
-
 """Modulo de servicios de Permisos"""
 
 from src.core.database import db

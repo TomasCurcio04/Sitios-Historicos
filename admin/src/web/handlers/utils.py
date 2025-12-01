@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Utilidades de autenticación y autorización."""
 
 from functools import wraps

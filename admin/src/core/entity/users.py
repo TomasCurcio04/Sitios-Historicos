@@ -1,6 +1,4 @@
-# pylint: disable=import-error
 """Modelo de usuario para la tabla 'users' en la base de datos."""
-
 
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
@@ -17,7 +15,6 @@ if TYPE_CHECKING:
     from src.core.entity.review import Review
 
 # Expresion regular para validar emails
-
 
 
 class Users(Base):
@@ -48,7 +45,9 @@ class Users(Base):
     flags: Mapped[list["FeatureFlag"]] = relationship(
         "FeatureFlag", back_populates="user"
     )
-    moderated_reviews: Mapped[list["Review"]] = relationship("Review", back_populates="moderator_rel")
+    moderated_reviews: Mapped[list["Review"]] = relationship(
+        "Review", back_populates="moderator_rel"
+    )
 
     # Fechas de creación y modificación
     date_create: Mapped[datetime] = mapped_column(

@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Modelo de Feature Flags para la tabla 'feature_flag' en la base de datos."""
 
 from datetime import datetime, timezone
