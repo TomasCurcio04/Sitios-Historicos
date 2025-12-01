@@ -1,5 +1,5 @@
-# pylint: disable=import-error
 """Modelo de imagen de sitio para la tabla site_image en la base de datos"""
+
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 from sqlalchemy import String

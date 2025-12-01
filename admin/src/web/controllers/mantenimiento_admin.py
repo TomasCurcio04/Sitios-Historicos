@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Controlador de página de mantenimiento administrativo."""
 
 from flask import (

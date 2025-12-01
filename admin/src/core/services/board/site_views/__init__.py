@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Servicio para manejo de visitas de sitios."""
 
 from src.core.entity.site_visit import SiteVisit

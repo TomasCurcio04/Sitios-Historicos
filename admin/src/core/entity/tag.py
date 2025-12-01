@@ -1,10 +1,11 @@
-# pylint: disable=import-error
 """Modelo de etiqueta para la tabla 'tag' en la base de datos."""
+
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from src.core.database import Base
+
 # from src.core.entity.site import site_tag  # Se define en site.py
 import unicodedata
 
@@ -26,10 +27,8 @@ class Tag(Base):
     )
 
     sites: Mapped[list["Site"]] = relationship(
-    "Site",
-    secondary="site_tag",
-    back_populates="tag"
-)
+        "Site", secondary="site_tag", back_populates="tag"
+    )
 
     def __init__(self, name: str):
         self.name = name
@@ -38,30 +37,34 @@ class Tag(Base):
     @staticmethod
     def generate_slug(name: str) -> str:
         """Genera un slug URL-friendly a partir del nombre.
-        
+
         Args:
             name: Nombre de la etiqueta
-        
+
         Returns:
             Slug sin acentos, en minúsculas y con guiones
         """
         # Quita acentos
-        slug = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
+        slug = (
+            unicodedata.normalize("NFKD", name)
+            .encode("ascii", "ignore")
+            .decode("ascii")
+        )
         # Convierte a minúsculas y reemplaza espacios por guiones
         slug = slug.lower().replace(" ", "-")
         return slug
-    
-    @validates('name')
+
+    @validates("name")
     def validate_name(self, key, value):
         """Valida que el nombre de la etiqueta sea válido.
-        
+
         Args:
             key: Nombre del campo
             value: Valor a validar
-        
+
         Returns:
             Valor validado y normalizado
-        
+
         Raises:
             ValueError: Si el nombre no cumple los criterios
         """
@@ -71,8 +74,6 @@ class Tag(Base):
         if len(value) < 3 or len(value) > 50:
             raise ValueError("El nombre debe tener entre 3 y 50 caracteres")
         return value
-
-    
 
     def __repr__(self):
         return f"<Tag(id_tag={self.id_tag}, name='{self.name}')>"

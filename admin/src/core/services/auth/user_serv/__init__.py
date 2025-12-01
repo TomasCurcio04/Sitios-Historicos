@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Servicio de usuarios."""
 
 import math
@@ -11,6 +10,7 @@ from src.core.services.auth.bcrypt import bcrypt
 from sqlalchemy import desc
 from src.core.database import db
 from src.core.entity.public_user import PublicUser
+
 
 def listar_usuarios(
     page=1,
@@ -37,7 +37,7 @@ def listar_usuarios(
         query = query.order_by(Users.date_create.desc())
     else:
         query = query.order_by(Users.date_create.asc())
-    
+
     total = query.count()
     items = query.offset((page - 1) * per_page).limit(per_page).all()
     pages = math.ceil(total / per_page)
@@ -65,6 +65,7 @@ def buscar_usuario(email):
         Usuario encontrado o None
     """
     return db.session.query(Users).filter_by(email=email).first()
+
 
 def buscar_usuario_public(email):
     """Busca un usuario público por su correo electrónico.
@@ -138,10 +139,10 @@ def create_user(**kwargs):
         password=kwargs["password"],
         s_user=kwargs.get("s_user", False),
         active=kwargs.get("active", True),
-        rol_rel = role_obj,
-        role = role_id
+        rol_rel=role_obj,
+        role=role_id,
     )
-    
+
     db.session.add(new_user)
 
     try:
@@ -150,17 +151,16 @@ def create_user(**kwargs):
     except:
         db.session.rollback()
         return "Error al crear el usuario"
-    
+
 
 def crear_user_public(**kwargs):
-
-    """Crea un nuevo usuario público. """
+    """Crea un nuevo usuario público."""
 
     new_user = PublicUser(
         google_id=kwargs["google_id"],
         email=kwargs["email"],
         name=kwargs["name"],
-        picture=kwargs["picture"]
+        picture=kwargs["picture"],
     )
 
     db.session.add(new_user)
@@ -170,7 +170,6 @@ def crear_user_public(**kwargs):
     except:
         db.session.rollback()
         return "Error al crear el usuario público"
-
 
 
 def create_user_public(**kwargs):
@@ -193,7 +192,9 @@ def create_user_public(**kwargs):
         return "Debe proporcionar un nombre"
 
     # Evitar duplicados por google_id
-    existing_user = db.session.query(PublicUser).filter_by(google_id=kwargs["google_id"]).first()
+    existing_user = (
+        db.session.query(PublicUser).filter_by(google_id=kwargs["google_id"]).first()
+    )
     if existing_user:
         return "El google_id ya está registrado"
 
@@ -202,7 +203,7 @@ def create_user_public(**kwargs):
         google_id=kwargs["google_id"],
         email=kwargs["email"],
         name=kwargs["name"],
-        picture=kwargs.get("picture")
+        picture=kwargs.get("picture"),
     )
 
     db.session.add(new_user)
@@ -213,7 +214,6 @@ def create_user_public(**kwargs):
     except Exception as e:
         db.session.rollback()
         return f"Error al crear el usuario público: {str(e)}"
-
 
 
 def eliminar_usuario(user_id):
@@ -248,7 +248,7 @@ def actualizar_usuario(user_id, **kwargs):
 
     if not user:
         return False, "Usuario no encontrado"
-    
+
     if "user_name" in kwargs:
         existing_user = buscar_username(kwargs["user_name"])
         if existing_user and existing_user.id_user != user_id:
@@ -267,7 +267,6 @@ def actualizar_usuario(user_id, **kwargs):
 
     db.session.commit()
     return True, "Usuario actualizado."
-
 
 
 def obtener_usuario_por_id(usuario_id):
@@ -297,14 +296,15 @@ def usuario_actual():
     except RuntimeError:
         # Fuera del contexto de request
         return None
-    
+
+
 def buscar_username(username):
     """Busca un usuario por su nombre de usuario.
-    
+
     Args:
         username: Nombre de usuario
     Returns:
         Usuario encontrado o None
     """
-    
+
     return db.session.query(Users).filter_by(user_name=username).first()

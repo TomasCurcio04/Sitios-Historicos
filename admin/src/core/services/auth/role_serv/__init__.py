@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Servicio de roles."""
 
 from src.core.database import db
