@@ -282,14 +282,23 @@ export default {
       }
       if (this.radius) params.radius = this.radius;
 
-      // Generar order_by según selects
-      const map = {
+       const map = {
         nombre: { asc: "name-asc", desc: "name-desc" },
         rank: { asc: "rating-1-5", desc: "rating-5-1" },
         fecha: { asc: "oldest", desc: "latest" },
-        visitas: { asc: "most-visited", desc: "most-visited" }
+        visitas: { asc: "most-visited", desc: "most-visited" },
+        "most-visited": "most-visited",
+        "rating-5-1": "rating-5-1",
+        "latest": "latest"
       };
-      params.order_by = map[this.sortBy][this.sortOrder];
+
+      if (this.$route.query.order_by) {
+        params.order_by = this.$route.query.order_by;
+      } 
+      else {
+        params.order_by = map[this.sortBy][this.sortOrder];
+      }
+
 
       if (
         JSON.stringify(this.$route.query) !== JSON.stringify(params)
