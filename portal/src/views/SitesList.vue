@@ -199,6 +199,19 @@ export default {
     this.searchCity = q.city || '';
     this.selectedProvince = q.province || '';
     this.favorites = q.search_favorites === 'true';
+    if (q.order_by) {
+    // inicializar sortBy/sortOrder según el valor
+    if (q.order_by === 'latest') {
+      this.sortBy = 'fecha';
+      this.sortOrder = 'desc';
+    } else if (q.order_by === 'most-visited') {
+      this.sortBy = 'visitas';
+      this.sortOrder = 'desc';
+    } else if (q.order_by === 'rating-5-1') {
+      this.sortBy = 'rank';
+      this.sortOrder = 'desc';
+    }
+  }
 
     if (q.tags) {
       this.selectedTags = q.tags.split(',');
@@ -292,12 +305,7 @@ export default {
         "latest": "latest"
       };
 
-      if (this.$route.query.order_by) {
-        params.order_by = this.$route.query.order_by;
-      } 
-      else {
-        params.order_by = map[this.sortBy][this.sortOrder];
-      }
+      params.order_by = map[this.sortBy][this.sortOrder];
 
 
       if (
