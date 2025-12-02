@@ -40,14 +40,14 @@ export function useApi() {
         }
       })
     },
-    getToken() {
-      return apiClient.post('/auth/token', {})
-        .then(res => {
-          const token = res.data.access_token
-          localStorage.setItem('auth_token', token)
-          return token
-        })
-    },
+    // getToken() {
+    //   return apiClient.post('/auth/token', {})
+    //     .then(res => {
+    //       const token = res.data.access_token
+    //       localStorage.setItem('token', token)
+    //       return token
+    //     })
+    // },
     getMyReviews(params = {}) {
       const token = localStorage.getItem('auth_token');
 
