@@ -14,7 +14,7 @@
         :key="r.id"
         class="review-card"
       >
-        <div class="card-header">
+        <div class="card-header"> 
           <h4 class="card-title">{{ r.user_name || 'Usuario anónimo' }}</h4>
           <span class="review-date">{{ formatDate(r.inserted_at) }}</span>
         </div>
@@ -82,6 +82,8 @@ function formatDate(dateStr) {
 
   return `${day}/${month}/${year}`;
 }
+
+
 </script>
 
 <style scoped>

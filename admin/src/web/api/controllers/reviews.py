@@ -24,8 +24,6 @@ bp = Blueprint("api_reviews", __name__, url_prefix="/api/sites")
 def get_site_reviews(site_id):
     """Obtiene reseñas de un sitio específico."""
     try:
-        # TODO: Implementar autenticación JWT cuando esté disponible
-        # Placeholder: permitir acceso sin autenticación por ahora
 
         # Verificar que el sitio existe
         site_data = get_site_by_id(site_id)
@@ -60,7 +58,7 @@ def get_site_reviews(site_id):
         response_schema = ReviewsListResponseSchema()
         return jsonify(response_schema.dump(reviews_data))
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
@@ -189,7 +187,7 @@ def delete_site_review(site_id, review_id):
         if auth_error:
             return auth_error
 
-        user_id = user["public_user_id"]
+        # user_id = user["public_user_id"]
 
         # Obtener reseña
         review_data = get_review_by_id(review_id, site_id, include_pending=True)
@@ -216,7 +214,7 @@ def delete_site_review(site_id, review_id):
 
         return "", 204
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {

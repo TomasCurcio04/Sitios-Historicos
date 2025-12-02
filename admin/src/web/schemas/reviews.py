@@ -15,6 +15,7 @@ class ReviewResponseSchema(Schema):
 
     id = fields.Int()
     site_id = fields.Int()
+    user_name = fields.Str()
     public_user_id = fields.Int()
     rating = fields.Int()
     comment = fields.Str()

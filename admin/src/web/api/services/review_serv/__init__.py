@@ -2,19 +2,37 @@
 
 from src.core.database import db
 from src.core.entity.review import Review, ReviewStatus
+from src.core.entity.public_user import PublicUser
 
 
+# def listar_reviews_by_site(site_id, page=1, per_page=10):
+#     """Listar reseñas de un sitio con paginación"""
+#     query = (
+#         db.session.query(Review)
+#         .filter(
+#             Review.id_site == site_id,
+#             Review.status == ReviewStatus.APROBADA,  # Solo reseñas aprobadas
+#         )
+#         .order_by(Review.date_created.desc())
+#     )
+
+#     # Paginación
+#     total = query.count()
+#     items = query.offset((page - 1) * per_page).limit(per_page).all()
+
+
+#     return {"total": total, "page": page, "per_page": per_page, "items": items}
 def listar_reviews_by_site(site_id, page=1, per_page=10):
-    """Listar reseñas de un sitio con paginación"""
+    """Listar reseñas de un sitio con paginación, devolviendo nombre de usuario"""
     query = (
-        db.session.query(Review)
+        db.session.query(Review, PublicUser.name)
+        .join(PublicUser, Review.id_public_user == PublicUser.id_public_user)
         .filter(
             Review.id_site == site_id,
-            Review.status == ReviewStatus.APROBADA,  # Solo reseñas aprobadas
+            Review.status == ReviewStatus.APROBADA,
         )
         .order_by(Review.date_created.desc())
     )
-
     # Paginación
     total = query.count()
     items = query.offset((page - 1) * per_page).limit(per_page).all()
