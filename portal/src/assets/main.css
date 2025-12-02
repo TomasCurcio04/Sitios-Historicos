@@ -75,7 +75,12 @@ img[src*="minio"],
 
 
 /* Tipografía global */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 1rem;
@@ -90,7 +95,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Botones globales */
-.btn, button {
+.btn,
+button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -271,7 +277,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Grid horizontal responsive */
 .sites-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 12px;
 }
 
@@ -381,36 +387,36 @@ h1, h2, h3, h4, h5, h6 {
   .container {
     padding: 20px;
   }
-  
+
   .filters-toggle {
     display: none;
   }
-  
+
   .filters-section {
     max-height: none;
     padding: 20px;
     opacity: 1;
     margin-bottom: 20px;
   }
-  
+
   .sites-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 14px;
   }
-  
+
   /* Layout sidebar para tablet y desktop */
   .main-layout {
     display: flex;
     gap: 24px;
     align-items: flex-start;
   }
-  
+
   .filters-wrapper {
     flex-shrink: 0;
     width: 300px;
     margin-bottom: 0;
   }
-  
+
   .content-area {
     flex: 1;
     min-width: 0;
@@ -423,12 +429,12 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 1200px;
     padding: 24px;
   }
-  
+
   .sites-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
-  
+
   .filters-wrapper {
     width: 320px;
   }
@@ -532,33 +538,33 @@ h1, h2, h3, h4, h5, h6 {
   .hero-banner {
     padding: 40px 16px;
   }
-  
+
   .hero-content {
     flex-direction: column;
     text-align: center;
     gap: 30px;
   }
-  
+
   .hero-text {
     text-align: center;
   }
-  
+
   .hero-title {
     font-size: 2.2rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.1rem;
   }
-  
+
   .search-box {
     min-width: 280px;
   }
-  
+
   .search-input {
     padding: 14px 20px;
   }
-  
+
   .search-button {
     padding: 14px 20px;
   }
