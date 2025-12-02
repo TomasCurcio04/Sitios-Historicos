@@ -190,17 +190,35 @@ export default {
   this.api.getTags().then(res => this.tags = res.data);
   this.api.getStates().then(res => this.states = res.data);
 
-  const q = this.$route.query;
-  const page = parseInt(q.page) || 1;
+this.$watch(
+  () => this.$route.query,
+  (newQuery) => {
+    const defaults = {
+      page: 1,
+      per_page: 20,
+      radius: 100,
+      search_favorites: false,
+      order_by: 'latest',
+    };
 
-  // Si hay filtros en la URL, los cargamos al estado
-  if (Object.keys(q).length > 0) {
-    this.searchNameDesc = q.search || '';
-    this.searchCity = q.city || '';
-    this.selectedProvince = q.province || '';
+    const q = { ...defaults, ...newQuery };
+
+    // Actualizar estado
+    this.searchNameDesc = q.search;
+    this.searchCity = q.city;
+    this.selectedProvince = q.province;
     this.favorites = q.search_favorites === 'true';
-    if (q.order_by) {
-    // inicializar sortBy/sortOrder según el valor
+    this.radius = Number(q.radius);
+    this.selectedLat = q.lat ? Number(q.lat) : null;
+    this.selectedLong = q.long ? Number(q.long) : null;
+
+    if (q.tags) {
+      this.selectedTags = q.tags.split(',');
+    } else {
+      this.selectedTags = [];
+    }
+
+    // Lógica de sortBy/sortOrder
     if (q.order_by === 'latest') {
       this.sortBy = 'fecha';
       this.sortOrder = 'desc';
@@ -211,23 +229,13 @@ export default {
       this.sortBy = 'rank';
       this.sortOrder = 'desc';
     }
-  }
 
-    if (q.tags) {
-      this.selectedTags = q.tags.split(',');
-    }
+    // Ejecutar búsqueda
+    this.buscarSitios(Number(q.page));
+    },
+    { immediate: true } 
+  );},
 
-    if (q.radius) {
-      this.radius = Number(q.radius);
-    }
-
-    if (q.lat) this.selectedLat = Number(q.lat);
-    if (q.long) this.selectedLong = Number(q.long);
-  }
-
-  // Buscar usando SIEMPRE los datos de la URL
-  this.buscarSitios(page, false);
-  },
 
   mounted() {
     this.map = L.map('map').setView([-34.6037, -58.3816], 12);
