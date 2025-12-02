@@ -3,12 +3,13 @@
 from src.web.api.services.review_serv import listar_reviews_by_site
 
 
-def review_to_dict(review):
+def review_to_dict(review, public_user):
     """Convierte un objeto Review a diccionario según especificación API."""
     return {
         "id": review.id_review,
-        "public_user_id": review.id_public_user,
         "site_id": review.id_site,
+        "user_name": public_user if public_user else None,
+        "public_user_id": review.id_public_user,
         "rating": review.rating,
         "comment": review.content,
         "inserted_at": (
@@ -23,9 +24,10 @@ def review_to_dict(review):
 def get_reviews_by_site(site_id, **kwargs):
     """Listar reseñas de un sitio en formato json"""
     result = listar_reviews_by_site(site_id, **kwargs)
-
+    print(f"Esto tiene result ", result)
     # Convertir reseñas a formato JSON
-    data = [review_to_dict(review) for review in result["items"]]
+    data = [review_to_dict(review, user_name) for review, user_name in result["items"]]
+    print(f"Esto tiene data ", data)
 
     return {
         "data": data,
@@ -42,7 +44,7 @@ def create_review(site_id, review_data, public_user_id):
     from src.web.api.services.review_serv import create_review_service
 
     review = create_review_service(site_id, review_data, public_user_id)
-    return review_to_dict(review)
+    return review_to_dict(review, None)
 
 
 def get_review_by_id(review_id, site_id, include_pending=False):
@@ -54,7 +56,7 @@ def get_review_by_id(review_id, site_id, include_pending=False):
     if not review:
         return None
 
-    return review_to_dict(review)
+    return review_to_dict(review, None)
 
 
 def delete_review(review_id, site_id):

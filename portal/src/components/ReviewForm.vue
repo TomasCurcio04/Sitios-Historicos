@@ -15,8 +15,11 @@
               :key="n"
               type="button"
               class="star-btn"
-              :class="{ active: n <= rating }"
+              :class="{ active: n <= (hoverRating || rating) }"
               @click="setRating(n)"
+              @mouseover="setHover(n)"
+              @mouseleave="clearHover"
+
             >
               ★
             </button>
@@ -75,6 +78,7 @@ const emit = defineEmits(['submitted', 'cancel'])
 const { createReview } = useApi()
 
 const rating = ref(0)
+const hoverRating = ref(0)  
 const comment = ref('')
 const isSubmitting = ref(false)
 const error = ref('')
@@ -86,6 +90,13 @@ const isFormValid = computed(() => {
 
 const setRating = (newRating) => {
   rating.value = newRating
+}
+const setHover = (n) => {
+  hoverRating.value = n
+}
+
+const clearHover = () => {
+  hoverRating.value = 0
 }
 
 const submitReview = async () => {
