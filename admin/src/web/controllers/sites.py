@@ -1,13 +1,9 @@
-from sqlalchemy import or_
-from src.core.database import db
-from src.core.entity.site import Site
-from src.core.entity.site_history import SiteHistory
-from src.core.services.board.site_history_serv import SiteHistoryService
-from src.core.entity.tag import Tag
-from src.core.entity.state import State
-from src.core.entity.category import Category
+"""Controlador de gestión de sitios para el panel administrativo."""
+
 import csv
 import io
+from datetime import datetime
+from sqlalchemy import or_
 from flask import (
     Blueprint,
     request,
@@ -19,7 +15,15 @@ from flask import (
     session,
     current_app,
 )
-from datetime import datetime
+
+from src.core.database import db
+from src.core.entity.site import Site
+from src.core.entity.site_history import SiteHistory
+from src.core.services.board.site_history_serv import SiteHistoryService
+from src.core.entity.tag import Tag
+from src.core.entity.state import State
+from src.core.entity.category import Category
+from src.core.entity.site_image import SiteImage
 from src.core.services.board.busqueda_avanzada_serv import (
     buscar_sites,
     obtener_provincias_con_sitios,
@@ -27,8 +31,8 @@ from src.core.services.board.busqueda_avanzada_serv import (
     paginar_lista,
 )
 from src.core.services.board.tag_serv import obtener_todas_las_tags
-from src.core.entity.site import Site
-from src.core.entity.site_image import SiteImage
+from src.web.handlers.utils import permissions_required
+
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
@@ -38,9 +42,6 @@ bp = Blueprint("sites", __name__, url_prefix="/sitios")
 # =====================================================
 # LISTAR SITIOS CON FILTROS Y PAGINACIÓN
 # =====================================================
-
-
-bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
 
 def parse_date(s):
@@ -315,6 +316,7 @@ def eliminar(site_id):
 # HISTORIAL DE CAMBIOS DE SITIO
 # =====================================================
 @bp.get("/<int:site_id>/historial")
+@permissions_required("site_history", ["view"])
 def historial(site_id):
     """Muestra el historial de cambios de un sitio."""
     sitio = db.session.get(Site, site_id)
