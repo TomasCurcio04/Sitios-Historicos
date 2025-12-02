@@ -13,13 +13,13 @@
             @keyup.enter="emitSearch"
             type="text"
             placeholder="Buscar un sitio..."
-            class="search-input"
+            class="search-input mobile-hidden"
           />
           <button
             @click="emitSearch"
-            class="search-button"
+            class="search-button mobile-full-width"
           >
-            🔍
+            🔍 <span class="mobile-only">Ver Sitios</span>
           </button>
         </div>
       </div>
@@ -29,12 +29,24 @@
 
 <script>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'SearchHero',
   setup(_, { emit }) {
     const search = ref('')
-    const emitSearch = () => emit('search', search.value)
+    const router = useRouter()
+    
+    const emitSearch = () => {
+      if (window.innerWidth < 768) {
+        // En móviles, navegar directamente a la lista de sitios
+        router.push({ path: '/sites-list', query: search.value ? { q: search.value } : {} })
+      } else {
+        // En desktop, usar el comportamiento original
+        emit('search', search.value)
+      }
+    }
+    
     return { search, emitSearch }
   },
 }
