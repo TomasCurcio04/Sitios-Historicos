@@ -199,6 +199,19 @@ export default {
     this.searchCity = q.city || '';
     this.selectedProvince = q.province || '';
     this.favorites = q.search_favorites === 'true';
+    if (q.order_by) {
+    // inicializar sortBy/sortOrder según el valor
+    if (q.order_by === 'latest') {
+      this.sortBy = 'fecha';
+      this.sortOrder = 'desc';
+    } else if (q.order_by === 'most-visited') {
+      this.sortBy = 'visitas';
+      this.sortOrder = 'desc';
+    } else if (q.order_by === 'rating-5-1') {
+      this.sortBy = 'rank';
+      this.sortOrder = 'desc';
+    }
+  }
 
     if (q.tags) {
       this.selectedTags = q.tags.split(',');
@@ -282,14 +295,18 @@ export default {
       }
       if (this.radius) params.radius = this.radius;
 
-      // Generar order_by según selects
-      const map = {
+       const map = {
         nombre: { asc: "name-asc", desc: "name-desc" },
         rank: { asc: "rating-1-5", desc: "rating-5-1" },
         fecha: { asc: "oldest", desc: "latest" },
-        visitas: { asc: "most-visited", desc: "most-visited" }
+        visitas: { asc: "most-visited", desc: "most-visited" },
+        "most-visited": "most-visited",
+        "rating-5-1": "rating-5-1",
+        "latest": "latest"
       };
+
       params.order_by = map[this.sortBy][this.sortOrder];
+
 
       if (
         JSON.stringify(this.$route.query) !== JSON.stringify(params)

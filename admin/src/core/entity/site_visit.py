@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Modelo de visitas de sitio para la tabla 'site_visit' en la base de datos."""
 
 from typing import TYPE_CHECKING
@@ -17,7 +16,7 @@ class SiteVisit(Base):
 
     id_site: Mapped[int] = mapped_column(ForeignKey("site.id_site"), primary_key=True)
     visit_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    
+
     # Relación con sitio
     site_rel: Mapped["Site"] = relationship("Site", back_populates="visits")
 

@@ -103,18 +103,28 @@
                     </span>
                 </td>
                 <td>
-                    {% if user.active %}
-                    <a href="{{ url_for('users.user_edit', user_id=user.id_user) }}" class="btn btn-unified btn-sm me-2">Editar</a>
-                    <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
-                        {% if not user.rol_rel.name == 'admin' %}
-                        <button type="submit" class="btn btn-unified btn-sm me-2"
-                            onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
-                            Eliminar
-                        </button>
-                        {% endif %}
-                    </form>
-                    {% endif %}
-                </td>
+            {% if user.active %}
+            <a href="{{ url_for('users.user_edit', user_id=user.id_user) }}" class="btn btn-unified btn-sm me-2">Editar</a>
+
+            <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
+                {% if not user.rol_rel.name == 'admin' %}
+                <button type="submit" class="btn btn-unified btn-sm me-2"
+                    onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
+                    Eliminar
+                </button>
+                {% endif %}
+            </form>
+
+            {% else %}
+            <form action="{{ url_for('users.user_activate', user_id=user.id_user) }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-success btn-sm me-2"
+                    onclick="return confirm('¿Reactivar usuario {{ user.user_name }}?');">
+                    Reactivar
+                </button>
+            </form>
+            {% endif %}
+        </td>
+
             </tr>
             {% endfor %}
         </tbody>

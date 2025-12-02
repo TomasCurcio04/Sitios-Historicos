@@ -1,5 +1,3 @@
-# pylint: disable=import-error
-# pylint: disable=unused-variable
 """Script de semillas para la base de datos."""
 
 from src.core.services import board
@@ -18,9 +16,18 @@ from src.core.entity.site_visit import SiteVisit
 from src.core.entity.site_favorite import SiteFavorite
 
 
-
 def run():
-    """Función para ejecutar el script de semillas."""
+    """Función para ejecutar el script de rellenado.
+
+    Crea permisos, roles, usuarios, estados, tags, sitios, imágenes, flags
+    y reseñas de ejemplo.
+
+    Args:
+        None
+
+    Returns:
+       Mensaje de éxito al completar la operación.
+    """
 
     permissions1 = create_permission(
         permission_name="site_view", permission_description="Ver el Sitio"
@@ -100,11 +107,9 @@ def run():
         permission_name="review_publish", permission_description="Publicar Reseña"
     )
 
-
     role1 = create_role(name="admin", description="Administrador")
     role2 = create_role(name="editor", description="Editor")
     role3 = create_role(name="moderator", description="Moderador")
-    # role4 = create_role(name="public", description="Usuario Publico")
 
     role1.permission = [
         permissions1,
@@ -147,12 +152,6 @@ def run():
         permission20,
         permission24,
     ]
-    # role4.permission = [
-    #     permission21,
-    #     permission22,
-    #     permission23,
-    #     permission25,
-    # ]
 
     user1 = create_user(
         user_name="admin",
@@ -687,197 +686,194 @@ def run():
         created_by=user1.id_user,
         tag=[board_tag2, board_tag5, board_tag12],
     )
- 
-   
 
     # Crear imágenes para los sitios con rutas reales de MinIO
     site_images = [
-    SiteImage(
-        site_id=site1.id_site,
-        image_path="public/sites/1/da8d038a-0cee-45f8-a293-abd0951149f5.jpg",
-        title="Cerro de los 7 colores",
-        description="Imagen del Cerro de los 7 colores",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site2.id_site,
-        image_path="public/sites/2/1d02d758-7ac9-47c9-9c91-7066a44f7cc1.jpg",
-        title="La Cueva de las Manos",
-        description="Imagen de La Cueva de las Manos",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site3.id_site,
-        image_path="public/sites/3/6b9fd85a-aa11-4f75-9d30-dd6d0a643996.jpg",
-        title="La Manzana Jesuítica",
-        description="Imagen de La Manzana Jesuítica",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site4.id_site,
-        image_path="public/sites/4/918ed3e6-e111-40a9-8298-61f321530e2b.jpg",
-        title="Cabildo de Buenos Aires",
-        description="Imagen del Cabildo de Buenos Aires",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site5.id_site,
-        image_path="public/sites/5/241e7979-14fb-410b-90e4-821cee6ea492.jpg",
-        title="Catedral de Salta",
-        description="Imagen de la Catedral de Salta",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site6.id_site,
-        image_path="public/sites/6/e8eb9dcd-0f6d-490c-85dc-8a44d8b55a4d.jpeg",
-        title="Glaciar Perito Moreno",
-        description="Imagen del Glaciar Perito Moreno",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site9.id_site,
-        image_path="public/sites/9/f5ec8d77-429a-4053-b556-a0ed8b8d1379.jpeg",
-        title="Aconcagua",
-        description="Imagen del Aconcagua",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site10.id_site,
-        image_path="public/sites/10/80624add-3ad0-484a-a9a2-aa9564ef39ff.jpeg",
-        title="Casa Rosada",
-        description="Imagen de la Casa Rosada",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site11.id_site,
-        image_path="public/sites/11/a87c4b33-ea7c-4963-9eeb-3412598a8d78.jpeg",
-        title="Cataratas del Iguazú",
-        description="Imagen de las Cataratas del Iguazú",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site13.id_site,
-        image_path="public/sites/13/1b687aa7-11cd-46cd-8906-ab3422a7a686.jpeg",
-        title="Monumento a la Bandera",
-        description="Imagen del Monumento a la Bandera",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site16.id_site,
-        image_path="public/sites/16/738c89b5-7e98-498c-bd2e-fbba42f4b5fa.webp",
-        title="Ushuaia",
-        description="Imagen de Ushuaia",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site17.id_site,
-        image_path="public/sites/17/f0f119f9-bed2-4a3a-8622-5d04bb045c0c.jpeg",
-        title="Parque Nacional Los Glaciares",
-        description="Imagen del Parque Nacional Los Glaciares",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site18.id_site,
-        image_path="public/sites/18/4e657abf-a34b-43f4-af7c-108c22b42763.jpeg",
-        title="Esteros del Iberá",
-        description="Imagen de los Esteros del Iberá",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site19.id_site,
-        image_path="public/sites/19/a836b970-75ea-47c1-8ed6-851ca3cb2ae3.jpeg",
-        title="Parque Nacional Talampaya",
-        description="Imagen del Parque Nacional Talampaya",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site20.id_site,
-        image_path="public/sites/20/e20fbc16-80fc-437f-9e8b-8833fcb32750.jpg",
-        title="Bariloche",
-        description="Imagen de Bariloche",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site21.id_site,
-        image_path="public/sites/21/c5c4c6f9-06fc-43bd-b450-8ee3a62fd0d5.jpg",
-        title="Parque Nacional Ischigualasto",
-        description="Imagen del Parque Nacional Ischigualasto",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site22.id_site,
-        image_path="public/sites/22/34ec6bcd-82a6-4256-a6d5-58bf893679c7.jpg",
-        title="Caminito",
-        description="Imagen de Caminito",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site23.id_site,
-        image_path="public/sites/23/afb87af5-8d14-4b45-b9e4-ec4d4a4dbb79.jpg",
-        title="Parque Nacional Los Cardones",
-        description="Imagen del Parque Nacional Los Cardones",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site25.id_site,
-        image_path="public/sites/25/5f66a631-0838-45e8-8a26-3e4bb9b4ee64.jpg",
-        title="Parque Nacional El Palmar",
-        description="Imagen del Parque Nacional El Palmar",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site26.id_site,
-        image_path="public/sites/26/2ff1c912-626b-440f-9950-332a909f235c.jpg",
-        title="Parque Nacional Calilegua",
-        description="Imagen del Parque Nacional Calilegua",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site27.id_site,
-        image_path="public/sites/27/d9e99acc-9c81-4cbc-80c8-6849c9626cfa.jpg",
-        title="Parque Nacional Lanín",
-        description="Imagen del Parque Nacional Lanín",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site28.id_site,
-        image_path="public/sites/28/aa06b73f-e834-4427-834c-478ebdc71e92.jpg",
-        title="Parque Nacional Chaco",
-        description="Imagen del Parque Nacional Chaco",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-    SiteImage(
-        site_id=site29.id_site,
-        image_path="public/sites/29/728ae69e-1337-481c-a52a-e45764fd7d03.jpg",
-        title="Parque Nacional Lihué Calel",
-        description="Imagen del Parque Nacional Lihué Calel",
-        display_order=1,
-        is_thumbnail=True,
-    ),
-]
-
+        SiteImage(
+            site_id=site1.id_site,
+            image_path="public/sites/1/da8d038a-0cee-45f8-a293-abd0951149f5.jpg",
+            title="Cerro de los 7 colores",
+            description="Imagen del Cerro de los 7 colores",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site2.id_site,
+            image_path="public/sites/2/1d02d758-7ac9-47c9-9c91-7066a44f7cc1.jpg",
+            title="La Cueva de las Manos",
+            description="Imagen de La Cueva de las Manos",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site3.id_site,
+            image_path="public/sites/3/6b9fd85a-aa11-4f75-9d30-dd6d0a643996.jpg",
+            title="La Manzana Jesuítica",
+            description="Imagen de La Manzana Jesuítica",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site4.id_site,
+            image_path="public/sites/4/918ed3e6-e111-40a9-8298-61f321530e2b.jpg",
+            title="Cabildo de Buenos Aires",
+            description="Imagen del Cabildo de Buenos Aires",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site5.id_site,
+            image_path="public/sites/5/241e7979-14fb-410b-90e4-821cee6ea492.jpg",
+            title="Catedral de Salta",
+            description="Imagen de la Catedral de Salta",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site6.id_site,
+            image_path="public/sites/6/e8eb9dcd-0f6d-490c-85dc-8a44d8b55a4d.jpeg",
+            title="Glaciar Perito Moreno",
+            description="Imagen del Glaciar Perito Moreno",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site9.id_site,
+            image_path="public/sites/9/f5ec8d77-429a-4053-b556-a0ed8b8d1379.jpeg",
+            title="Aconcagua",
+            description="Imagen del Aconcagua",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site10.id_site,
+            image_path="public/sites/10/80624add-3ad0-484a-a9a2-aa9564ef39ff.jpeg",
+            title="Casa Rosada",
+            description="Imagen de la Casa Rosada",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site11.id_site,
+            image_path="public/sites/11/a87c4b33-ea7c-4963-9eeb-3412598a8d78.jpeg",
+            title="Cataratas del Iguazú",
+            description="Imagen de las Cataratas del Iguazú",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site13.id_site,
+            image_path="public/sites/13/1b687aa7-11cd-46cd-8906-ab3422a7a686.jpeg",
+            title="Monumento a la Bandera",
+            description="Imagen del Monumento a la Bandera",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site16.id_site,
+            image_path="public/sites/16/738c89b5-7e98-498c-bd2e-fbba42f4b5fa.webp",
+            title="Ushuaia",
+            description="Imagen de Ushuaia",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site17.id_site,
+            image_path="public/sites/17/f0f119f9-bed2-4a3a-8622-5d04bb045c0c.jpeg",
+            title="Parque Nacional Los Glaciares",
+            description="Imagen del Parque Nacional Los Glaciares",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site18.id_site,
+            image_path="public/sites/18/4e657abf-a34b-43f4-af7c-108c22b42763.jpeg",
+            title="Esteros del Iberá",
+            description="Imagen de los Esteros del Iberá",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site19.id_site,
+            image_path="public/sites/19/a836b970-75ea-47c1-8ed6-851ca3cb2ae3.jpeg",
+            title="Parque Nacional Talampaya",
+            description="Imagen del Parque Nacional Talampaya",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site20.id_site,
+            image_path="public/sites/20/e20fbc16-80fc-437f-9e8b-8833fcb32750.jpg",
+            title="Bariloche",
+            description="Imagen de Bariloche",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site21.id_site,
+            image_path="public/sites/21/c5c4c6f9-06fc-43bd-b450-8ee3a62fd0d5.jpg",
+            title="Parque Nacional Ischigualasto",
+            description="Imagen del Parque Nacional Ischigualasto",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site22.id_site,
+            image_path="public/sites/22/34ec6bcd-82a6-4256-a6d5-58bf893679c7.jpg",
+            title="Caminito",
+            description="Imagen de Caminito",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site23.id_site,
+            image_path="public/sites/23/afb87af5-8d14-4b45-b9e4-ec4d4a4dbb79.jpg",
+            title="Parque Nacional Los Cardones",
+            description="Imagen del Parque Nacional Los Cardones",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site25.id_site,
+            image_path="public/sites/25/5f66a631-0838-45e8-8a26-3e4bb9b4ee64.jpg",
+            title="Parque Nacional El Palmar",
+            description="Imagen del Parque Nacional El Palmar",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site26.id_site,
+            image_path="public/sites/26/2ff1c912-626b-440f-9950-332a909f235c.jpg",
+            title="Parque Nacional Calilegua",
+            description="Imagen del Parque Nacional Calilegua",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site27.id_site,
+            image_path="public/sites/27/d9e99acc-9c81-4cbc-80c8-6849c9626cfa.jpg",
+            title="Parque Nacional Lanín",
+            description="Imagen del Parque Nacional Lanín",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site28.id_site,
+            image_path="public/sites/28/aa06b73f-e834-4427-834c-478ebdc71e92.jpg",
+            title="Parque Nacional Chaco",
+            description="Imagen del Parque Nacional Chaco",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+        SiteImage(
+            site_id=site29.id_site,
+            image_path="public/sites/29/728ae69e-1337-481c-a52a-e45764fd7d03.jpg",
+            title="Parque Nacional Lihué Calel",
+            description="Imagen del Parque Nacional Lihué Calel",
+            display_order=1,
+            is_thumbnail=True,
+        ),
+    ]
 
     db.session.add_all(site_images)
     db.session.commit()
@@ -918,49 +914,49 @@ def run():
             google_id="test_user_123",
             email="test@example.com",
             name="Usuario Test",
-            picture=None
+            picture=None,
         ),
         PublicUser(
             google_id="116917976420947408041",
             email="javiercostas1981@gmail.com",
             name="Javier Costas",
-            picture="https://lh3.googleusercontent.com/a/ACg8ocLLuvunPoKggx2eUwqrv-8siwyxGBtwCWFjFtJCPXbEiFgU3nI=s96-c"
+            picture="https://lh3.googleusercontent.com/a/ACg8ocLLuvunPoKggx2eUwqrv-8siwyxGBtwCWFjFtJCPXbEiFgU3nI=s96-c",
         ),
         PublicUser(
             google_id="116656059833616552757",
             email="franciscogarrubba@gmail.com",
             name="Francisco Garrubba",
-            picture="https://lh3.googleusercontent.com/a/ACg8ocI_W2P42qYa4RAsBiwcmVmq4lCfTz3cYf-KrXg245Om4jMBAg=s96-c"
+            picture="https://lh3.googleusercontent.com/a/ACg8ocI_W2P42qYa4RAsBiwcmVmq4lCfTz3cYf-KrXg245Om4jMBAg=s96-c",
         ),
         PublicUser(
             google_id="100268899397354823737",
             email="humorgf@gmail.com",
             name="Javier Tooshort",
-            picture="https://lh3.googleusercontent.com/a/ACg8ocIaTowKY75L3nKl_QlgXCkefKTfv1gzdGNX9Lhp7MbQ5Ajrow=s96-c"
+            picture="https://lh3.googleusercontent.com/a/ACg8ocIaTowKY75L3nKl_QlgXCkefKTfv1gzdGNX9Lhp7MbQ5Ajrow=s96-c",
         ),
         PublicUser(
             google_id="106790879917519349421",
             email="tomicurcio1@gmail.com",
             name="Tomas Curcio",
-            picture="https://lh3.googleusercontent.com/a/ACg8ocJvcfSBuptQmMCRxUG4aVSrrPaBU9rCaLibOyZn1Ac-FLm4uHU=s96-c"
+            picture="https://lh3.googleusercontent.com/a/ACg8ocJvcfSBuptQmMCRxUG4aVSrrPaBU9rCaLibOyZn1Ac-FLm4uHU=s96-c",
         ),
         PublicUser(
             google_id="104028065698159628576",
             email="notevagustar7925@gmail.com",
             name="roman riquelme",
-            picture="https://lh3.googleusercontent.com/a/ACg8ocL9etGzxn8OVqbAOeLA1kQ2JeYZdumP1jJfOkHCeV2fdYZZaw=s96-c"
+            picture="https://lh3.googleusercontent.com/a/ACg8ocL9etGzxn8OVqbAOeLA1kQ2JeYZdumP1jJfOkHCeV2fdYZZaw=s96-c",
         ),
         PublicUser(
             google_id="104358394811490563545",
             email="nicomontviv@gmail.com",
             name="Nicolás Montanari",
-            picture="https://lh3.googleusercontent.com/a/ACg8ocICDHr327aTUgXYM2_Y-VrR7MAYfLlylUoxsuQEJi9vSIRXsQM=s96-c"
-        )
+            picture="https://lh3.googleusercontent.com/a/ACg8ocICDHr327aTUgXYM2_Y-VrR7MAYfLlylUoxsuQEJi9vSIRXsQM=s96-c",
+        ),
     ]
-    
+
     db.session.add_all(public_users)
     db.session.commit()
-    
+
     public_user4 = public_users[3]  # Javier Tooshort
 
     # Crear reseñas excelentes para el Cerro de los 7 colores y otros 4 sitios
@@ -970,36 +966,36 @@ def run():
             id_public_user=public_user4.id_public_user,
             rating=5,
             content="¡Absolutamente espectacular! El Cerro de los 7 colores es una maravilla natural que te deja sin palabras.",
-            status=ReviewStatus.APROBADA
+            status=ReviewStatus.APROBADA,
         ),
         Review(
             id_site=site2.id_site,
             id_public_user=public_user4.id_public_user,
             rating=5,
             content="Una experiencia única e impresionante. Ver las pinturas rupestres de más de 9000 años es increíble.",
-            status=ReviewStatus.APROBADA
+            status=ReviewStatus.APROBADA,
         ),
         Review(
             id_site=site11.id_site,
             id_public_user=public_user4.id_public_user,
             rating=5,
             content="Las cataratas del Iguazú son simplemente impresionantes. Una de las maravillas naturales más increíbles.",
-            status=ReviewStatus.APROBADA
+            status=ReviewStatus.APROBADA,
         ),
         Review(
             id_site=site6.id_site,
             id_public_user=public_user4.id_public_user,
             rating=5,
             content="Ver el Glaciar Perito Moreno es una experiencia que nunca olvidarás. Simplemente mágico.",
-            status=ReviewStatus.APROBADA
+            status=ReviewStatus.APROBADA,
         ),
         Review(
             id_site=site7.id_site,
             id_public_user=public_user4.id_public_user,
             rating=5,
             content="El Teatro Colón es una joya arquitectónica y cultural. Una experiencia cultural inolvidable.",
-            status=ReviewStatus.APROBADA
-        )
+            status=ReviewStatus.APROBADA,
+        ),
     ]
 
     db.session.add_all(reviews)

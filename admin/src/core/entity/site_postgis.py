@@ -1,5 +1,5 @@
-# pylint: disable=import-error
 """Modelo de sitio histórico con PostGIS para búsquedas geoespaciales."""
+
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 
@@ -14,7 +14,8 @@ from sqlalchemy import (
     Table,
     Column,
 )
-from geoalchemy2 import Geography
+
+# from geoalchemy2 import Geography
 from src.core.database import Base
 
 if TYPE_CHECKING:
@@ -49,10 +50,10 @@ class Site(Base):
     city: Mapped[str] = mapped_column(String(50), nullable=False)
     state: Mapped[int] = mapped_column(ForeignKey("state.id_state"), nullable=False)
     state_rel: Mapped["State"] = relationship(back_populates="sites")
-    
+
     # PostGIS: Reemplaza latitude/longitude con un punto geográfico
-    location: Mapped[str] = mapped_column(Geography('POINT', srid=4326))
-    
+    # location: Mapped[str] = mapped_column(Geography("POINT", srid=4326))
+
     conservation_state: Mapped[str] = mapped_column(String(20), nullable=True)
     inauguration_year: Mapped[int] = mapped_column(Integer, nullable=True)
     category: Mapped[int] = mapped_column(
@@ -64,7 +65,7 @@ class Site(Base):
     )
     is_visible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    
+
     # Relaciones
     tag: Mapped[list["Tag"]] = relationship(secondary=site_tag)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id_user"), nullable=False)
@@ -72,8 +73,12 @@ class Site(Base):
     history: Mapped[list["SiteHistory"]] = relationship(back_populates="site_rel")
     images: Mapped[list["SiteImage"]] = relationship(back_populates="site_rel")
     reviews: Mapped[list["Review"]] = relationship("Review", back_populates="site_rel")
-    visits: Mapped["SiteVisit"] = relationship("SiteVisit", back_populates="site_rel", uselist=False)
-    favorites: Mapped[list["SiteFavorite"]] = relationship("SiteFavorite", back_populates="site_rel")
+    visits: Mapped["SiteVisit"] = relationship(
+        "SiteVisit", back_populates="site_rel", uselist=False
+    )
+    favorites: Mapped[list["SiteFavorite"]] = relationship(
+        "SiteFavorite", back_populates="site_rel"
+    )
 
     def __repr__(self):
         return f"<Site(name='{self.name}', state='{self.state}', is_visible={self.is_visible})>"

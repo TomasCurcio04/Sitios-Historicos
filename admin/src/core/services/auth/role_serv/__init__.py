@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Servicio de roles."""
 
 from src.core.database import db
@@ -8,7 +7,7 @@ from src.core.entity.users import Users
 
 def list_roles():
     """Lista todos los roles del sistema.
-    
+
     Returns:
         Lista de roles
     """
@@ -18,10 +17,10 @@ def list_roles():
 
 def create_role(**kwargs):
     """Crea un nuevo rol.
-    
+
     Args:
         **kwargs: Datos del rol
-    
+
     Returns:
         Rol creado
     """
@@ -35,13 +34,13 @@ def create_role(**kwargs):
 
 def assign_role(user_id, role_id):
     """Asigna un rol a un usuario.
-    
+
     Args:
-        user_id: ID del usuario
-        role_id: ID del rol
-    
+        user_id (int): ID del usuario.
+        role_id (int): ID del rol.
+
     Returns:
-        Usuario con rol asignado
+        Users: Usuario actualizado con el rol asignado.
     """
     session = db.session
     user = session.query(Users).get(user_id)

@@ -1,7 +1,5 @@
 """Modelo de permiso para la tabla 'permission' en la base de datos."""
 
-# pylint: disable=import-error
-
 from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column

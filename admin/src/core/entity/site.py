@@ -1,5 +1,5 @@
-# pylint: disable=import-error
 """Modelo de sitio histórico para la tabla 'site' en la base de datos."""
+
 from typing import TYPE_CHECKING
 from datetime import datetime, timezone
 

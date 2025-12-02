@@ -1,5 +1,5 @@
-# pylint: disable=import-error
 """Modelo de categoría para la tabla 'category' en la base de datos."""
+
 from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column

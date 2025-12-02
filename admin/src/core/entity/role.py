@@ -1,6 +1,5 @@
 """Modelo de rol para la tabla 'role' en la base de datos."""
 
-# pylint: disable=import-error
 from typing import TYPE_CHECKING
 from sqlalchemy import String, ForeignKey, Table, Column
 from sqlalchemy.orm import relationship, Mapped, mapped_column

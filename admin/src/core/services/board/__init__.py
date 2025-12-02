@@ -20,14 +20,15 @@ from src.core.entity.review import Review
 USE_JSON = False  # Cambiar a True solo si querés usar JSON en lugar de DB
 DATA_FILE = os.path.join(os.path.dirname(__file__), "sites.json")
 
+
 # -------------------------
 # Funciones de JSON
 # -------------------------
 def load_sites():
     """Carga sitios desde archivo JSON.
-    
+
     Returns:
-        Lista de sitios o lista vacía si no existe el archivo
+        list: Lista de sitios desde el archivo JSON o lista vacía si no existe o hay error.
     """
     if not os.path.exists(DATA_FILE):
         return []
@@ -37,29 +38,32 @@ def load_sites():
         except json.JSONDecodeError:
             return []
 
+
 def save_sites(sites):
     """Guarda sitios en archivo JSON.
-    
+
     Args:
-        sites: Lista de sitios a guardar
+        sites (list): Lista de sitios a serializar y guardar.
     """
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(sites, f, ensure_ascii=False, indent=4)
 
+
 def get_all_sites_json():
     """Obtiene todos los sitios desde JSON.
-    
+
     Returns:
         Lista de todos los sitios
     """
     return load_sites()
 
+
 def get_site_json(site_id):
     """Obtiene un sitio específico desde JSON.
-    
+
     Args:
         site_id: ID del sitio a buscar
-    
+
     Returns:
         Sitio encontrado o None
     """
@@ -68,12 +72,13 @@ def get_site_json(site_id):
             return site
     return None
 
+
 def create_site_json(data):
     """Crea un nuevo sitio en JSON.
-    
+
     Args:
         data: Datos del sitio a crear
-    
+
     Returns:
         Sitio creado con ID asignado
     """
@@ -85,6 +90,7 @@ def create_site_json(data):
     save_sites(sites)
     return data
 
+
 def update_site_json(site_id, updated_data):
     sites = load_sites()
     for i, site in enumerate(sites):
@@ -93,6 +99,7 @@ def update_site_json(site_id, updated_data):
             save_sites(sites)
             return sites[i]
     return None
+
 
 def delete_site_json(site_id):
     sites = load_sites()
@@ -103,12 +110,13 @@ def delete_site_json(site_id):
             return True
     return False
 
+
 # -------------------------
 # Funciones de sitios usando DB
 # -------------------------
 def list_sites():
     """Lista todos los sitios históricos.
-    
+
     Returns:
         Lista de sitios desde DB o JSON según configuración
     """
@@ -117,28 +125,30 @@ def list_sites():
     session = db.session
     return session.query(Site).all()
 
+
 def get_site(site_id):
     """Obtiene un sitio por su ID.
-    
+
     Args:
-        site_id: ID del sitio a buscar
-    
+        site_id (int): ID del sitio a buscar.
+
     Returns:
-        Sitio encontrado o None
+        Site | dict | None: Objeto Site (DB) o dict (JSON mode) o None si no se encuentra.
     """
     if USE_JSON:
         return get_site_json(site_id)
     session = db.session
     return session.get(Site, site_id)
 
+
 def create_site(**kwargs):
     """Crea un nuevo sitio histórico.
-    
+
     Args:
-        **kwargs: Datos del sitio a crear
-    
+        **kwargs: Campos del sitio a crear.
+
     Returns:
-        Sitio creado
+        Site | dict: Instancia creada (DB) o dict (JSON mode).
     """
     if USE_JSON:
         return create_site_json(kwargs)
@@ -149,7 +159,17 @@ def create_site(**kwargs):
     session.refresh(site)
     return site
 
+
 def update_site(site_id, **kwargs):
+    """Actualiza un sitio existente.
+
+    Args:
+        site_id (int): ID del sitio a actualizar.
+        **kwargs: Campos a actualizar.
+
+    Returns:
+        Site | dict | None: Sitio actualizado o None si no existe.
+    """
     if USE_JSON:
         return update_site_json(site_id, kwargs)
     session = db.session
@@ -160,7 +180,16 @@ def update_site(site_id, **kwargs):
     session.refresh(site)
     return site
 
+
 def delete_site(site_id):
+    """Elimina un sitio por ID.
+
+    Args:
+        site_id (int): ID del sitio a eliminar.
+
+    Returns:
+        bool: True si se eliminó, False si no se encontró.
+    """
     if USE_JSON:
         return delete_site_json(site_id)
     session = db.session
@@ -169,17 +198,29 @@ def delete_site(site_id):
     session.commit()
     return True
 
+
 # -------------------------
 # Funciones de reseñas usando DB
 # -------------------------
 
+
 def create_review(**kwargs):
+    """Crea una reseña asociada a un sitio.
+
+    Args:
+        **kwargs: Campos de la reseña.
+
+    Returns:
+        Review: Instancia de reseña creada.
+    """
     review = Review(**kwargs)
     session = db.session
     session.add(review)
     session.commit()
     session.refresh(review)
     return review
+
+
 # -------------------------
 # Funciones de asignación
 # -------------------------
@@ -191,6 +232,7 @@ def assign_user(site, user):
     session.refresh(site)
     return site
 
+
 def assign_category_to_site(category, site):
     session = db.session
     site = session.merge(site)
@@ -198,6 +240,7 @@ def assign_category_to_site(category, site):
     session.commit()
     session.refresh(site)
     return site
+
 
 def assign_state_to_site(state, site):
     session = db.session
@@ -207,7 +250,17 @@ def assign_state_to_site(state, site):
     session.refresh(site)
     return site
 
+
 def assign_tag_to_site(tag, site):
+    """Asocia una etiqueta (tag) a un sitio si no existe ya.
+
+    Args:
+        tag (Tag): Objeto tag a asociar.
+        site (Site): Objeto site al que se asociará la etiqueta.
+
+    Returns:
+        Site: Sitio actualizado con la etiqueta asociada.
+    """
     session = db.session
     site = session.merge(site)
     if tag not in site.tag:
@@ -216,24 +269,26 @@ def assign_tag_to_site(tag, site):
     session.refresh(site)
     return site
 
+
 # -------------------------
 # Funciones de categorías
 # -------------------------
 def list_categories():
     """Lista todas las categorías disponibles.
-    
+
     Returns:
         Lista de categorías
     """
     session = db.session
     return session.query(Category).all()
 
+
 def create_category(**kwargs):
     """Crea una nueva categoría.
-    
+
     Args:
         **kwargs: Datos de la categoría
-    
+
     Returns:
         Categoría creada
     """
@@ -244,24 +299,26 @@ def create_category(**kwargs):
     session.refresh(category)
     return category
 
+
 # -------------------------
 # Funciones de estados/provincias
 # -------------------------
 def list_states():
     """Lista todos los estados/provincias.
-    
+
     Returns:
         Lista de estados
     """
     session = db.session
     return session.query(State).all()
 
+
 def create_state(**kwargs):
     """Crea un nuevo estado/provincia.
-    
+
     Args:
         **kwargs: Datos del estado
-    
+
     Returns:
         Estado creado
     """
@@ -272,12 +329,14 @@ def create_state(**kwargs):
     session.refresh(state)
     return state
 
+
 # -------------------------
 # Funciones de historial de sitios
 # -------------------------
 def list_site_history():
     session = db.session
     return session.query(SiteHistory).all()
+
 
 def create_site_history(**kwargs):
     site_history = SiteHistory(**kwargs)
@@ -287,6 +346,7 @@ def create_site_history(**kwargs):
     session.refresh(site_history)
     return site_history
 
+
 def assign_site_to_history(site_history, site):
     session = db.session
     site_history = session.merge(site_history)
@@ -294,6 +354,7 @@ def assign_site_to_history(site_history, site):
     session.commit()
     session.refresh(site_history)
     return site_history
+
 
 def assign_user_to_history(site_history, user):
     session = db.session
@@ -303,6 +364,7 @@ def assign_user_to_history(site_history, user):
     session.refresh(site_history)
     return site_history
 
+
 # -------------------------
 # Funciones de tags
 # -------------------------
@@ -310,12 +372,13 @@ def list_tags():
     session = db.session
     return session.query(Tag).all()
 
+
 def create_tag(**kwargs):
     """Crea una nueva etiqueta.
-    
+
     Args:
         **kwargs: Datos de la etiqueta
-    
+
     Returns:
         Etiqueta creada
     """

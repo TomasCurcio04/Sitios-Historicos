@@ -49,14 +49,26 @@ export function useApi() {
         })
     },
     getMyReviews(params = {}) {
-    const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('auth_token');
 
-    return apiClient.get('/me/reviews', {
-      params,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }); 
-  }
+      return apiClient.get('/me/reviews', {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    },
+    createReview(siteId, reviewData) {
+
+      const token = localStorage.getItem('auth_token');
+      return apiClient.post(`/sites/${siteId}/reviews`, reviewData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      });
+    },
+    getSiteReviews(siteId, params = {}) {
+      return apiClient.get(`/sites/${siteId}/reviews`, { params });
+    }
   }
 };

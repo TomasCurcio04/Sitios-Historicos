@@ -1,4 +1,3 @@
-# pylint: disable=import-error
 """Utilidades para la aplicación web."""
 
 from flask import flash, session as current_user, abort, redirect, url_for
@@ -9,10 +8,10 @@ from src.core.services.auth.feature_flag_serv import get_feature_flag
 # Middleware para modo mantenimiento de administración
 def admin_maintenance_required(view):
     """Decorator que verifica el estado de mantenimiento administrativo.
-    
+
     Args:
         view: Función de vista a decorar
-    
+
     Returns:
         Función decorada que verifica mantenimiento
     """
@@ -34,7 +33,7 @@ def admin_maintenance_required(view):
 
 def usuario_actual():
     """Obtiene el usuario actual desde la sesión.
-    
+
     Returns:
         Usuario actual o None si no hay sesión
     """
