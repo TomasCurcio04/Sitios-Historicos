@@ -26,28 +26,23 @@ const decodeJWT = (token) => {
 const checkSession = async () => {
   loading.value = true
   try {
-    const params = new URLSearchParams(window.location.search)
-    const tokenFromUrl = params.get('auth_token')
-    
-    if (tokenFromUrl) {
-      localStorage.setItem('auth_token', tokenFromUrl)
-      window.history.replaceState({}, document.title, window.location.pathname)
-      loggedIn.value = true
-      
-      // Decodificar JWT para obtener datos del usuario
-      const decoded = decodeJWT(tokenFromUrl)
-      if (decoded) {
-        user.value = {
-          id: decoded.public_user_id,
-          email: decoded.email,
-          name: decoded.name,
-          picture: decoded.picture
-        }
-      }
-    } else {
-      const token = localStorage.getItem('auth_token')
+    // Intentar obtener token del backend
+    const tokenResp = await fetch(`${API_URL}/api/auth/token`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+    if (tokenResp.ok) {
+      const data = await tokenResp.json()
+      const token = data?.access_token
+
       if (token) {
+        // Guardar token en localStorage
+        localStorage.setItem('auth_token', token)
         loggedIn.value = true
+
+        // Decodificar JWT para obtener datos del usuario
         const decoded = decodeJWT(token)
         if (decoded) {
           user.value = {
@@ -57,13 +52,19 @@ const checkSession = async () => {
             picture: decoded.picture
           }
         }
-      } else {
-        loggedIn.value = false
-        user.value = null
+        return
       }
     }
+
+    // Si no hay token disponible → limpiar
+    loggedIn.value = false
+    user.value = null
+    localStorage.removeItem('auth_token')
   } catch (err) {
     console.warn('Error checking session:', err)
+    loggedIn.value = false
+    user.value = null
+    localStorage.removeItem('auth_token')
   } finally {
     loading.value = false
   }
@@ -74,11 +75,12 @@ const checkSession = async () => {
 const login = (nextUrl) => {
   const current = (typeof nextUrl === 'string' ? nextUrl : null) || window.location.href
   window.location.href = `${API_URL}/google/login?next=${encodeURIComponent(current)}`
+
 }
 
 const logout = async (eventOrUrl) => {
   try {
-    await fetch(`${API_URL}/google/logout`)
+    await fetch(`${API_URL}/google/logout`, { credentials: 'include' })
   } catch (err) {
     console.warn('Logout request failed', err)
   }

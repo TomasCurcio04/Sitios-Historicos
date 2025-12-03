@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, url_for, session, render_template, request
+import base64
+from flask import Blueprint, json, make_response, redirect, url_for, session, render_template, request
 from src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
 from src.web.oauth import oauth
 from flask import current_app
@@ -33,20 +34,31 @@ def auth():
             name = userinfo.get("name"),
             picture = userinfo.get("picture")
         )
-    
-    playload = {
-        "public_user_id": userinfo.get("sub"),
+
+    user_cookie = {
+        "id": userinfo.get("sub"),
         "email": userinfo.get("email"),
         "name": userinfo.get("name"),
         "picture": userinfo.get("picture")
     }
-    jwt_token = jwt.encode(playload, current_app.config["JWT_SECRET_KEY"], algorithm="HS256")
-
-    next_url = request.args.get('state') or '/'
-    separator = '&' if '?' in next_url else '?'
-    return redirect(f"{next_url}{separator}auth_token={jwt_token}")
     
+    next_url = request.args.get('state') or '/'
+    res = make_response(redirect(next_url))
+    
+    res.set_cookie(
+        'user_info',
+        value=base64.b64encode(json.dumps(user_cookie).encode()).decode(),
+        httponly=True,
+        secure=True,  
+        samesite='Lax',
+        max_age=60*30
+    )
+
+    return res
+
 @bp.route("/logout")
 def logout():
     next_url = request.args.get("next", "/")
-    return redirect(next_url)
+    resp = make_response(redirect(next_url))
+    resp.delete_cookie('user_info')
+    return resp

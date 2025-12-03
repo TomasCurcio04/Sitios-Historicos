@@ -6,6 +6,31 @@ const apiClient = axios.create({
   withCredentials: true
 })
 
+apiClient.interceptors.response.use(
+  (response) => response,
+
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const message = error.response?.data?.error?.message
+
+      if (
+        message === "Token expired" ||
+        message === "Authentication required"
+      ) {
+        console.warn("Sesión expirada o inválida, cerrando sesión...")
+
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('token')
+        sessionStorage.clear()
+
+        window.location.href = "/login"
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
+
 export function useApi() {
   return {
     getSites(params) {
