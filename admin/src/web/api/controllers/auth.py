@@ -60,7 +60,7 @@ def get_token():
 #             name=userinfo.get("name"),
 #             picture=userinfo.get("picture")
 #         )
-    
+
 #     session['user'] = {
 #         "id": userinfo.get("sub"),
 #         "email": userinfo.get("email"),
@@ -68,7 +68,7 @@ def get_token():
 #         "picture": userinfo.get("picture"),
 #         "type": "google"
 #     }
-    
+
 #     next_url = session.get('next') or '/'
 #     return redirect(next_url)
 

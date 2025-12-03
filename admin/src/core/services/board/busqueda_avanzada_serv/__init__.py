@@ -6,6 +6,7 @@ from src.core.entity.tag import Tag
 from sqlalchemy import or_, distinct
 from src.core.entity.state import State
 
+
 def buscar_sites(filtros):
     """Devuelve una lista de sitios filtrados según los parámetros de búsqueda."""
     query = db.session.query(Site)
@@ -13,7 +14,9 @@ def buscar_sites(filtros):
     if filtros.get("ciudad"):
         query = query.filter(Site.city.ilike(f"%{filtros['ciudad']}%"))
     if filtros.get("provincia"):
-        query = query.join(Site.state_rel).filter(State.name.ilike(f"%{filtros['provincia']}%"))
+        query = query.join(Site.state_rel).filter(
+            State.name.ilike(f"%{filtros['provincia']}%")
+        )
     if filtros.get("estado"):
         query = query.filter(Site.conservation_state.ilike(f"%{filtros['estado']}%"))
     if filtros.get("visibilidad") == "true":
@@ -35,21 +38,26 @@ def buscar_sites(filtros):
     # Ejecutar la query y devolver lista de diccionarios
     resultados = []
     for site in query.all():
-        resultados.append({
-            "id": site.id_site,
-            "name": site.name,
-            "city": site.city,
-            "state": site.state_rel.name if site.state_rel else None,
-            "conservation_state": site.conservation_state,
-            "is_visible": site.is_visible,
-            "date_registered": site.date_registered.isoformat() if site.date_registered else None,
-            "tags": [t.id_tag for t in site.tag]
-        })
+        resultados.append(
+            {
+                "id": site.id_site,
+                "name": site.name,
+                "city": site.city,
+                "state": site.state_rel.name if site.state_rel else None,
+                "conservation_state": site.conservation_state,
+                "is_visible": site.is_visible,
+                "date_registered": (
+                    site.date_registered.isoformat() if site.date_registered else None
+                ),
+                "tags": [t.id_tag for t in site.tag],
+            }
+        )
     return resultados
+
 
 def obtener_provincias_con_sitios():
     """Obtiene provincias que tienen al menos un sitio registrado.
-    
+
     Returns:
         Lista de nombres de provincias
     """
@@ -61,11 +69,13 @@ def obtener_provincias_con_sitios():
     )
     return [r[0] for r in resultados]
 
+
 def ordenar_lista(results, sort, order):
     """Ordena una lista de diccionarios según un campo."""
     if sort in ["name", "date_registered", "city"]:
-        results.sort(key=lambda r: r.get(sort), reverse=(order=="desc"))
+        results.sort(key=lambda r: r.get(sort), reverse=(order == "desc"))
     return results
+
 
 def paginar_lista(results, page, per_page):
     """Devuelve los items de la página indicada y total de páginas."""

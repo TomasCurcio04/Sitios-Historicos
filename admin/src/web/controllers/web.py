@@ -27,6 +27,3 @@ def validacion_propuesta():
 def bajo_mantenimiento():
     """Página mostrada durante el mantenimiento administrativo."""
     return render_template("web.bajo_mantenimiento.html")
-
-
-

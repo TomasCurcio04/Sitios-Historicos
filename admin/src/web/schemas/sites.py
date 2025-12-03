@@ -5,7 +5,7 @@ from marshmallow import Schema, fields, validate
 
 class SiteQuerySchema(Schema):
     """Schema para validar parámetros de query del endpoint sites"""
-    
+
     name = fields.Str(load_default=None)
     description = fields.Str(load_default=None)
     city = fields.Str(load_default=None)
@@ -13,25 +13,35 @@ class SiteQuerySchema(Schema):
     tags = fields.Str(load_default=None)
     conservation_state = fields.Str(load_default=None)
     search = fields.Str(load_default=None)
-    
+
     order_by = fields.Str(
         load_default=None,
-        validate=validate.OneOf(['rating-5-1', 'rating-1-5', 'latest', 'oldest', 'name-asc', 'name-desc', 'most-visited'])
+        validate=validate.OneOf(
+            [
+                "rating-5-1",
+                "rating-1-5",
+                "latest",
+                "oldest",
+                "name-asc",
+                "name-desc",
+                "most-visited",
+            ]
+        ),
     )
-    
+
     lat = fields.Float(load_default=None, validate=validate.Range(min=-90, max=90))
     long = fields.Float(load_default=None, validate=validate.Range(min=-180, max=180))
     radius = fields.Float(load_default=None, validate=validate.Range(min=0))
-    
+
     page = fields.Int(load_default=1, validate=validate.Range(min=1))
     per_page = fields.Int(load_default=20, validate=validate.Range(min=1, max=100))
-    
+
     search_favorites = fields.Bool(load_default=False)
 
 
 class SiteResponseSchema(Schema):
     """Schema para la respuesta del endpoint sites"""
-    
+
     id = fields.Int()
     name = fields.Str()
     short_description = fields.Str()
@@ -54,9 +64,11 @@ class SiteResponseSchema(Schema):
 
 class SiteCreateSchema(Schema):
     """Schema para crear un nuevo sitio"""
-    
+
     name = fields.Str(required=True, validate=validate.Length(min=1, max=150))
-    short_description = fields.Str(required=True, validate=validate.Length(min=1, max=120))
+    short_description = fields.Str(
+        required=True, validate=validate.Length(min=1, max=120)
+    )
     description = fields.Str(required=True)
     city = fields.Str(required=True, validate=validate.Length(min=1, max=50))
     province = fields.Str(required=True)
@@ -65,12 +77,12 @@ class SiteCreateSchema(Schema):
     tags = fields.List(fields.Str(), required=True)
     state_of_conservation = fields.Str(
         required=True,
-        validate=validate.OneOf(['excelente', 'bueno', 'regular', 'malo'])
+        validate=validate.OneOf(["excelente", "bueno", "regular", "malo"]),
     )
 
 
 class SitesListResponseSchema(Schema):
     """Schema para la respuesta completa del listado de sites"""
-    
+
     data = fields.List(fields.Nested(SiteResponseSchema))
     meta = fields.Dict(keys=fields.Str(), values=fields.Raw())
