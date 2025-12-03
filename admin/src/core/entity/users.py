@@ -2,10 +2,9 @@
 
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
+from src.core.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 from sqlalchemy import String, Boolean, DateTime, ForeignKey
-from src.core.database import Base
-import re
 
 if TYPE_CHECKING:
     from src.core.entity.site import Site
@@ -14,14 +13,11 @@ if TYPE_CHECKING:
     from src.core.entity.feature_flag import FeatureFlag
     from src.core.entity.review import Review
 
-# Expresion regular para validar emails
-
 
 class Users(Base):
     """Modelo de usuario para la tabla 'users'."""
 
     __tablename__ = "users"
-    EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
     # Campos principales
     id_user: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -59,24 +55,6 @@ class Users(Base):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-
-    # @validates("email")
-    # def validate_email(self, key, email):
-    #     if not re.match(self.EMAIL_REGEX, email):
-    #         raise ValueError("El email no tiene un formato válido.")
-    #     return email.strip().lower()
-
-    # @validates("user_name")
-    # def validate_user_name(self, key, user_name):
-    #     if not user_name or len(user_name.strip()) < 3:
-    #         raise ValueError("El nombre de usuario debe tener al menos 3 caracteres.")
-    #     return user_name.strip()
-
-    # @validates("password")
-    # def validate_password(self, key, password):
-    #     if len(password) < 6:
-    #         raise ValueError("La contraseña debe tener al menos 6 caracteres.")
-    #     return password
 
     def __repr__(self):
         return f"<Users(user_name='{self.user_name}', email='{self.email}', role={self.role})>"

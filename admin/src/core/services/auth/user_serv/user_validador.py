@@ -29,10 +29,8 @@ class UserValidator:
         if password != confirm_password:
             self.errors["confirm_password"] = "Las contraseñas no coinciden"
 
-        print(f"valor = {role_str}")
         try:
             role_int = int(role_str)
-            print(f"valor int = {role_int}")
         except (ValueError, TypeError):
             self.errors["role"] = "Debes seleccionar un rol válido1"
             role_int = None

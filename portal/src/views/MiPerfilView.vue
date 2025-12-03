@@ -169,16 +169,12 @@ const loadReviews = async (page = 1) => {
   reviewsLoading.value = true;
 
   try {
-    console.log("Llamando a getMyReviews...")
-    const res = await Api.getMyReviews({ page });
-    console.log("Respuesta de reviews:", res)
-    
+    const res = await Api.getMyReviews({ page });    
     const data = res.data || {}
     reviews.value = (data.data || []).map(r => ({
       ...r,
       date: r.inserted_at
     }))
-    console.log("Mapped reviews:", reviews.value)
     
     const meta = data.meta || {}
     reviewsMeta.value = {
@@ -206,12 +202,12 @@ const loadFavorites = async (page = 1) => {
 
   try {
     const res = await Api.getMyFavorites({ page });
-    console.log('Favoritos response:', res.data); // Debug
+
 
     const data = res.data;
 
     favorites.value = (data.data || []).map(f => {
-      console.log('Favorite item:', f); // Debug cada favorito
+
       return {
         ...f,
         date: f.inserted_at
@@ -261,13 +257,10 @@ watch(loggedIn, async (isLoggedIn) => {
     await Api.getToken();
     await loadReviews()
     await loadFavorites()
-    console.log("Datos cargados tras inicio de sesión.")
   } else {
     // Si el usuario cierra sesión, limpiamos la lista
-    console.log("Usuario ha cerrado sesión, limpiando datos...")
     reviews.value = []
     favorites.value = []
-    console.log("Datos limpiados.")
   }
 }, { 
   // 'immediate: true' garantiza que se ejecute al inicio, una vez que useAuth 

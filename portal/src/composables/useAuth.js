@@ -1,7 +1,6 @@
 import { ref, onMounted } from 'vue'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://admin-grupo10.proyecto2025.linti.unlp.edu.ar'
-console.log("API_URL:", API_URL)
 const loggedIn = ref(false)
 const user = ref(null)
 const loading = ref(true)
@@ -27,7 +26,7 @@ const checkSession = async () => {
 
     loggedIn.value = !!data.logged_in
     user.value = data.user ?? null
-    
+
     // Si está logueado pero no tiene token JWT, obtenerlo
     if (loggedIn.value && !localStorage.getItem('auth_token')) {
       try {
@@ -87,7 +86,7 @@ const logout = async (eventOrUrl) => {
 
 export function useAuth() {
   onMounted(async () => {
-  await checkSession()
+    await checkSession()
 
   })
 
