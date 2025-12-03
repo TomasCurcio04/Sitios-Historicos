@@ -1,13 +1,9 @@
-from sqlalchemy import or_
-from src.core.database import db
-from src.core.entity.site import Site
-from src.core.entity.site_history import SiteHistory
-from src.core.services.board.site_history_serv import SiteHistoryService
-from src.core.entity.tag import Tag
-from src.core.entity.state import State
-from src.core.entity.category import Category
+"""Controlador de gestión de sitios para el panel administrativo."""
+
 import csv
 import io
+from datetime import datetime
+from sqlalchemy import or_
 from flask import (
     Blueprint,
     request,
@@ -19,7 +15,14 @@ from flask import (
     session,
     current_app,
 )
-from datetime import datetime
+
+from src.core.database import db
+from src.core.entity.site import Site
+from src.core.entity.site_history import SiteHistory
+from src.core.entity.tag import Tag
+from src.core.entity.state import State
+from src.core.entity.category import Category
+from src.core.entity.site_image import SiteImage
 from src.core.services.board.busqueda_avanzada_serv import (
     buscar_sites,
     obtener_provincias_con_sitios,
@@ -27,8 +30,9 @@ from src.core.services.board.busqueda_avanzada_serv import (
     paginar_lista,
 )
 from src.core.services.board.tag_serv import obtener_todas_las_tags
-from src.core.entity.site import Site
-from src.core.entity.site_image import SiteImage
+from src.core.services.board import site_history_serv as SiteHistoryService
+from src.web.handlers.utils import permissions_required
+
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
@@ -38,9 +42,6 @@ bp = Blueprint("sites", __name__, url_prefix="/sitios")
 # =====================================================
 # LISTAR SITIOS CON FILTROS Y PAGINACIÓN
 # =====================================================
-
-
-bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
 
 def parse_date(s):
@@ -181,11 +182,15 @@ def crear():
 
     try:
         db.session.add(nuevo_sitio)
-        db.session.flush()  # Para obtener el ID del sitio antes del commit
-
-        # ✅ Lógica delegada al servicio
-        SiteHistoryService.register_creation(
-            db.session, site=nuevo_sitio, user_id=user_id
+        db.session.flush()
+        action_detail = (
+            f"Sitio '{nuevo_sitio.name}' creado (estaba en {nuevo_sitio.city})"
+        )
+        SiteHistoryService.register_modify(
+            nuevo_sitio,
+            user_id,
+            "CREATE",
+            action_detail,
         )
 
         db.session.commit()
@@ -243,19 +248,20 @@ def actualizar(site_id):
     try:
         # ✅ Primero: detectar los cambios (comparar el estado actual con los nuevos valores)
         cambios_detectados = SiteHistoryService.detect_changes(
-            db_session=db.session,
-            site_actual=sitio,
-            nuevos_datos=data,
-            nuevas_tags=nuevas_etiquetas,
+            sitio,
+            data,
+            nuevas_etiquetas,
         )
 
         # ✅ Si hay cambios, registrar en el historial ANTES del commit
         if cambios_detectados:
-            SiteHistoryService.register_update(
-                db_session=db.session,
-                site_id=sitio.id_site,
-                user_id=user_id,
-                changes=cambios_detectados,
+            detalle = "\n".join(cambios_detectados)
+            action_detail = f"Cambios:\n{detalle}"
+            SiteHistoryService.register_modify(
+                sitio,
+                user_id,
+                "UPDATE",
+                action_detail,
             )
 
         # ✅ Luego aplicar los cambios al objeto `sitio`
@@ -297,9 +303,9 @@ def eliminar(site_id):
 
     try:
         # ✅ Lógica delegada al servicio ANTES de eliminar el objeto
-        SiteHistoryService.register_deletion(db.session, site=sitio, user_id=user_id)
-
         db.session.delete(sitio)
+        action_detail = f"Sitio '{sitio.name}' eliminado."
+        SiteHistoryService.register_modify(sitio, user_id, "DELETE", action_detail)
         db.session.commit()
 
         flash("Sitio eliminado correctamente", "success")
@@ -315,6 +321,7 @@ def eliminar(site_id):
 # HISTORIAL DE CAMBIOS DE SITIO
 # =====================================================
 @bp.get("/<int:site_id>/historial")
+@permissions_required("site_history", ["view"])
 def historial(site_id):
     """Muestra el historial de cambios de un sitio."""
     sitio = db.session.get(Site, site_id)

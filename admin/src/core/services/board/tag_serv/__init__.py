@@ -130,3 +130,14 @@ def eliminar_tag(tag_id):
     session.delete(tag)
     session.commit()
     return tag, None
+
+
+def listar_tags_por_id(ids: set[int]) -> list[str]:
+    """Devuelve una lista de nombres de tags dado un conjunto de ids.
+    Args:
+        ids: Conjunto de ids de tags
+    Returns:
+        list[str]: lista de strings
+    """
+    tags = db.session.query(Tag).filter(Tag.id_tag.in_(ids)).all()
+    return [t.name for t in tags]
