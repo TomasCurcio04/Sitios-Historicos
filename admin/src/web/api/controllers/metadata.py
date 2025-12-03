@@ -19,7 +19,7 @@ def get_states():
 
         return jsonify(data)
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
@@ -43,7 +43,7 @@ def get_tags():
 
         return jsonify(data)
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
@@ -70,7 +70,7 @@ def get_categories():
 
         return jsonify(data)
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {

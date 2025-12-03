@@ -32,7 +32,7 @@ def get_portal_status():
         response = jsonify(response_data)
         return response
 
-    except Exception as e:
+    except Exception:
         error_response = jsonify(
             {
                 "error": {
@@ -56,7 +56,7 @@ def get_reviews_status():
 
         return jsonify({"enabled": reviews_flag.enabled})
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {

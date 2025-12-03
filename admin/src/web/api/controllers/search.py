@@ -47,7 +47,7 @@ def search_nearby():
             ),
             400,
         )
-    except Exception as e:
+    except Exception:
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -73,7 +73,7 @@ def search_by_filters():
 
         return jsonify({"success": True, "count": len(results), "results": results})
 
-    except Exception as e:
+    except Exception:
         return jsonify({"success": False, "error": str(e)}), 500
 
 
@@ -99,5 +99,5 @@ def autocomplete_cities():
 
         return jsonify([city[0] for city in cities if city[0]])
 
-    except Exception as e:
+    except Exception:
         return jsonify({"error": str(e)}), 500

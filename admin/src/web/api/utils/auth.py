@@ -38,7 +38,7 @@ def get_authenticated_user():
         }
     except jwt.InvalidTokenError:
         return None
-    except Exception as e:
+    except Exception:
         print(f"Error en get_authenticated_user: {str(e)}")
         return None
 

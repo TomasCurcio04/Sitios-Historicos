@@ -221,7 +221,7 @@ def create_user_public(**kwargs):
     try:
         db.session.commit()
         return new_user
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return f"Error al crear el usuario público: {str(e)}"
 

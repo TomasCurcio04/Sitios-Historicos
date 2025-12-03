@@ -56,7 +56,7 @@ def all_sites():
         response_schema = SitesListResponseSchema()
         return jsonify(response_schema.dump(sites_data))
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
@@ -84,7 +84,7 @@ def get_site(site_id):
                 user, auth_error = require_auth()
                 if not auth_error and user:
                     user_id = user.get("public_user_id") or user.get("user_id")
-            except Exception as e:
+            except Exception:
                 pass  # Token inválido, continuar sin user_id
 
         site_data = get_site_by_id(site_id, user_id=user_id)
@@ -99,7 +99,7 @@ def get_site(site_id):
         response_schema = SiteResponseSchema()
         return jsonify(response_schema.dump(site_data))
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
@@ -153,7 +153,7 @@ def create_site_endpoint():
 
         return jsonify(response_data), 201
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {

@@ -33,7 +33,7 @@ def toggle_site_favorite_endpoint(site_id):
         # Respuesta 204 No Content (éxito sin contenido)
         return "", 204
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {

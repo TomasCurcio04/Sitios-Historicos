@@ -197,7 +197,7 @@ def crear():
         flash("Sitio creado correctamente.", "success")
         return redirect(url_for("sites.index"))
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash(f"Error al crear el sitio: {str(e)}", "error")
         return redirect(url_for("sites.nuevo"))
@@ -283,7 +283,7 @@ def actualizar(site_id):
 
         return redirect(url_for("sites.index"))
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash(f"Error al actualizar el sitio: {str(e)}", "error")
         return redirect(url_for("sites.editar", site_id=site_id))
@@ -310,7 +310,7 @@ def eliminar(site_id):
 
         flash("Sitio eliminado correctamente", "success")
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash(f"Error al eliminar el sitio: {str(e)}", "error")
 
@@ -425,5 +425,5 @@ def _extraer_y_validar_form():
             "category": category,
             "is_visible": is_visible,
         }
-    except Exception as e:
+    except Exception:
         return f"Error en el formulario: {str(e)}"

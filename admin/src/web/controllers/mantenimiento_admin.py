@@ -74,7 +74,7 @@ def upload_image():
             base_url = current_app.config["MINIO_SERVER"]
             bucket_name = current_app.config["MINIO_BUCKET"]
 
-        except Exception as e:
+        except Exception:
             flash(f"Error al cargar los sitios: {e}", "danger")
             sites = []
             base_url = ""
@@ -180,7 +180,7 @@ def upload_image():
         flash("¡Imagen subida y registrada con éxito!", "success")
         return redirect(url_for("mantenimiento_admin.upload_image"))
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash(f"Error grave al subir la imagen: {str(e)}", "danger")
         return redirect(request.url)
@@ -221,7 +221,7 @@ def delete_image(image_id):
 
         flash("Imagen eliminada correctamente.", "success")
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash(f"Error al eliminar la imagen: {str(e)}", "danger")
 
@@ -270,7 +270,7 @@ def make_cover(image_id):
 
         flash("Nueva imagen de portada establecida con éxito.", "success")
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         flash(f"Error al cambiar la portada: {str(e)}", "danger")
 

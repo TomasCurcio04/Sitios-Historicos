@@ -8,16 +8,12 @@ timeout = 30
 keepalive = 2
 
 # Configuración para servir archivos estáticos
-static_map = {
-    '/static': 'src/web/static'
-}
+static_map = {"/static": "src/web/static"}
 
 # Variables de entorno
-raw_env = [
-    'FLASK_ENV=production'
-]
+raw_env = ["FLASK_ENV=production"]
 
 # Logging
-accesslog = '-'
-errorlog = '-'
-loglevel = 'info'
+accesslog = "-"
+errorlog = "-"
+loglevel = "info"

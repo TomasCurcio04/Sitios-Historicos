@@ -28,16 +28,16 @@ def reset_db():
         Mensaje de confirmación.
     """
 
-    from src.core.entity.users import Users
-    from src.core.entity.site import Site
-    from src.core.entity.category import Category
-    from src.core.entity.state import State
-    from src.core.entity.site_image import SiteImage
-    from src.core.entity.site_history import SiteHistory
-    from src.core.entity.tag import Tag
-    from src.core.entity.role import Role
-    from src.core.entity.permission import Permission
-    from src.core.entity.feature_flag import FeatureFlag
+    # from src.core.entity.users import Users
+    # from src.core.entity.site import Site
+    # from src.core.entity.category import Category
+    # from src.core.entity.state import State
+    # from src.core.entity.site_image import SiteImage
+    # from src.core.entity.site_history import SiteHistory
+    # from src.core.entity.tag import Tag
+    # from src.core.entity.role import Role
+    # from src.core.entity.permission import Permission
+    # from src.core.entity.feature_flag import FeatureFlag
 
     print("Reiniciando la base de datos...")
     Base.metadata.drop_all(bind=db.engine)
