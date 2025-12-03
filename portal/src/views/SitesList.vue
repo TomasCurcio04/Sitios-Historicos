@@ -150,7 +150,6 @@ export default {
 
     // Reaccionar a cambios de sesión
     watch(loggedIn, async (isLoggedIn) => {
-      console.log("Estado de sesión cambió:", isLoggedIn);
     }, { immediate: true });
 
     return { api, loggedIn }; // lo exponemos al template
@@ -313,7 +312,6 @@ export default {
       ) {
         this.$router.push({ query: params });
       }
-      console.log("Parámetros de búsqueda:", params);
 
       this.api.getSites(params)
         .then(res => {

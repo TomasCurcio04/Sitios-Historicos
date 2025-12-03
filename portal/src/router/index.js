@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { checkPortalMaintenance } from './guards.js'
 
 import HomePage from '../pages/Home.vue'
-import List from '../pages/List.vue'
 import Detail from '../pages/Detail.vue'
 import MaintenancePage from '../pages/Maintenance.vue'
 import MiPerfilView from '../views/MiPerfilView.vue'
@@ -16,20 +15,10 @@ const router = createRouter({
       component: HomePage,
     },
     {
-      path: '/sites',
-      name: 'sites-list1',
-      component: List,
-    },
-    {
       path: '/sites/:id',
       name: 'site-detail',
       component: Detail,
       props: true,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue'),
     },
     {
       path: '/sites-list',
@@ -58,11 +47,11 @@ const router = createRouter({
     {
       path: '/mi-perfil',
       name: 'Profile',
-      component: MiPerfilView  
+      component: MiPerfilView
     }
   ],
 })
-  
+
 router.beforeEach(checkPortalMaintenance)
 
 export default router

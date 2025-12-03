@@ -200,7 +200,6 @@ const fetchSiteReviews = async (page = 1) => {
   reviewsLoading.value = true
   try {
     const response = await getSiteReviews(site.value.id, { page, per_page: 10 })
-    console.log("Respuesta de reviews:", response)
     if (response.data && response.data.data) {
       siteReviews.value = response.data.data
       reviewsMeta.value = response.data.meta
