@@ -3,7 +3,6 @@
 import csv
 import io
 from datetime import datetime
-from sqlalchemy import or_
 from flask import (
     Blueprint,
     request,
@@ -15,13 +14,9 @@ from flask import (
     session,
     current_app,
 )
-
 from src.core.database import db
 from src.core.entity.site import Site
 from src.core.entity.site_history import SiteHistory
-from src.core.entity.tag import Tag
-from src.core.entity.state import State
-from src.core.entity.category import Category
 from src.core.entity.site_image import SiteImage
 from src.core.services.board.busqueda_avanzada_serv import (
     buscar_sites,
@@ -33,8 +28,16 @@ from src.core.services.board.tag_serv import obtener_todas_las_tags
 from src.core.services.board import site_history_serv as SiteHistoryService
 from src.web.handlers.utils import permissions_required
 
+from src.core.services.board.site_history_serv import obtener_historial_sitios
+
+from src.core.services.board.sites import(obtener_todos_las_provincias, obtener_todas_las_categorias,
+obtener_sitio_id,actualizar_sitio,eliminar_sitio,crear_sitio,obtener_nuevas_etiquetas)
+
+
+
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
+
 
 # USUARIO_ES_ADMIN = True  //esto era para pruebas
 
@@ -52,6 +55,7 @@ def parse_date(s):
 
 
 @bp.get("/")
+@permissions_required("site",["view"])
 def index():
     ciudad = request.args.get("ciudad", "").strip()
     provincia = request.args.get("provincia", "").strip()
@@ -153,36 +157,36 @@ def index():
 # CREAR NUEVO SITIO
 # =====================================================
 @bp.get("/nuevo")
+@permissions_required("site",["create"])
 def nuevo():
     """Muestra el formulario para crear un nuevo sitio."""
-    estados = db.session.query(State).all()
-    categorias = db.session.query(Category).all()
-    etiquetas = db.session.query(Tag).all()
+    states = obtener_todos_las_provincias()
+    categorys = obtener_todas_las_categorias()
+    tags = obtener_todas_las_tags()
     return render_template(
         "sites/form.html",
-        sitio=None,
-        estados=estados,
-        categorias=categorias,
-        etiquetas=etiquetas,
+        estados=states,
+        categorias=categorys,
+        etiquetas=tags,
     )
 
 
 @bp.post("/crear")
+@permissions_required("site",["create"])
 def crear():
     """Crea un nuevo sitio histórico."""
     user_id = int(request.form.get("user_id", 1))
     data = _extraer_y_validar_form()
+
     if isinstance(data, str):
         flash(data, "error")
         return redirect(url_for("sites.nuevo"))
 
-    nuevo_sitio = Site(**data, created_by=user_id)
+
     tags_ids = request.form.getlist("tags")
-    nuevo_sitio.tag = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
 
     try:
-        db.session.add(nuevo_sitio)
-        db.session.flush()
+        nuevo_sitio=crear_sitio(data,tags_ids,user_id)
         action_detail = (
             f"Sitio '{nuevo_sitio.name}' creado (estaba en {nuevo_sitio.city})"
         )
@@ -193,12 +197,10 @@ def crear():
             action_detail,
         )
 
-        db.session.commit()
         flash("Sitio creado correctamente.", "success")
         return redirect(url_for("sites.index"))
 
     except Exception as e:
-        db.session.rollback()
         flash(f"Error al crear el sitio: {str(e)}", "error")
         return redirect(url_for("sites.nuevo"))
 
@@ -207,41 +209,44 @@ def crear():
 # EDITAR SITIO
 # =====================================================
 @bp.get("/<int:site_id>/editar")
+@permissions_required("site",["edit"])
 def editar(site_id):
     """Muestra el formulario para editar un sitio existente."""
-    sitio = db.session.get(Site, site_id)
-    if not sitio:
+    site = obtener_sitio_id(site_id)
+    if not site:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
-    estados = db.session.query(State).all()
-    categorias = db.session.query(Category).all()
-    etiquetas = db.session.query(Tag).all()
+    states = obtener_todos_las_provincias()
+    categorys = obtener_todas_las_categorias()
+    tags = obtener_todas_las_tags()
     return render_template(
         "sites/form.html",
-        sitio=sitio,
-        estados=estados,
-        categorias=categorias,
-        etiquetas=etiquetas,
+        sitio=site,
+        estados=states,
+        categorias=categorys,
+        etiquetas=tags,
     )
 
 
 @bp.post("/<int:site_id>/editar")
+@permissions_required("site",["edit"])
 def actualizar(site_id):
     """Actualiza los datos de un sitio existente y registra los cambios detectados."""
-    sitio = db.session.get(Site, site_id)
+    sitio = obtener_sitio_id(site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
 
     # Extraer y validar datos del formulario
     data = _extraer_y_validar_form()
+
     if isinstance(data, str):
         flash(data, "error")
-        return redirect(url_for("sites.editar", site_id=site_id))
+        return redirect(url_for("sites.editar", site_id))
 
     # Recuperar etiquetas seleccionadas del formulario
     tags_ids = request.form.getlist("tags")
-    nuevas_etiquetas = db.session.query(Tag).filter(Tag.id_tag.in_(tags_ids)).all()
+    nuevas_etiquetas = obtener_nuevas_etiquetas(tags_ids)
 
     user_id = int(request.form.get("user_id", 1))
 
@@ -265,13 +270,7 @@ def actualizar(site_id):
             )
 
         # ✅ Luego aplicar los cambios al objeto `sitio`
-        for key, value in data.items():
-            setattr(sitio, key, value)
-
-        sitio.tag = nuevas_etiquetas
-
-        # ✅ Finalmente, commit de todo
-        db.session.commit()
+        actualizar_sitio(sitio,data,nuevas_etiquetas)
 
         if cambios_detectados:
             flash(
@@ -284,34 +283,31 @@ def actualizar(site_id):
         return redirect(url_for("sites.index"))
 
     except Exception as e:
-        db.session.rollback()
         flash(f"Error al actualizar el sitio: {str(e)}", "error")
-        return redirect(url_for("sites.editar", site_id=site_id))
+        return redirect(url_for("sites.editar", site_id))
 
 
 # =====================================================
 # ELIMINAR SITIO
 # =====================================================
 @bp.post("/<int:site_id>/eliminar")
+@permissions_required("site",["delete"])
 def eliminar(site_id):
     """Elimina un sitio histórico."""
     user_id = int(request.form.get("user_id", 1))
-    sitio = db.session.get(Site, site_id)
+    sitio = obtener_sitio_id(site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
 
     try:
-        # ✅ Lógica delegada al servicio ANTES de eliminar el objeto
-        db.session.delete(sitio)
+
+        eliminar_sitio(sitio)
         action_detail = f"Sitio '{sitio.name}' eliminado."
         SiteHistoryService.register_modify(sitio, user_id, "DELETE", action_detail)
-        db.session.commit()
-
         flash("Sitio eliminado correctamente", "success")
 
     except Exception as e:
-        db.session.rollback()
         flash(f"Error al eliminar el sitio: {str(e)}", "error")
 
     return redirect(url_for("sites.index"))
@@ -326,17 +322,10 @@ def historial(site_id):
     """Muestra el historial de cambios de un sitio."""
     sitio = db.session.get(Site, site_id)
     if not sitio:
-        # En el contexto de una llamada fetch, un redirect no es ideal.
-        # Sería mejor devolver un error, pero por ahora esto funciona.
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
 
-    cambios = (
-        db.session.query(SiteHistory)
-        .filter_by(id_site=site_id)
-        .order_by(SiteHistory.date_action.desc())
-        .all()
-    )
+    cambios = obtener_historial_sitios(site_id)
 
     # Aquí está el cambio clave:
     return render_template(
@@ -392,8 +381,8 @@ def _extraer_y_validar_form():
         is_visible = request.form.get("is_visible", "0") == "1"
 
         # Validaciones obligatorias
-        if not nombre or not city or not state or not category:
-            return "Nombre, ciudad, estado y categoría son obligatorios."
+        if not nombre or not city or not state or not category or not latitude or not longitude:
+            return "Nombre, ciudad, estado, latitud, longitud y categoría son obligatorios."
 
         # Etiquetas obligatorias
         tags_ids = request.form.getlist("tags")
