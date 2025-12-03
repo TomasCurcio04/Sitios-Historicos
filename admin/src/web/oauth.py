@@ -1,3 +1,5 @@
+"""Módulo para la configuración de OAuth en la aplicación Flask."""
+
 from authlib.integrations.flask_client import OAuth
 import os
 

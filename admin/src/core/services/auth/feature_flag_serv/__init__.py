@@ -42,7 +42,7 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
     Raises:
         ValueError: Si el mensaje supera los 50 caracteres
     """
-    flag = FeatureFlag.get_flag(name)
+    flag = get_feature_flag(name)
     if flag:
         flag.enabled = enabled
         flag.updated_by = updated_by

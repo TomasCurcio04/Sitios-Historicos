@@ -38,7 +38,6 @@ from src.web.config import config
 from src.web.storage import storage
 from src.core.services.auth.bcrypt import bcrypt
 from src.core import database
-from src.core import seeds
 from src.core.services.auth.user_serv import buscar_usuario, buscar_usuario_public
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 from src.web.api.controllers.sites import bp as api_sites_bp
@@ -95,31 +94,6 @@ def create_app(env="development", static_folder=None):
     storage.init_app(app)
 
     init_oauth(app)
-
-    # --- 2. REGISTRA EL HELPER EN JINJA ---
-    @app.context_processor
-    def inject_permissions():
-        """Hace que la función has_permission() esté disponible en todos los templates."""
-        return dict(has_permission=has_permission)
-
-    # --- FIN DEL REGISTRO ---
-    # Register
-    @app.cli.command("reset-db")
-    def reset_db_command():
-        """Comando CLI para reiniciar la base de datos.
-
-        Elimina todas las tablas y las vuelve a crear.
-        """
-        database.reset_db()
-
-    @app.cli.command("seed-db")
-    def seed_db_command():
-        """Comando CLI para llenar la base de datos con datos iniciales.
-
-        Ejecuta el script de semillas para crear usuarios, roles,
-        sitios y otros datos de prueba.
-        """
-        seeds.run()
 
     # Registrar blueprints
     app.register_blueprint(web)

@@ -45,6 +45,12 @@ bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
 
 def parse_date(s):
+    """Parses a date string in 'YYYY-MM-DD' format to a date object.
+    Args:
+        s (str): Date string in 'YYYY-MM-DD'
+    Returns:
+        datetime.date or None if parsing fails
+    """
     try:
         return datetime.strptime(s, "%Y-%m-%d").date()
     except (ValueError, TypeError):
@@ -53,6 +59,12 @@ def parse_date(s):
 
 @bp.get("/")
 def index():
+    """Muestra la lista de sitios históricos con filtros y paginación.
+    Args:
+        None
+    Returns:
+        Renderiza la plantilla con la lista de sitios filtrados y paginados.
+    """
     ciudad = request.args.get("ciudad", "").strip()
     provincia = request.args.get("provincia", "").strip()
     estado = request.args.get("estado", "").strip()
@@ -154,7 +166,12 @@ def index():
 # =====================================================
 @bp.get("/nuevo")
 def nuevo():
-    """Muestra el formulario para crear un nuevo sitio."""
+    """Muestra el formulario para crear un nuevo sitio.
+    Args:
+        None
+    Returns:
+        Renderiza la plantilla del formulario para un nuevo sitio.
+    """
     estados = db.session.query(State).all()
     categorias = db.session.query(Category).all()
     etiquetas = db.session.query(Tag).all()
@@ -169,7 +186,12 @@ def nuevo():
 
 @bp.post("/crear")
 def crear():
-    """Crea un nuevo sitio histórico."""
+    """Crea un nuevo sitio histórico.
+    Args:
+        None
+    Returns:
+        Redirige a la lista de sitios con un mensaje de éxito o error.
+    """
     user_id = int(request.form.get("user_id", 1))
     data = _extraer_y_validar_form()
     if isinstance(data, str):
@@ -197,7 +219,7 @@ def crear():
         flash("Sitio creado correctamente.", "success")
         return redirect(url_for("sites.index"))
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         flash(f"Error al crear el sitio: {str(e)}", "error")
         return redirect(url_for("sites.nuevo"))
@@ -208,7 +230,12 @@ def crear():
 # =====================================================
 @bp.get("/<int:site_id>/editar")
 def editar(site_id):
-    """Muestra el formulario para editar un sitio existente."""
+    """Muestra el formulario para editar un sitio existente.
+    Args:
+        site_id (int): ID del sitio a editar.
+    Returns:
+        Renderiza la plantilla del formulario con los datos del sitio.
+    """
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -227,7 +254,12 @@ def editar(site_id):
 
 @bp.post("/<int:site_id>/editar")
 def actualizar(site_id):
-    """Actualiza los datos de un sitio existente y registra los cambios detectados."""
+    """Actualiza los datos de un sitio existente y registra los cambios detectados.
+    Args:
+        site_id (int): ID del sitio a actualizar.
+    Returns:
+        Redirige a la lista de sitios con un mensaje de éxito o error.
+    """
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -283,7 +315,7 @@ def actualizar(site_id):
 
         return redirect(url_for("sites.index"))
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         flash(f"Error al actualizar el sitio: {str(e)}", "error")
         return redirect(url_for("sites.editar", site_id=site_id))
@@ -294,7 +326,12 @@ def actualizar(site_id):
 # =====================================================
 @bp.post("/<int:site_id>/eliminar")
 def eliminar(site_id):
-    """Elimina un sitio histórico."""
+    """Elimina un sitio histórico.
+    Args:
+        site_id (int): ID del sitio a eliminar.
+    Returns:
+        Redirige a la lista de sitios con un mensaje de éxito o error.
+    """
     user_id = int(request.form.get("user_id", 1))
     sitio = db.session.get(Site, site_id)
     if not sitio:
@@ -310,7 +347,7 @@ def eliminar(site_id):
 
         flash("Sitio eliminado correctamente", "success")
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         flash(f"Error al eliminar el sitio: {str(e)}", "error")
 
@@ -323,7 +360,12 @@ def eliminar(site_id):
 @bp.get("/<int:site_id>/historial")
 @permissions_required("site_history", ["view"])
 def historial(site_id):
-    """Muestra el historial de cambios de un sitio."""
+    """Muestra el historial de cambios de un sitio.
+    Args:
+        site_id (int): ID del sitio.
+    Returns:
+        Renderiza la plantilla parcial con el historial de cambios.
+    """
     sitio = db.session.get(Site, site_id)
     if not sitio:
         # En el contexto de una llamada fetch, un redirect no es ideal.
@@ -349,7 +391,12 @@ def historial(site_id):
 # =====================================================
 @bp.get("/exportar")
 def exportar():
-    """Exporta todos los sitios a un archivo CSV."""
+    """Exporta todos los sitios a un archivo CSV.
+    Args:
+        None
+    Returns:
+        Respuesta con el archivo CSV para descargar.
+    """
     sitios = db.session.query(Site).all()
     output = io.StringIO()
     output.write("\ufeff")  # BOM para Excel
@@ -377,7 +424,12 @@ def exportar():
 # FUNCIÓN AUXILIAR DE VALIDACIÓN
 # =====================================================
 def _extraer_y_validar_form():
-    """Extrae y valida los datos del formulario de sitio."""
+    """Extrae y valida los datos del formulario de sitio.
+    Args:
+        None
+    Returns:
+        dict con los datos validados o str con mensaje de error.
+    """
     try:
         nombre = request.form.get("nombre", "").strip()
         short_description = request.form.get("short_description", "").strip()
@@ -425,5 +477,5 @@ def _extraer_y_validar_form():
             "category": category,
             "is_visible": is_visible,
         }
-    except Exception:
+    except Exception as e:
         return f"Error en el formulario: {str(e)}"
