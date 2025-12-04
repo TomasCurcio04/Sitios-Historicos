@@ -135,13 +135,19 @@
         </thead>
         <tbody>
             {% for r in results %}
-            <tr>
-                <td>
+            <tr {% if r.deleted %}class="site-deleted" {% endif %}>
+                <td style="position: relative;">
                     {% if r.portada_url %}
                     <img src="{{ r.portada_url }}" alt="Portada de {{ r.name }}"
                         style="width: 100px; height: auto; border-radius: 4px;">
+                    {% if r.deleted %}
+                    <div class="deleted-overlay">ELIMINADO</div>
+                    {% endif %}
                     {% else %}
                     <span style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+                    {% if r.deleted %}
+                    <div class="deleted-overlay">ELIMINADO</div>
+                    {% endif %}
                     {% endif %}
                 </td>
                 <td>{{ r.name }}</td>
@@ -154,26 +160,22 @@
                     <div class="acciones">
                         <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
                             <button type="submit" class="btn btn-edit js-requires-permission"
-                                data-permission="site_edit">Editar</button>
+                                data-permission="site_edit" {% if r.deleted %}disabled{% endif %}>Editar</button>
                         </form>
-
 
                         <button onclick="showHistoryModal({{ r.id }})" class="btn btn-sm btn-outline-info">
                             <i class="fas fa-history"></i> Historial
                         </button>
 
-
-
                         <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
                             <input type="hidden" name="user_id"
                                 value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
                             <button type="submit" class="btn btn-delete js-requires-permission"
-                                data-permission="site_delete"
-                                onclick="return confirm('¿Seguro que querés ar este sitio?')">
+                                data-permission="site_delete" {% if r.deleted %}disabled{% endif %}
+                                onclick="return confirm('¿Seguro que querés eliminar este sitio?')">
                                 Eliminar
                             </button>
                         </form>
-
                     </div>
                 </td>
             </tr>
@@ -260,37 +262,33 @@
 
     function showHistoryModal(siteId) {
         // 1. Obtenemos los permisos del usuario (inyectados de forma segura desde Flask)
-        const userPermissions = {{ session.get("permissions", []) | tojson
-    }};
 
-    // 2. Verificamos el permiso necesario
-    if (!userPermissions.includes("site_history_view")) {
-        alert('No tiene permiso para ver el historial de modificaciones');
-        return;
-    }
 
-    // 3. Si tiene permiso → abrir modal y cargar contenido
-    modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
-    modal.style.display = 'block';
+        // 2. Verificamos el permiso necesario
 
-    // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
-    fetch(`/sitios/${siteId}/historial`)
-        .then(response => {
-            if (!response.ok) {
-                if (response.status === 403) {
-                    throw new Error('Acceso denegado (403)');
+
+        // 3. Si tiene permiso → abrir modal y cargar contenido
+        modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
+        modal.style.display = 'block';
+
+        // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
+        fetch(`/sitios/${siteId}/historial`)
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error('Acceso denegado (403)');
+                    }
+                    throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
                 }
-                throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
-            }
-            return response.text();
-        })
-        .then(html => {
-            modalContent.innerHTML = html;
-        })
-        .catch(error => {
-            modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
-            console.error('Error cargando historial:', error);
-        });
+                return response.text();
+            })
+            .then(html => {
+                modalContent.innerHTML = html;
+            })
+            .catch(error => {
+                modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
+                console.error('Error cargando historial:', error);
+            });
     }
 
     function closeModal() {

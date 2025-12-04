@@ -1,44 +1,117 @@
-{% if cambios %}
-<div class="timeline">
-    {% for cambio in cambios %}
-    <div class="timeline-item">
-        <span class="action-badge action-{{ cambio.action_type }}">
-            {{ cambio.action_type }}
-        </span>
+<!-- Controles de ordenamiento -->
+<div class="history-controls">
+    <div class="sort-controls">
+        <label>Ordenar por:</label>
+        <select id="sortSelect" onchange="sortHistory()">
+            <option value="date-desc">Fecha (más reciente)</option>
+            <option value="date-asc">Fecha (más antigua)</option>
+            <option value="action-asc">Acción (A-Z)</option>
+            <option value="user-asc">Usuario (A-Z)</option>
+        </select>
+        <button type="button" onclick="sortHistory()" style="margin-left: 0.5rem; padding: 0.25rem 0.5rem;">Ordenar</button>
+    </div>
+    <div class="history-stats">
+        <span>Total: <strong id="totalCount">{{ cambios|length }}</strong> cambios</span>
+    </div>
+</div>
 
-        <div class="cambio-info">
-            <div class="cambio-info-item">
-                <strong>👤 Usuario:</strong>
-                {% if cambio.user_rel %}
-                {{ cambio.user_rel.email }}
-                {% else %}
-                ID: {{ cambio.id_user }}
-                {% endif %}
+{% if cambios %}
+<div class="timeline" id="historyTimeline">
+    {% for cambio in cambios %}
+    <div class="timeline-item" data-date="{{ cambio.date_action.isoformat() if cambio.date_action else '' }}"
+        data-action="{{ cambio.action_type }}"
+        data-user="{{ cambio.user_rel.email if cambio.user_rel else 'ID: ' + cambio.id_user|string }}">
+
+        <div class="timeline-marker"></div>
+
+        <div class="timeline-content">
+            <div class="timeline-header">
+                <span class="action-badge action-{{ cambio.action_type }}">
+                    {% if cambio.action_type == 'CREATE' %}🆕 Creación
+                    {% elif cambio.action_type == 'UPDATE' %}✏️ Edición
+                    {% elif cambio.action_type == 'DELETE' %}🗑️ Eliminación
+                    {% else %}{{ cambio.action_type }}
+                    {% endif %}
+                </span>
+                <span class="timeline-date">
+                    {{ cambio.date_action.strftime('%d/%m/%Y %H:%M') if cambio.date_action else 'N/A' }}
+                </span>
             </div>
 
-            <div class="cambio-info-item">
-                <strong>📅 Fecha:</strong>
-                {{ cambio.date_action.strftime('%d/%m/%Y %H:%M:%S') if cambio.date_action else 'N/A' }}
+            <div class="timeline-user">
+                👤 {{ cambio.user_rel.email if cambio.user_rel else 'Usuario ID: ' + cambio.id_user|string }}
             </div>
 
             {% if cambio.action_detail %}
-            <div class="cambio-info-item">
-                <strong>📝 Detalles del cambio:</strong>
-                {{ cambio.action_detail | replace('\n', '<br>') | safe }}
+            <div class="timeline-details">
+                {% set details = cambio.action_detail.replace('Cambios:\n', '') %}
+                {% for line in details.split('\n') %}
+                {% if line.strip() %}
+                <div class="change-item">
+                    {% if '→' in line or '->' in line or 'agregadas:' in line or 'eliminadas:' in line %}
+                        {% if 'agregadas:' in line or 'eliminadas:' in line %}
+                            <span class="change-field">{{ line.split(':')[0] }}:</span>
+                            <span class="change-new">{{ line.split(':')[1].strip() }}</span>
+                        {% else %}
+                            {% set arrow = '→' if '→' in line else '->' %}
+                            {% set parts = line.split(arrow) %}
+                            {% if ':' in parts[0] %}
+                                {% set field_parts = parts[0].split(':', 1) %}
+                                <span class="change-field">{{ field_parts[0] }}:</span>
+                                <span class="change-old">{{ field_parts[1].strip() }}</span>
+                            {% else %}
+                                <span class="change-old">{{ parts[0].strip() }}</span>
+                            {% endif %}
+                            <span class="change-arrow">→</span>
+                            <span class="change-new">{{ parts[1].strip() }}</span>
+                        {% endif %}
+                    {% else %}
+                        {{ line }}
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
             </div>
-
-
             {% endif %}
         </div>
     </div>
     {% endfor %}
 </div>
 
-<div style="text-align: center; margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
-    <p style="color: #666; margin: 0;">
-        <strong>Total de cambios registrados:</strong> {{ cambios|length }}
-    </p>
-</div>
+<script>
+    function sortHistory() {
+        const timeline = document.getElementById('historyTimeline');
+        if (!timeline) return;
+        
+        const items = Array.from(timeline.children);
+        const sortValue = document.getElementById('sortSelect').value;
+
+        items.sort((a, b) => {
+            switch (sortValue) {
+                case 'date-desc':
+                    const dateA = a.dataset.date || '';
+                    const dateB = b.dataset.date || '';
+                    return new Date(dateB).getTime() - new Date(dateA).getTime();
+                case 'date-asc':
+                    const dateA2 = a.dataset.date || '';
+                    const dateB2 = b.dataset.date || '';
+                    return new Date(dateA2).getTime() - new Date(dateB2).getTime();
+                case 'action-asc':
+                    return (a.dataset.action || '').localeCompare(b.dataset.action || '');
+                case 'user-asc':
+                    return (a.dataset.user || '').localeCompare(b.dataset.user || '');
+                default:
+                    return 0;
+            }
+        });
+
+        while (timeline.firstChild) {
+            timeline.removeChild(timeline.firstChild);
+        }
+        
+        items.forEach(item => timeline.appendChild(item));
+    }
+</script>
 
 {% else %}
 <div class="empty-state">
