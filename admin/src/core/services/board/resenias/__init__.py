@@ -24,7 +24,7 @@ def buscar_review_con_filtros(filtros):
     Returns:
         list[dict]: Lista de reseñas como diccionarios serializados.
     """
-    query = db.session.query(Review)
+    query = db.session.query(Review).filter(Review.site_rel.has(~Site.deleted))
 
     # Filtrar por sitio por ID
     if filtros.get("sitio"):
@@ -128,8 +128,9 @@ def eliminar_review(review_id):
             - review: Objeto Review eliminado o None si no existe.
             - error: Mensaje de error o None si fue exitoso.
     """
+
     review = db.session.get(Review, review_id)
-    if not review:
+    if review is None or not review.site_rel or review.site_rel.deleted:
         return None, "Reseña no encontrada."
 
     db.session.delete(review)
@@ -150,7 +151,7 @@ def aprobar_review(review_id, moderator_id):
             - error: Mensaje de error o None si fue exitoso.
     """
     review = db.session.get(Review, review_id)
-    if not review:
+    if review is None or not review.site_rel or review.site_rel.deleted:
         return None, "Reseña no encontrada."
 
     review.status = ReviewStatus.APROBADA
@@ -170,6 +171,8 @@ def buscar_review_por_id(review_id):
         Review|None: Instancia Review si existe, o None.
     """
     review = db.session.get(Review, review_id)
+    if review is None or not review.site_rel or review.site_rel.deleted:
+        return None
     return review
 
 
@@ -187,7 +190,7 @@ def rechazar_review(review_id, moderator_id, reason):
             - error: Mensaje de error o None si fue exitoso.
     """
     review = db.session.get(Review, review_id)
-    if not review:
+    if review is None or not review.site_rel or review.site_rel.deleted:
         return None, "Reseña no encontrada."
     review.status = ReviewStatus.RECHAZADA
     review.rejection_reason = reason
@@ -206,6 +209,7 @@ def obtener_sitios_con_reviews():
     resultados = (
         db.session.query(Site.id_site, Site.name)
         .join(Review, Review.id_site == Site.id_site)
+        .filter(~Site.deleted)
         .distinct()
         .order_by(Site.name)
         .all()

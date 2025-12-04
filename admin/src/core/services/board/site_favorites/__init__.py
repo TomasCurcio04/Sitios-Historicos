@@ -51,7 +51,7 @@ def is_site_favorite(site_id, public_user_id):
 
 
 def get_user_favorites(public_user_id, page=1, per_page=25):
-    """Obtiene los sitios favoritos de un usuario con paginación.
+    """Obtiene los sitios favoritos de un usuario excluyendo sitios eliminados y no visibles.
 
     Args:
         public_user_id: ID del usuario público
@@ -62,8 +62,19 @@ def get_user_favorites(public_user_id, page=1, per_page=25):
         dict: Diccionario con items, total, page, per_page, pages
     """
     import math
+    from src.core.entity.site import Site
 
-    query = db.session.query(SiteFavorite).filter_by(id_public_user=public_user_id)
+    # Query que excluye sitios eliminados y no visibles
+    query = (
+        db.session.query(SiteFavorite)
+        .join(Site, SiteFavorite.id_site == Site.id_site)
+        .filter(
+            SiteFavorite.id_public_user == public_user_id,
+            Site.deleted == False,
+            Site.is_visible == True
+        )
+    )
+    
     total = query.count()
     items = query.offset((page - 1) * per_page).limit(per_page).all()
     pages = math.ceil(total / per_page)
