@@ -1,11 +1,9 @@
 """Servicio de búsqueda básico sin PostGIS"""
 
 import math
-from sqlalchemy import and_, or_, func
+from sqlalchemy import and_, or_
 from src.core.database import db
 from src.core.entity.site import Site
-from src.core.entity.category import Category
-from src.core.entity.state import State
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):

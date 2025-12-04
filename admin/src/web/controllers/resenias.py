@@ -1,7 +1,7 @@
 """Controlador de moderación de reseñas para sitios históricos."""
 
 from datetime import datetime
-from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from src.web.handlers.utils import permissions_required
 from src.core.services.board.resenias import (
     buscar_review_con_filtros,
@@ -13,7 +13,6 @@ from src.core.services.board.resenias import (
     rechazar_review,
     obtener_sitios_con_reviews,
 )
-from src.core.services.board import list_sites
 from src.core.services.auth.user_serv import usuario_actual
 
 bp = Blueprint("gestion_resenias", __name__, url_prefix="/moderacion_resenias")

@@ -1,20 +1,10 @@
 """Google OAuth2 Authentication Controller"""
 
 import base64
-from flask import (
-    Blueprint,
-    json,
-    make_response,
-    redirect,
-    url_for,
-    session,
-    render_template,
-    request,
-    current_app,
-)
+import json
+from flask import Blueprint, redirect, url_for, request, make_response
 from src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
 from src.web.oauth import oauth
-import jwt
 
 
 bp = Blueprint("google_auth", __name__, url_prefix="/google")

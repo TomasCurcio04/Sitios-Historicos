@@ -12,14 +12,14 @@ from src.core.services.auth.user_serv import (
     activar_usuario,
 )
 from src.core.services.auth.role_serv import list_roles
-from src.core.entity.users import Users
-import re
 from src.web.handlers.utils import permissions_required
 from src.core.services.auth.user_serv.user_validador import UserValidator
 
 # Creamos un nuevo Blueprint con el nombre 'users' y el prefijo /gestion_usuarios
 # Esto nos dará endpoints como 'users.user_index', 'users.user_new', etc.
 user_bp = Blueprint("users", __name__, url_prefix="/gestion_usuarios")
+
+PER_PAGE = 25
 
 
 # Ruta para LISTAR usuarios
@@ -40,7 +40,6 @@ def user_index():
     """
 
     page = request.args.get("page", 1, type=int)
-    PER_PAGE = 25
 
     is_active_param = request.args.get("is_active", type=str)
 
@@ -119,7 +118,7 @@ def user_create():
 
     if not validator.validate():
         # Si la validación de formato falla:
-        for field, error_msg in validator.errors.items():
+        for _, error_msg in validator.errors.items():
             flash(error_msg, "error")
 
         # Devuelve el formulario con los datos brutos anteriores

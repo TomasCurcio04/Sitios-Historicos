@@ -1,9 +1,8 @@
 """Manejadores de errores HTTP para la aplicación."""
 
 from dataclasses import dataclass
-from flask import Flask, request, redirect
+from flask import request, redirect
 from flask import render_template
-from sqlalchemy.exc import OperationalError
 
 
 @dataclass
