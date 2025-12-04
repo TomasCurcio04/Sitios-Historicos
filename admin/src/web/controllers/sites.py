@@ -24,9 +24,10 @@ from src.core.services.board.busqueda_avanzada_serv import (
 )
 from src.core.services.board.tag_serv import obtener_todas_las_tags
 from src.core.services.board import site_history_serv as SiteHistoryService
+from src.core.services.auth.user_serv import usuario_actual
 from src.web.handlers.utils import permissions_required
 
-from src.core.services.board.site_history_serv import obtener_historial_sitios
+from sqlalchemy import or_
 
 from src.core.services.board.sites import (
     obtener_todos_las_provincias,
@@ -184,7 +185,8 @@ def crear():
     Returns:
         Redirige a la lista de sitios con un mensaje de éxito o error.
     """
-    user_id = int(request.form.get("user_id", 1))
+
+    user_id = usuario_actual().id_user
     data = _extraer_y_validar_form()
 
     if isinstance(data, str):
@@ -266,7 +268,7 @@ def actualizar(site_id):
     tags_ids = request.form.getlist("tags")
     nuevas_etiquetas = obtener_nuevas_etiquetas(tags_ids)
 
-    user_id = int(request.form.get("user_id", 1))
+    user_id = usuario_actual().id_user
 
     try:
         # ✅ Primero: detectar los cambios (comparar el estado actual con los nuevos valores)
@@ -318,7 +320,7 @@ def eliminar(site_id):
     Returns:
         Redirige a la lista de sitios con un mensaje de éxito o error.
     """
-    user_id = int(request.form.get("user_id", 1))
+    user_id = usuario_actual().id_user
     sitio = obtener_sitio_id(site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -349,6 +351,8 @@ def historial(site_id):
     Returns:
         Renderiza la plantilla parcial con el historial de cambios.
     """
+    from src.core.services.board.site_history_serv import obtener_historial_sitios
+
     sitio = db.session.get(Site, site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -356,7 +360,6 @@ def historial(site_id):
 
     cambios = obtener_historial_sitios(site_id)
 
-    # Aquí está el cambio clave:
     return render_template(
         "sites/_historial_partial.html", sitio=sitio, cambios=cambios
     )
