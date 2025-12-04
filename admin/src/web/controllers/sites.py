@@ -13,6 +13,7 @@ from flask import (
     Response,
     current_app,
 )
+from src.core.services.board.site_export import exportar_sites_csv
 from src.core.database import db
 from src.core.entity.site import Site
 from src.core.entity.site_image import SiteImage
@@ -379,26 +380,28 @@ def exportar():
     Returns:
         Respuesta con el archivo CSV para descargar.
     """
-    sitios = db.session.query(Site).all()
-    output = io.StringIO()
-    output.write("\ufeff")  # BOM para Excel
-    writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+    filtros = {
+        "ciudad": request.args.get("ciudad"),
+        "provincia": request.args.get("provincia"),
+        "estado": request.args.get("estado"),
+        "visibilidad": request.args.get("visibilidad"),
+        "fecha_desde": request.args.get("fecha_desde"),
+        "fecha_hasta": request.args.get("fecha_hasta"),
+        "busqueda_texto": request.args.get("busqueda_texto"),
+        "tags": request.args.getlist("tags"),
+    }
 
-    campos = [col.name for col in Site.__table__.columns]
-    campos.append("tags")  # Exportar etiquetas como texto
+    filtros = {k: v for k, v in filtros.items() if v not in (None, "", "None", [])}
 
-    writer.writerow(campos)
+    sort = request.args.get("sort")
+    order = request.args.get("order", "asc")
 
-    for sitio in sitios:
-        fila = [getattr(sitio, campo.name, "") for campo in Site.__table__.columns]
-        fila.append(", ".join([tag.name for tag in sitio.tag]))
-        writer.writerow(fila)
+    csv_data, nombre_archivo = exportar_sites_csv(filtros, sort, order)
 
-    output.seek(0)
     return Response(
-        output,
+        csv_data,
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=sitios_historicos.csv"},
+        headers={"Content-Disposition": f"attachment; filename={nombre_archivo}"},
     )
 
 
