@@ -30,6 +30,13 @@ def user_index():
 
     Permite filtrar por estado activo, rol y email, además de
     ordenar por fecha de creación ascendente o descendente.
+    Args:
+        page (int): Página actual para paginación.
+        is_active (str): Filtro por estado activo ("true"/"false").
+        rol (str): Filtro por rol de usuario.
+        email (str): Filtro por email (búsqueda parcial).
+    Returns:
+        Render de la plantilla con la lista de usuarios paginada.
     """
 
     page = request.args.get("page", 1, type=int)
@@ -85,7 +92,12 @@ def user_index():
 @user_bp.route("/new", methods=["GET"])
 @permissions_required("user", ["create", "edit"])
 def user_new():
-    """Muestra el formulario para crear un nuevo usuario."""
+    """Muestra el formulario para crear un nuevo usuario.
+    Args:
+        None
+    Returns:
+        Render del formulario de creación de usuario.
+    """
     # Aquí irá el formulario real de creación
 
     roles = list_roles()
@@ -96,7 +108,12 @@ def user_new():
 @user_bp.route("/create", methods=["POST"])
 @permissions_required("user", ["create"])
 def user_create():
-
+    """Procesa el formulario de creación de un nuevo usuario.
+    Args:
+        None (datos del formulario vía request.form)
+    Returns:
+        Redirección a la lista de usuarios o re-render del formulario con errores.
+    """
     # 1. Ejecutar el Validador (Maneja Formato, Limpieza y Conversión)
     validator = UserValidator(request.form)
 
@@ -140,7 +157,12 @@ def user_create():
 @user_bp.route("/<int:user_id>/delete", methods=["POST"])
 @permissions_required("user", ["delete"])
 def user_delete(user_id):
-    """Desactiva un usuario (eliminación lógica)."""
+    """Desactiva un usuario (eliminación lógica).
+    Args:
+        user_id (int): ID del usuario a desactivar.
+    Returns:
+        Redirección a la lista de usuarios.
+    """
     user = obtener_usuario_por_id(user_id)
 
     if user:
@@ -155,7 +177,12 @@ def user_delete(user_id):
 @user_bp.route("/<int:user_id>/activate", methods=["POST"])
 @permissions_required("user", ["update"])
 def user_activate(user_id):
-    """Reactiva un usuario."""
+    """Reactiva un usuario.
+    Args:
+        user_id (int): ID del usuario a reactivar.
+    Returns:
+        Redirección a la lista de usuarios.
+    """
     user = obtener_usuario_por_id(user_id)
 
     if user:
@@ -170,6 +197,12 @@ def user_activate(user_id):
 @user_bp.route("/<int:user_id>/edit", methods=["GET"])
 @permissions_required("user", ["edit", "view"])
 def user_edit(user_id):
+    """Muestra el formulario para editar un usuario existente.
+    Args:
+        user_id (int): ID del usuario a editar.
+    Returns:
+        Render del formulario de edición de usuario.
+    """
     user = obtener_usuario_por_id(user_id)
 
     if not user:
@@ -188,7 +221,12 @@ def user_edit(user_id):
 @user_bp.route("/<int:user_id>/update", methods=["POST"])
 @permissions_required("user", ["edit"])
 def user_update(user_id):
-    """Procesa los datos y actualiza el usuario."""
+    """Procesa los datos y actualiza el usuario.
+    Args:
+        user_id (int): ID del usuario a actualizar.
+    Returns:
+        Redirección a la lista de usuarios o re-render del formulario con errores.
+    """
 
     user = obtener_usuario_por_id(user_id)
     if not user:
