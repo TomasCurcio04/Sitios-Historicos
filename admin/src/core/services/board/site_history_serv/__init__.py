@@ -200,11 +200,11 @@ def detect_changes(site, nuevos_datos, nuevas_tags):
         tags_eliminados = tags_actuales - tags_nuevos
 
         if tags_agregados:
-            nombres = [listar_tags_por_id(tags_agregados)]
+            nombres = listar_tags_por_id(tags_agregados)
             cambios_detectados.append(f"Etiquetas agregadas: {', '.join(nombres)}")
 
         if tags_eliminados:
-            nombres = [listar_tags_por_id(tags_eliminados)]
+            nombres = listar_tags_por_id(tags_eliminados)
             cambios_detectados.append(f"Etiquetas eliminadas: {', '.join(nombres)}")
 
     return cambios_detectados
@@ -216,3 +216,18 @@ def is_visible(booleano):
     Returns: string"""
 
     return "Visible" if booleano else "Oculto"
+
+
+def obtener_historial_sitios(site_id):
+    """Obtiene el historial de modificaciones de un sitio específico.
+    Args:
+        site_id (int): ID del sitio.
+    Returns:
+        list[SiteHistory]: Lista de objetos SiteHistory ordenados por fecha descendente.
+    """
+    return (
+        db.session.query(SiteHistory)
+        .filter_by(id_site=site_id)
+        .order_by(SiteHistory.date_action.desc())
+        .all()
+    )
