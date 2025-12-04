@@ -94,6 +94,9 @@ export function useApi() {
     },
     getSiteReviews(siteId, params = {}) {
       return apiClient.get(`/sites/${siteId}/reviews`, { params });
+    },
+    getReviewsStatus() {
+      return apiClient.get('/feature-flags/reviews-status');
     }
   }
 };

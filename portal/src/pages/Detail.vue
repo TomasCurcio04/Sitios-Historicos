@@ -86,9 +86,17 @@
           <button @click="handleFavoriteClick" class="btn-fav" :class="{ active: site.is_favorite }">
             {{ site.is_favorite ? '❤️ Guardado en Favoritos' : '🤍 Marcar como Favorito' }}
           </button>
-          <button @click="handleWriteReview" class="btn-review">
+          <button 
+            v-if="reviewsEnabled" 
+            @click="handleWriteReview" 
+            class="btn-review"
+          >
             ✏️ Escribir una reseña
           </button>
+          <div v-else class="reviews-disabled-notice">
+            <div class="disabled-icon">🚫</div>
+            <p>{{ reviewsDisabledMessage }}</p>
+          </div>
         </div>
       </aside>
     </div>
@@ -116,7 +124,7 @@ import ReviewForm from '../components/ReviewForm.vue'
 import SiteReviewsList from '../components/SiteReviewsList.vue'
 
 const { loggedIn, login } = useAuth()
-const { getSiteReviews } = useApi()
+const { getSiteReviews, getReviewsStatus } = useApi()
 
 const props = defineProps({
   id: { type: [String, Number], required: true }
@@ -137,6 +145,8 @@ const showReviewForm = ref(false)
 const siteReviews = ref([])
 const reviewsLoading = ref(false)
 const reviewsMeta = ref(null)
+const reviewsEnabled = ref(true)
+const reviewsDisabledMessage = ref('')
 
 // Computed
 const statusClass = computed(() => {
@@ -181,6 +191,7 @@ const fetchSite = async () => {
       // Ahora sí, esperamos a que el DOM se actualice y buscamos el mapa
       nextTick(() => {
         initMap()
+        checkReviewsStatus()
         fetchSiteReviews()
       })
     } else {
@@ -191,6 +202,18 @@ const fetchSite = async () => {
     console.error("Error fetchSite:", err)
     error.value = 'Error de conexión.'
     loading.value = false
+  }
+}
+
+const checkReviewsStatus = async () => {
+  try {
+    const response = await getReviewsStatus()
+    reviewsEnabled.value = response.data.enabled
+    reviewsDisabledMessage.value = response.data.message || ''
+  } catch (err) {
+    console.error('Error checking reviews status:', err)
+    // En caso de error, permitir reviews por defecto
+    reviewsEnabled.value = true
   }
 }
 
@@ -286,9 +309,11 @@ const handleWriteReview = () => {
             api.loginWithGoogle()
         }
         return
-    } else {
-       showReviewForm.value = true
     }
+    if (!reviewsEnabled.value) {
+        return
+    }
+    showReviewForm.value = true
 }
 
 const onReviewSubmitted = (reviewData) => {
@@ -336,5 +361,26 @@ onBeforeUnmount(() => {
 <style scoped>
 .reviews-section {
   margin-top: 2rem;
+}
+
+.reviews-disabled-notice {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  margin-top: 0.75rem;
+}
+
+.reviews-disabled-notice .disabled-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.reviews-disabled-notice p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 </style>

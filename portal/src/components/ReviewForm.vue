@@ -6,7 +6,16 @@
         <button class="close-btn" @click="cancel">×</button>
       </div>
 
-      <form @submit.prevent="submitReview" class="review-form">
+      <div v-if="!reviewsEnabled" class="reviews-disabled-message">
+        <div class="disabled-icon">🚫</div>
+        <h3>Reseñas no disponibles</h3>
+        <p>{{ disabledMessage || 'Las reseñas están temporalmente deshabilitadas.' }}</p>
+        <button type="button" class="btn-cancel" @click="cancel">
+          Cerrar
+        </button>
+      </div>
+
+      <form v-else @submit.prevent="submitReview" class="review-form">
         <div class="form-group">
           <label class="rating-label">Calificación:</label>
           <div class="stars-container">
@@ -59,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useApi } from '@/composables/useApi'
 
 const props = defineProps({
@@ -75,13 +84,15 @@ const props = defineProps({
 
 const emit = defineEmits(['submitted', 'cancel'])
 
-const { createReview } = useApi()
+const { createReview, getReviewsStatus } = useApi()
 
 const rating = ref(0)
 const hoverRating = ref(0)  
 const comment = ref('')
 const isSubmitting = ref(false)
 const error = ref('')
+const reviewsEnabled = ref(true)
+const disabledMessage = ref('')
 
 const isFormValid = computed(() => {
   const commentLength = comment.value.trim().length
@@ -139,6 +150,22 @@ const submitReview = async () => {
 const cancel = () => {
   emit('cancel')
 }
+
+const checkReviewsStatus = async () => {
+  try {
+    const response = await getReviewsStatus()
+    reviewsEnabled.value = response.data.enabled
+    disabledMessage.value = response.data.message || ''
+  } catch (err) {
+    console.error('Error checking reviews status:', err)
+    // En caso de error, permitir reviews por defecto
+    reviewsEnabled.value = true
+  }
+}
+
+onMounted(() => {
+  checkReviewsStatus()
+})
 </script>
 
 <style scoped>
@@ -315,6 +342,28 @@ textarea:focus {
   cursor: not-allowed;
 }
 
+.reviews-disabled-message {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.disabled-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.reviews-disabled-message h3 {
+  margin: 0 0 1rem 0;
+  color: #374151;
+  font-size: 1.25rem;
+}
+
+.reviews-disabled-message p {
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
 @media (max-width: 640px) {
   .review-modal-overlay {
     padding: 0.5rem;
@@ -323,6 +372,10 @@ textarea:focus {
   .modal-header,
   .review-form {
     padding: 1rem;
+  }
+
+  .reviews-disabled-message {
+    padding: 1.5rem;
   }
 
   .form-actions {
