@@ -5,20 +5,26 @@
 
       <SectionCarousel
         title="🔥 Los más visitados"
-        :fetchFn="fetchMostVisited"
+        :fetchFn="fetchMostVisitedFromApi"
         :queryParams="{ order_by: 'most-visited' }"
       />
 
       <SectionCarousel
         title="⭐ Mejor puntuados"
-        :fetchFn="fetchTopRated"
+        :fetchFn="fetchTopRatedFromApi"
         :queryParams="{ order_by: 'rating-5-1' }"
       />
 
       <SectionCarousel
         title="🆕 Recientemente agregados"
-        :fetchFn="fetchRecent"
+        :fetchFn="fetchRecentFromApi"
         :queryParams="{ order_by: 'latest' }"
+      />
+      <SectionCarousel
+        v-if="loggedIn"
+        title="❤️ Favoritos"
+        :fetchFn="fetchFavoritesFromApi"
+        :queryParams="{ search_favorites:true }"
       />
 
       </div>
@@ -26,21 +32,46 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-
-// Componentes
 import SectionCarousel from '../components/SectionCarousel.vue';
+import { useApi } from '@/composables/useApi.js'
+import { watch } from 'vue'
+import { useAuth } from '@/composables/useAuth.js'
 
-// API: Importamos las funciones INDIVIDUALMENTE para usarlas en el template
-import {
-  fetchMostVisited,
-  fetchTopRated,
-  fetchRecent,
-  isAuthenticated // Si tienes esta función helper en api.js
-} from '../api.js'; // <--- OJO: Asegúrate que la ruta sea correcta (../api.js o ../Services/api.js)
+    const api = useApi()
+    
+  const { loggedIn } = useAuth()
 
-const router = useRouter();
+    const fetchMostVisitedFromApi = (params = {}) => {
+      return api.getSites({
+        ...params,
+        order_by: 'most-visited',
+        per_page: 4
+      })
+    }
 
-// onMounted ya no es necesario, useAuth maneja la verificación
+    const fetchTopRatedFromApi = (params = {}) => {
+      return api.getSites({
+        ...params,
+        order_by: 'rating-5-1',
+        per_page: 4
+      })
+    }
+
+    const fetchRecentFromApi = (params = {}) => {
+      return api.getSites({
+        ...params,
+        order_by: 'latest',
+        per_page: 4
+      })
+    }
+
+    const fetchFavoritesFromApi = (params = {}) => {
+      return api.getSites({
+        ...params,
+        search_favorites: true,
+        per_page: 4
+      })
+    }
+watch(loggedIn, async (isLoggedIn) => {
+    }, { immediate: true });
 </script>
