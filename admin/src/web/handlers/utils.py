@@ -3,11 +3,9 @@
 from functools import wraps
 from flask import flash, session as current_user, abort, redirect, url_for, request
 
-from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
+from src.core.services.auth.user_serv import buscar_usuario
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 
-from src.core.entity.site_visit import SiteVisit
-from src.core.database import db
 
 # Obtener permisos del usuario
 from src.core.services.auth.permission_serv import get_permissions

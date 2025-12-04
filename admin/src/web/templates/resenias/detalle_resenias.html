@@ -27,32 +27,32 @@
     <p>
         <strong>Estado:</strong>
         {% if review.status.value == "Aprobada" %}
-            <span style="color:green; font-weight:bold;">{{ review.status.value }}</span>
+        <span style="color:green; font-weight:bold;">{{ review.status.value }}</span>
         {% elif review.status.value == "Rechazada" %}
-            <span style="color:red; font-weight:bold;">{{ review.status.value }}</span>
+        <span style="color:red; font-weight:bold;">{{ review.status.value }}</span>
         {% else %}
-            <span style="color:orange; font-weight:bold;">{{ review.status.value }}</span>
+        <span style="color:orange; font-weight:bold;">{{ review.status.value }}</span>
         {% endif %}
     </p>
 
     {% if review.rejection_reason %}
-        <p><strong>Motivo de rechazo:</strong> {{ review.rejection_reason }}</p>
+    <p><strong>Motivo de rechazo:</strong> {{ review.rejection_reason }}</p>
     {% endif %}
 
     <h2>Fechas</h2>
     <p><strong>Fecha de creación:</strong> {{ review.date_created.strftime("%Y-%m-%d") }}</p>
 
     {% if review.date_moderated %}
-        <p><strong>Fecha de moderación:</strong> {{ review.date_moderated.strftime("%Y-%m-%d") }}</p>
+    <p><strong>Fecha de moderación:</strong> {{ review.date_moderated.strftime("%Y-%m-%d") }}</p>
     {% endif %}
 
     <h2>Moderación</h2>
     {% if review.moderated_by %}
-        <p><strong>ID Moderador:</strong> {{ review.moderated_by }}</p>
-        <p><strong>Email Moderador:</strong> {{ review.moderator_rel.email }}</p>
-        <p><strong>Nombre Moderador:</strong> {{ review.moderator_rel.user_name }}</p>
+    <p><strong>ID Moderador:</strong> {{ review.moderated_by }}</p>
+    <p><strong>Email Moderador:</strong> {{ review.moderator_rel.email }}</p>
+    <p><strong>Nombre Moderador:</strong> {{ review.moderator_rel.user_name }}</p>
     {% else %}
-        <p><em>No ha sido moderada aún.</em></p>
+    <p><em>No ha sido moderada aún.</em></p>
     {% endif %}
 </div>
 

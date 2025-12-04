@@ -25,12 +25,11 @@ def toggle_site_favorite(site_id, public_user_id):
         db.session.delete(favorite)
         db.session.commit()
         return False
-    else:
-        # Si no existe, lo agregamos
-        new_favorite = SiteFavorite(id_site=site_id, id_public_user=public_user_id)
-        db.session.add(new_favorite)
-        db.session.commit()
-        return True
+    # Si no existe, lo agregamos
+    new_favorite = SiteFavorite(id_site=site_id, id_public_user=public_user_id)
+    db.session.add(new_favorite)
+    db.session.commit()
+    return True
 
 
 def is_site_favorite(site_id, public_user_id):

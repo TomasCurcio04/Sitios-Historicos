@@ -131,9 +131,9 @@ def eliminar_review(review_id):
     review = db.session.get(Review, review_id)
     if not review:
         return None, "Reseña no encontrada."
-    else:
-        db.session.delete(review)
-        db.session.commit()
+
+    db.session.delete(review)
+    db.session.commit()
     return review, None
 
 
@@ -152,11 +152,11 @@ def aprobar_review(review_id, moderator_id):
     review = db.session.get(Review, review_id)
     if not review:
         return None, "Reseña no encontrada."
-    else:
-        review.status = ReviewStatus.APROBADA
-        review.moderated_by = moderator_id
-        review.date_moderated = datetime.now(timezone.utc)
-        db.session.commit()
+
+    review.status = ReviewStatus.APROBADA
+    review.moderated_by = moderator_id
+    review.date_moderated = datetime.now(timezone.utc)
+    db.session.commit()
     return review, None
 
 
@@ -189,12 +189,11 @@ def rechazar_review(review_id, moderator_id, reason):
     review = db.session.get(Review, review_id)
     if not review:
         return None, "Reseña no encontrada."
-    else:
-        review.status = ReviewStatus.RECHAZADA
-        review.rejection_reason = reason
-        review.moderated_by = moderator_id
-        review.date_moderated = datetime.now(timezone.utc)
-        db.session.commit()
+    review.status = ReviewStatus.RECHAZADA
+    review.rejection_reason = reason
+    review.moderated_by = moderator_id
+    review.date_moderated = datetime.now(timezone.utc)
+    db.session.commit()
     return review, None
 
 

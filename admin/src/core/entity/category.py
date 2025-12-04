@@ -21,4 +21,7 @@ class Category(Base):
     sites: Mapped[list["Site"]] = relationship(back_populates="category_rel")
 
     def __repr__(self):
-        return f"<Category(id_category={self.id_category}, name='{self.name}', description='{self.description}')>"
+        return (
+            f"<Category(id_category={self.id_category}, "
+            f"name='{self.name}', description='{self.description}')>"
+        )

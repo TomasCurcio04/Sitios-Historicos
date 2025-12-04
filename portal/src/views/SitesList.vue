@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="sites-list">
     <div class="container">
       <h1 class="title">Listado de sitios</h1>
 
@@ -17,78 +17,78 @@
             <label class="filter-label">Búsqueda por nombre o descripción:</label>
             <input type="text" v-model="searchNameDesc" class="filter-input">
           </div>
-        </div>
-        <!-- Tags -->
-        <div class="filter-group">
-          <label class="filter-label">Tags:</label>
-          <select multiple v-model="selectedTags" class="filter-input">
-            <option
-              v-for="tag in tags"
-              :key="tag.id"
-              :value="tag.name"
-            >
-              {{ tag.name }}
-            </option>
-          </select>
-        </div>
 
-        <!-- Provincias -->
-        <div class="filter-group">
-          <label class="filter-label">Provincias:</label>
-          <select v-model="selectedProvince" class="filter-input">
-            <option value="">--Cualquiera--</option>
-            <option
-              v-for="state in states"
-              :key="state.id"
-              :value="state.name"
-            >
-              {{ state.name }}
-            </option>
-          </select>
-        </div>
+          <!-- Tags -->
+          <div class="filter-group">
+            <label class="filter-label">Tags:</label>
+            <select multiple v-model="selectedTags" class="filter-input">
+              <option
+                v-for="tag in tags"
+                :key="tag.id"
+                :value="tag.name"
+              >
+                {{ tag.name }}
+              </option>
+            </select>
+          </div>
 
-        <!-- Favoritos -->
-      <div class="filter-group" v-if="loggedIn">
-        <label class="filter-label checkbox-label">
-          <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
-        </label>
-      </div>
+          <!-- Provincias -->
+          <div class="filter-group">
+            <label class="filter-label">Provincias:</label>
+            <select v-model="selectedProvince" class="filter-input">
+              <option value="">--Cualquiera--</option>
+              <option
+                v-for="state in states"
+                :key="state.id"
+                :value="state.name"
+              >
+                {{ state.name }}
+              </option>
+            </select>
+          </div>
 
+          <!-- Favoritos -->
+          <div class="filter-group" v-if="loggedIn">
+            <label class="filter-label checkbox-label">
+              <input type="checkbox" v-model="favorites" class="checkbox-input"> Favoritos
+            </label>
+          </div>
 
-        <!-- Ciudad -->
-        <div class="filter-group">
-          <label class="filter-label">Búsqueda por ciudad:</label>
-          <input type="text" v-model="searchCity" class="filter-input">
-        </div>
+          <!-- Ciudad -->
+          <div class="filter-group">
+            <label class="filter-label">Búsqueda por ciudad:</label>
+            <input type="text" v-model="searchCity" class="filter-input">
+          </div>
 
-        <!-- Orden -->
-        <div class="filter-group">
-          <label class="filter-label">Ordenar por:</label>
-          <select v-model="sortBy" class="filter-input">
-            <option value="fecha">Fecha de registro</option>
-            <option value="nombre">Nombre</option>
-            <option value="rank">Mejor rankeados</option>
-            <option value="visitas">Más visitados</option>
-          </select>
+          <!-- Orden -->
+          <div class="filter-group">
+            <label class="filter-label">Ordenar por:</label>
+            <select v-model="sortBy" class="filter-input">
+              <option value="fecha">Fecha de registro</option>
+              <option value="nombre">Nombre</option>
+              <option value="rank">Mejor rankeados</option>
+              <option value="visitas">Más visitados</option>
+            </select>
 
-          <select v-model="sortOrder" class="filter-input">
-            <option value="asc">Ascendente</option>
-            <option value="desc">Descendente</option>
-          </select>
-        </div>
+            <select v-model="sortOrder" class="filter-input">
+              <option value="asc">Ascendente</option>
+              <option value="desc">Descendente</option>
+            </select>
+          </div>
 
-        <!-- Radio mapa -->
-        <div class="filter-group">
-          <label class="filter-label">Radio (Km):</label>
-          <input type="number" v-model.number="radius" @input="actualizarRadio" class="filter-input">
-        </div>
+          <!-- Radio mapa -->
+          <div class="filter-group">
+            <label class="filter-label">Radio (Km):</label>
+            <input type="number" v-model.number="radius" @input="actualizarRadio" class="filter-input">
+          </div>
 
-        <!-- MAPA -->
-        <div id="map" style="height: 300px; margin: 1rem 0; border-radius: 8px;"></div>
+          <!-- MAPA -->
+          <div id="map" style="height: 300px; margin: 1rem 0; border-radius: 8px;"></div>
 
-        <div class="buttons-group">
-          <button type="button" @click="buscarSitios(1)" class="btn btn-primary">Buscar</button>
-          <button type="button" @click="borrarFiltros" class="btn btn-secondary">Borrar</button>
+          <div class="buttons-group">
+            <button type="button" @click="buscarSitios(1)" class="btn btn-primary">Buscar</button>
+            <button type="button" @click="borrarFiltros" class="btn btn-secondary">Borrar</button>
+          </div>
         </div>
       </div>
 
@@ -103,6 +103,7 @@
         </div>
         
         </div>
+        
     <div v-if="hasSearched && sites.length === 0" class="no-results">
       No se encontraron sitios con los filtros seleccionados.
     </div>
@@ -150,7 +151,6 @@ export default {
 
     // Reaccionar a cambios de sesión
     watch(loggedIn, async (isLoggedIn) => {
-      console.log("Estado de sesión cambió:", isLoggedIn);
     }, { immediate: true });
 
     return { api, loggedIn }; // lo exponemos al template
@@ -190,17 +190,35 @@ export default {
   this.api.getTags().then(res => this.tags = res.data);
   this.api.getStates().then(res => this.states = res.data);
 
-  const q = this.$route.query;
-  const page = parseInt(q.page) || 1;
+this.$watch(
+  () => this.$route.query,
+  (newQuery) => {
+    const defaults = {
+      page: 1,
+      per_page: 20,
+      radius: 100,
+      search_favorites: false,
+      order_by: 'latest',
+    };
 
-  // Si hay filtros en la URL, los cargamos al estado
-  if (Object.keys(q).length > 0) {
-    this.searchNameDesc = q.search || '';
-    this.searchCity = q.city || '';
-    this.selectedProvince = q.province || '';
+    const q = { ...defaults, ...newQuery };
+
+    // Actualizar estado
+    this.searchNameDesc = q.search;
+    this.searchCity = q.city;
+    this.selectedProvince = q.province;
     this.favorites = q.search_favorites === 'true';
-    if (q.order_by) {
-    // inicializar sortBy/sortOrder según el valor
+    this.radius = Number(q.radius);
+    this.selectedLat = q.lat ? Number(q.lat) : null;
+    this.selectedLong = q.long ? Number(q.long) : null;
+
+    if (q.tags) {
+      this.selectedTags = q.tags.split(',');
+    } else {
+      this.selectedTags = [];
+    }
+
+    // Lógica de sortBy/sortOrder
     if (q.order_by === 'latest') {
       this.sortBy = 'fecha';
       this.sortOrder = 'desc';
@@ -211,23 +229,13 @@ export default {
       this.sortBy = 'rank';
       this.sortOrder = 'desc';
     }
-  }
 
-    if (q.tags) {
-      this.selectedTags = q.tags.split(',');
-    }
+    // Ejecutar búsqueda
+    this.buscarSitios(Number(q.page));
+    },
+    { immediate: true } 
+  );},
 
-    if (q.radius) {
-      this.radius = Number(q.radius);
-    }
-
-    if (q.lat) this.selectedLat = Number(q.lat);
-    if (q.long) this.selectedLong = Number(q.long);
-  }
-
-  // Buscar usando SIEMPRE los datos de la URL
-  this.buscarSitios(page, false);
-  },
 
   mounted() {
     this.map = L.map('map').setView([-34.6037, -58.3816], 12);
@@ -313,7 +321,6 @@ export default {
       ) {
         this.$router.push({ query: params });
       }
-      console.log("Parámetros de búsqueda:", params);
 
       this.api.getSites(params)
         .then(res => {

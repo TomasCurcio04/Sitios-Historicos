@@ -6,6 +6,31 @@ const apiClient = axios.create({
   withCredentials: true
 })
 
+apiClient.interceptors.response.use(
+  (response) => response,
+
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const message = error.response?.data?.error?.message
+
+      if (
+        message === "Token expired" ||
+        message === "Authentication required"
+      ) {
+        console.warn("Sesión expirada o inválida, cerrando sesión...")
+
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('token')
+        sessionStorage.clear()
+
+        window.location.href = "/login"
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
+
 export function useApi() {
   return {
     getSites(params) {
@@ -40,14 +65,14 @@ export function useApi() {
         }
       })
     },
-    getToken() {
-      return apiClient.post('/auth/token', {})
-        .then(res => {
-          const token = res.data.access_token
-          localStorage.setItem('auth_token', token)
-          return token
-        })
-    },
+    // getToken() {
+    //   return apiClient.post('/auth/token', {})
+    //     .then(res => {
+    //       const token = res.data.access_token
+    //       localStorage.setItem('token', token)
+    //       return token
+    //     })
+    // },
     getMyReviews(params = {}) {
       const token = localStorage.getItem('auth_token');
 
@@ -69,6 +94,9 @@ export function useApi() {
     },
     getSiteReviews(siteId, params = {}) {
       return apiClient.get(`/sites/${siteId}/reviews`, { params });
+    },
+    getReviewsStatus() {
+      return apiClient.get('/feature-flags/reviews-status');
     }
   }
 };

@@ -90,11 +90,13 @@
     <!-- Botones secundarios -->
     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
         <form action="{{ url_for('sites.nuevo') }}" method="get" style="display:inline;">
-            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_create">+ Crear Nuevo Sitio</button>
+            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_create">+
+                Crear Nuevo Sitio</button>
         </form>
 
         <form action="{{ url_for('tags.menu_tags') }}" method="get">
-            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="tag_list">Gestionar Etiquetas</button>
+            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="tag_list">Gestionar
+                Etiquetas</button>
         </form>
 
         <form action="{{ url_for('sites.exportar') }}" method="get">
@@ -105,7 +107,8 @@
             ] %}
             <input type="hidden" name="{{ key }}" value="{{ request.args.get(key, '') }}">
             {% endfor %}
-            <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_export_CSV">Exportar CSV</button>
+            <button type="submit" class="btn-primary-action js-requires-permission"
+                data-permission="site_export_CSV">Exportar CSV</button>
         </form>
     </div>
 </div>
@@ -131,48 +134,51 @@
             </tr>
         </thead>
         <tbody>
-    {% for r in results %}
-    <tr>
-        <td>
-            {% if r.portada_url %}
-                <img src="{{ r.portada_url }}" alt="Portada de {{ r.name }}" style="width: 100px; height: auto; border-radius: 4px;">
-            {% else %}
-                <span style="font-size: 0.8rem; color: #888;">Sin imagen</span>
-            {% endif %}
-        </td>
-        <td>{{ r.name }}</td>
-        <td>{{ r.state or "" }}</td>
-        <td>{{ r.city }}</td>
-        <td>{{ r.conservation_state }}</td>
-        <td>{% if r.is_visible %}Visible{% else %}No visible{% endif %}</td>
-        <td>{{ r.date_registered[:10] if r.date_registered else "" }}</td>
-        <td>
-            <div class="acciones">
-                <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
-                    <button type="submit" class="btn btn-edit js-requires-permission" data-permission="site_edit">Editar</button>
-                </form>
+            {% for r in results %}
+            <tr>
+                <td>
+                    {% if r.portada_url %}
+                    <img src="{{ r.portada_url }}" alt="Portada de {{ r.name }}"
+                        style="width: 100px; height: auto; border-radius: 4px;">
+                    {% else %}
+                    <span style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+                    {% endif %}
+                </td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.state or "" }}</td>
+                <td>{{ r.city }}</td>
+                <td>{{ r.conservation_state }}</td>
+                <td>{% if r.is_visible %}Visible{% else %}No visible{% endif %}</td>
+                <td>{{ r.date_registered[:10] if r.date_registered else "" }}</td>
+                <td>
+                    <div class="acciones">
+                        <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
+                            <button type="submit" class="btn btn-edit js-requires-permission"
+                                data-permission="site_edit">Editar</button>
+                        </form>
 
-                
-               <button onclick="showHistoryModal({{ r.id }})" class="btn btn-sm btn-outline-info">
-                       <i class="fas fa-history"></i> Historial
-                </button>
-                
 
-                
-                <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
-                    <input type="hidden" name="user_id"
-                        value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
-                    <button type="submit" class="btn btn-delete js-requires-permission" data-permission="site_delete"
-                        onclick="return confirm('¿Seguro que querés ar este sitio?')">
-                        Eliminar
-                    </button>
-                </form>
-            
-            </div>
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
+                        <button onclick="showHistoryModal({{ r.id }})" class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-history"></i> Historial
+                        </button>
+
+
+
+                        <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
+                            <input type="hidden" name="user_id"
+                                value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
+                            <button type="submit" class="btn btn-delete js-requires-permission"
+                                data-permission="site_delete"
+                                onclick="return confirm('¿Seguro que querés ar este sitio?')">
+                                Eliminar
+                            </button>
+                        </form>
+
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </div>
 
@@ -223,18 +229,18 @@
             </li>
             {% endfor %}
 
-            {% if page < total_pages %}
-            <li class="page-item">
+            {% if page < total_pages %} <li class="page-item">
                 <button type="submit" name="page" value="{{ page+1 }}" class="page-link">&raquo;</button>
-            </li>
-            {% endif %}
+                </li>
+                {% endif %}
         </ul>
     </nav>
     {% endif %}
 </form>
 
 
-<form action="{{ url_for('mantenimiento_admin.upload_image') }}" method="get" style="display:inline-block; margin-right: 10px;">
+<form action="{{ url_for('mantenimiento_admin.upload_image') }}" method="get"
+    style="display:inline-block; margin-right: 10px;">
     <button type="submit" class="btn-primary-action js-requires-permission" data-permission="site_edit">
         Gestionar Imágenes
     </button>
@@ -254,36 +260,37 @@
 
     function showHistoryModal(siteId) {
         // 1. Obtenemos los permisos del usuario (inyectados de forma segura desde Flask)
-        const userPermissions = {{ session.get("permissions", []) | tojson }};
+        const userPermissions = {{ session.get("permissions", []) | tojson
+    }};
 
-        // 2. Verificamos el permiso necesario
-        if (!userPermissions.includes("site_history_view")) {
-            alert('No tiene permiso para ver el historial de modificaciones');
-            return;
-        }
+    // 2. Verificamos el permiso necesario
+    if (!userPermissions.includes("site_history_view")) {
+        alert('No tiene permiso para ver el historial de modificaciones');
+        return;
+    }
 
-        // 3. Si tiene permiso → abrir modal y cargar contenido
-        modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
-        modal.style.display = 'block';
+    // 3. Si tiene permiso → abrir modal y cargar contenido
+    modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
+    modal.style.display = 'block';
 
-        // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
-        fetch(`/sitios/${siteId}/historial`)
-            .then(response => {
-                if (!response.ok) {
-                    if (response.status === 403) {
-                        throw new Error('Acceso denegado (403)');
-                    }
-                    throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
+    // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
+    fetch(`/sitios/${siteId}/historial`)
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error('Acceso denegado (403)');
                 }
-                return response.text();
-            })
-            .then(html => {
-                modalContent.innerHTML = html;
-            })
-            .catch(error => {
-                modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
-                console.error('Error cargando historial:', error);
-            });
+                throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            modalContent.innerHTML = html;
+        })
+        .catch(error => {
+            modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
+            console.error('Error cargando historial:', error);
+        });
     }
 
     function closeModal() {
@@ -296,7 +303,7 @@
     }
 
     // Cerrar clic fuera del modal
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         if (event.target === modal) {
             closeModal();
         }

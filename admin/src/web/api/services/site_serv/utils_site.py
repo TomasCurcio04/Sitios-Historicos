@@ -1,6 +1,5 @@
 """Funciones auxiliares para el servicio de sitios"""
 
-from collections import OrderedDict
 from src.web.api.services.site_serv import listar_sitios, get_site_by_id_service
 from src.core.database import db
 from src.core.entity.site_image import SiteImage
@@ -77,7 +76,7 @@ def site_to_dict(site, include_full_data=False, user_id=None):
 
         if include_full_data:
             review_count = reviews_query.count()
-        
+
         ratings = [r.rating for r in reviews_query.all()]
         if ratings:
             average_rating = sum(ratings) / len(ratings)
@@ -111,14 +110,19 @@ def site_to_dict(site, include_full_data=False, user_id=None):
     if user_id:
         try:
             from src.core.entity.site_favorite import SiteFavorite
-            favorite = db.session.query(SiteFavorite).filter(
-                SiteFavorite.id_site == site.id_site,
-                SiteFavorite.id_public_user == user_id
-            ).first()
+
+            favorite = (
+                db.session.query(SiteFavorite)
+                .filter(
+                    SiteFavorite.id_site == site.id_site,
+                    SiteFavorite.id_public_user == user_id,
+                )
+                .first()
+            )
             is_favorite = favorite is not None
         except Exception:
             pass
-    
+
     result["is_favorite"] = is_favorite
 
     # Agregar datos adicionales para detalle completo

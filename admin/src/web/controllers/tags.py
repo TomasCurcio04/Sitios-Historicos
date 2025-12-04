@@ -1,7 +1,12 @@
 """Controlador de gestión de etiquetas para sitios históricos."""
 
 from flask import Blueprint, request, render_template, redirect, url_for, flash
-from src.core.services.board.tag_serv import buscar_tags, crear_tag, actualizar_tag, eliminar_tag
+from src.core.services.board.tag_serv import (
+    buscar_tags,
+    crear_tag,
+    actualizar_tag,
+    eliminar_tag,
+)
 from src.web.handlers.utils import permissions_required
 
 bp = Blueprint("tags", __name__, url_prefix="/etiquetas")
@@ -10,11 +15,10 @@ bp = Blueprint("tags", __name__, url_prefix="/etiquetas")
 @bp.get("/")
 @permissions_required("tag", ["view"])
 def menu_tags():
-
     """Muestra el menú principal de gestión de etiquetas."""
     return render_template("tags/menu.html")
 
-    
+
 @bp.get("/listar")
 @permissions_required("tag", ["view"])
 def list_tags():

@@ -29,4 +29,7 @@ class Role(Base):
     permission: Mapped[list["Permission"]] = relationship(secondary=permission_list)
 
     def __repr__(self):
-        return f"<Role(id_role={self.id_role}, name='{self.name}', description='{self.description}')>"
+        return (
+            f"<Role(id_role={self.id_role}, name='{self.name}'"
+            f", description='{self.description}')>"
+        )

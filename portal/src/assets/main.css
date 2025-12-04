@@ -1,6 +1,5 @@
 @import './base.css';
 
-
 a,
 .green {
   text-decoration: none;
@@ -41,13 +40,13 @@ body {
 }
 
 /* Desktop: más ancho para grid horizontal */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .container {
     max-width: 1200px;
     margin: 0 auto;
     background: #f0f6ff;
   }
-}
+} */
 
 /* Imágenes thumbnail para flexbox */
 .cover-image,
@@ -75,7 +74,12 @@ img[src*="minio"],
 
 
 /* Tipografía global */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 1rem;
@@ -90,7 +94,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Botones globales */
-.btn, button {
+.btn,
+button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -271,7 +276,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Grid horizontal responsive */
 .sites-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 12px;
 }
 
@@ -288,6 +293,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 12px;
   gap: 12px;
   align-items: flex-start;
+  min-height: 140px;
 }
 
 .card-image {
@@ -377,40 +383,81 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Tablet: 3 columnas */
-@media (min-width: 600px) {
+@media (min-width: 768px) {
+
   .container {
-    padding: 20px;
+    padding: 16px;
   }
-  
+
+  /* SitesList específico - sin padding */
+  .sites-list .container {
+    padding: 1px;
+  }
+
+  .hero-banner {
+    padding: 40px 16px;
+  }
+
+  .hero-content {
+    flex-direction: row;
+    text-align: left;
+    gap: 40px;
+    justify-content: space-between;
+  }
+
+  .hero-text {
+    text-align: left;
+  }
+
+  .hero-title {
+    font-size: 2.2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .search-box {
+    min-width: 280px;
+  }
+
+  .search-input {
+    padding: 14px 20px;
+  }
+
+  .search-button {
+    padding: 14px 20px;
+  }
+
   .filters-toggle {
     display: none;
   }
-  
+
   .filters-section {
     max-height: none;
     padding: 20px;
     opacity: 1;
     margin-bottom: 20px;
   }
-  
+
   .sites-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 14px;
   }
-  
+
   /* Layout sidebar para tablet y desktop */
   .main-layout {
     display: flex;
-    gap: 24px;
+    gap: 8px;
     align-items: flex-start;
   }
-  
+
   .filters-wrapper {
     flex-shrink: 0;
-    width: 300px;
+    width: 280px;
     margin-bottom: 0;
   }
-  
+
   .content-area {
     flex: 1;
     min-width: 0;
@@ -421,16 +468,28 @@ h1, h2, h3, h4, h5, h6 {
 @media (min-width: 1024px) {
   .container {
     max-width: 1200px;
-    padding: 24px;
+    padding: 16px;
+    margin: 0 auto;
+    background: #f0f6ff;
   }
-  
+
+  /* SitesList específico - sin padding */
+  .sites-list .container {
+    padding: 1px;
+    max-width: 100%;
+  }
+
   .sites-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
-  
+
   .filters-wrapper {
-    width: 320px;
+    width: 280px;
+  }
+
+  .main-layout {
+    gap: 8px;
   }
 }
 
@@ -477,7 +536,7 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.1;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
-  text-stroke: 1px rgba(255, 255, 255, 0.3);
+  /* text-stroke: 1px rgba(255, 255, 255, 0.3); */
 }
 
 .hero-subtitle {
@@ -527,39 +586,61 @@ h1, h2, h3, h4, h5, h6 {
   background: #1e40af;
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .hero-banner {
-    padding: 40px 16px;
+/* Estilos específicos para móviles */
+@media (max-width: 767px) {
+  .mobile-hidden {
+    display: none;
   }
   
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 30px;
+  .mobile-only {
+    display: inline;
+    margin-left: 8px;
   }
   
-  .hero-text {
-    text-align: center;
-  }
-  
-  .hero-title {
-    font-size: 2.2rem;
-  }
-  
-  .hero-subtitle {
+  .mobile-full-width {
+    width: 100%;
+    border-radius: 50px;
+    padding: 16px 24px;
     font-size: 1.1rem;
+    font-weight: 600;
   }
   
   .search-box {
     min-width: 280px;
-  }
-  
-  .search-input {
-    padding: 14px 20px;
-  }
-  
-  .search-button {
-    padding: 14px 20px;
+    width: 100%;
   }
 }
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
+/* Paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.pagination .btn {
+  min-width: 100px;
+}
+
+/* Site wrapper para altura uniforme */
+.site-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-wrapper .site-card {
+  flex: 1;
+  height: 100%;
+}
+
+/* Tablet responsive */
+/* @media (max-width: 768px) {} */

@@ -11,11 +11,8 @@
 {% if is_authenticated() %}
 
 <form action="{{ url_for('users.user_index') }}" method="GET" class="d-flex mb-3">
-    <input type="text"
-           name="email"
-           style="flex: 1; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;"
-           placeholder="Buscar usuario por email"
-           value="{{ request.args.get('email', '') }}">
+    <input type="text" name="email" style="flex: 1; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px;"
+        placeholder="Buscar usuario por email" value="{{ request.args.get('email', '') }}">
     <button type="submit" class="btn-primary-action">
         Buscar
     </button>
@@ -30,19 +27,19 @@
         <label for="active-filter" class="form-label me-2 mb-0 fw-bold">Estado:</label>
         <select name="is_active" id="active-filter" class="form-select" onchange="this.form.submit()">
             <option value="" {% if not current_is_active %}selected{% endif %}>Todos</option>
-            <option value="true" {% if current_is_active | lower == 'true' %}selected{% endif %}>Activo (Sí)</option>
-            <option value="false" {% if current_is_active | lower == 'false' %}selected{% endif %}>Inactivo (No)</option>
+            <option value="true" {% if current_is_active | lower=='true' %}selected{% endif %}>Activo (Sí)</option>
+            <option value="false" {% if current_is_active | lower=='false' %}selected{% endif %}>Inactivo (No)</option>
         </select>
     </div>
 
     <div class="d-flex align-items-center">
         <label for="rol-filter" class="form-label me-2 mb-0 fw-bold">Rol:</label>
-        <select name="rol" id="rol-filter" class="form-select" onchange="this.form.submit()">   
+        <select name="rol" id="rol-filter" class="form-select" onchange="this.form.submit()">
             <option value="" {% if not current_rol %}selected{% endif %}>Todos los Roles</option>
             {% for rol in roles %}
-                <option value="{{ rol.name }}" {% if current_rol == rol.name %}selected{% endif %}>
-                    {{ rol.name }}
-                </option>
+            <option value="{{ rol.name }}" {% if current_rol==rol.name %}selected{% endif %}>
+                {{ rol.name }}
+            </option>
             {% endfor %}
         </select>
     </div>
@@ -103,27 +100,30 @@
                     </span>
                 </td>
                 <td>
-            {% if user.active %}
-            <a href="{{ url_for('users.user_edit', user_id=user.id_user) }}" class="btn btn-unified btn-sm me-2">Editar</a>
+                    {% if user.active %}
+                    <a href="{{ url_for('users.user_edit', user_id=user.id_user) }}"
+                        class="btn btn-unified btn-sm me-2">Editar</a>
 
-            <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST" class="d-inline">
-                {% if not user.rol_rel.name == 'admin' %}
-                <button type="submit" class="btn btn-unified btn-sm me-2"
-                    onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
-                    Eliminar
-                </button>
-                {% endif %}
-            </form>
+                    <form action="{{ url_for('users.user_delete', user_id=user.id_user) }}" method="POST"
+                        class="d-inline">
+                        {% if not user.rol_rel.name == 'admin' %}
+                        <button type="submit" class="btn btn-unified btn-sm me-2"
+                            onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ user.user_name }}?');">
+                            Eliminar
+                        </button>
+                        {% endif %}
+                    </form>
 
-            {% else %}
-            <form action="{{ url_for('users.user_activate', user_id=user.id_user) }}" method="POST" class="d-inline">
-                <button type="submit" class="btn btn-success btn-sm me-2"
-                    onclick="return confirm('¿Reactivar usuario {{ user.user_name }}?');">
-                    Reactivar
-                </button>
-            </form>
-            {% endif %}
-        </td>
+                    {% else %}
+                    <form action="{{ url_for('users.user_activate', user_id=user.id_user) }}" method="POST"
+                        class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm me-2"
+                            onclick="return confirm('¿Reactivar usuario {{ user.user_name }}?');">
+                            Reactivar
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
 
             </tr>
             {% endfor %}

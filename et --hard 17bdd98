@@ -1,0 +1,614 @@
+[33m17bdd98[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelopment[m[33m, [m[1;31morigin/modify/guias_de_estilo_Python[m[33m, [m[1;32mmodify/guias_de_estilo_Python[m[33m)[m Modificando codigo respetando las guias de estilo Python
+[33m2399306[m Modificando codigo respetando las guias de estilo Python
+[33mc580af5[m Eliminacion de tests
+[33m5b43288[m Modificando codigo respetando las guias de estilo Python
+[33mdb93260[m Merge branch 'modify/HistorialSitios_Etapa2' into development
+[33m8c1e0df[m[33m ([m[1;31morigin/modify/HistorialSitios_Etapa2[m[33m, [m[1;32mmodify/HistorialSitios_Etapa2[m[33m)[m Modificación historial de sitios, creacion de nuevos servicios, modificacion de existentes, correccion de varios errores
+[33m41f4160[m Merge branch 'delete/delete_files' into development
+[33mbc24274[m[33m ([m[1;31morigin/delete/delete_files[m[33m, [m[1;32mdelete/delete_files[m[33m)[m Borrado de archivos
+[33mdbb52db[m Modificado controller site history
+[33m7454fda[m Merge branch 'fix/styles_Etapa2' into development
+[33m240ffc6[m[33m ([m[1;31morigin/fix/styles_Etapa2[m[33m, [m[1;32mfix/styles_Etapa2[m[33m)[m Corrección del searchHero, modificacion de menu de filtros y cantidad de sitios en movil, modificacion de vista de listados de sitios
+[33m6247da4[m Modificado: 1 sitio en pantalla para movil
+[33mc75745b[m Borrado de carpeta static duplicada
+[33m4c83eff[m Agrego para que funcione la barra de busqueda
+[33m91bf55a[m Merge branch 'feature/reviews_Etapa2' into development
+[33m939bd6f[m[33m ([m[1;31morigin/feature/reviews_Etapa2[m[33m, [m[1;32mfeature/reviews_Etapa2[m[33m)[m Agregado el nombre de usuario en las reseñas de sitios
+[33m152f58a[m Merge branch 'fix/remove_pylint_Etapa2' into development
+[33m55ec71b[m[33m ([m[1;31morigin/fix/remove_pylint_Etapa2[m[33m)[m Eliminacion de disable-import-error de pylint
+[33m75bca87[m Arreglo para que se pueda cambiar de orden desde el listado de sitios
+[33mde4bc43[m Arreglo para que al seleccionar ver todos desde el home se vea reflejado en la url los parametros pasados
+[33ma23d584[m[33m ([m[1;31morigin/feature/activar_usuario[m[33m)[m Agrego funcionalidad para poder reactivar un usuario eliminado
+[33m962137d[m Funcionalidad ver reviews, falta el usuario que publica
+[33m7dc637b[m Funcionalidad Enviar reseñas
+[33m1026fdb[m Removidos pylint disable
+[33mc0d9291[m[33m ([m[1;31morigin/fix/docstring_Etapa2[m[33m, [m[1;32mfix/docstring_Etapa2[m[33m)[m Actualizando docstrings faltantes
+[33m4d28280[m Agregado de docstrings faltantes o modificados a estilo Google docstrings
+[33m683f47c[m Agrego al pasaje de parametros de la funcion buscar usuario el email
+[33m1f0ba93[m Agrego archivo estructura.txt y el sh al ignore
+[33m7625560[m Merge branch 'fix/cards' into development
+[33ma3b8f55[m[33m ([m[1;31morigin/fix/cards[m[33m)[m Reutilizo template de card para mostrar los datos de sitios y actualizo con tags y provincia
+[33md3fa3fd[m Merge branch 'fix/favorites_card' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m4770879[m[33m ([m[1;31morigin/fix/favorites_card[m[33m)[m Conecto con el login de google para cuando queres marcar un sitio como favorito
+[33mb4944fc[m Merge branch 'fix/cerrar_sesion' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m5ebbf66[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33ma470767[m[33m ([m[1;31morigin/fix/cerrar_sesion[m[33m)[m Agrego para que se guarden los filtros cuando le das a volver en un site
+[33m125ebd8[m Cuando le das a cerrar sesion te mantiene en el sitio en el que estabas
+[33m8ab4970[m[33m ([m[1;31morigin/fix/reviews_me[m[33m)[m Arreglado captura de estado de reseña
+[33m5b27e26[m Estilos a reseñas de usuario
+[33m1d7c52e[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m117356c[m Corregido error de login y cierre de sesion
+[33mf8fce4d[m Mergeo con lo mas actual de dev
+[33m58321aa[m Cuando inicia sesion carga los favoritos
+[33mfd651a7[m modificacion de average-rating
+[33m7799045[m Merge branch 'fix/styles' into development
+[33mdc527b5[m[33m ([m[1;31morigin/fix/styles[m[33m)[m Modifado fondo de pagina
+[33mfe8afb7[m[33m ([m[1;31morigin/fix/seeder[m[33m)[m Modificacion de seeder
+[33m778f58c[m Modificado organizacion del perfil y algunos colores
+[33mcd63582[m Modificando visual de perfil y otros aspectos de la pagina
+[33m6e2f172[m[33m ([m[1;31morigin/fix/inicio_sesion[m[33m)[m Se borran las sesiones cuando se baja el servidor, cuando se ingresa no es necesario y a mi perfil para que carguen los datos
+[33me44c994[m Reparacion de añadir favoritos
+[33m73c78a3[m Pregunta antes de iniciar sesion si usa otra cuenta
+[33me0c9e60[m Terminamos de acomodar CORS
+[33mfda77d2[m acomodamos CORS
+[33m663475f[m aa
+[33mddb322e[m cambio toma de variables
+[33m4cc30b6[m cambio secret_id
+[33m6363dbd[m cambios en toma valores vault
+[33md1d93ab[m a
+[33mb6357ce[m prueba mr
+[33m9d6cb97[m[33m ([m[1;31morigin/refactoring/google_auth[m[33m)[m Refactoring de OAuth para usarlo por api
+[33mf0075b2[m Acomodo para que corra en dev
+[33m361eca6[m Merge branch 'fix/sesion' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33mf035017[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33mee09a31[m[33m ([m[1;31morigin/fix/sesion[m[33m)[m Ahora cuando cierro sesion no quedan guardados los datos que tenia
+[33m52338da[m Modificado la API BASE
+[33m4f39581[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m0600198[m Aplicando estilos
+[33m69ec757[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m7802858[m Modificacion de estilos
+[33md669381[m Revert "Merge con conflictos solucionados"
+[33mee65197[m Merge con conflictos solucionados
+[33m412532a[m Merge branch 'development' into 'main'
+[33m3ff143e[m Modificando static ref
+[33me1f2312[m Merge branch 'development' into 'main'
+[33m45f5c7e[m Modificando static ref
+[33mde0a3c6[m Merge branch 'development' into 'main'
+[33m735d47f[m Volvierndo a cero las modificaciones de estilos
+[33m49b6c24[m Volvierndo a cero las modificaciones de estilos
+[33m7ff674b[m Merge branch 'development' into 'main'
+[33m984203d[m Volvierndo a cero las modificaciones de estilos
+[33m2e5481a[m Merge branch 'development' into 'main'
+[33mc6e7124[m Quito variable static folder
+[33m76ef7e7[m Merge branch 'development' into 'main'
+[33m25436c7[m Revirtiendo cambios
+[33m06bc406[m[33m ([m[1;31morigin/fix/styles_main[m[33m)[m Revirtiendo cambios
+[33m96ae745[m Merge branch 'development' into 'main'
+[33m18a527e[m Merge branch 'fix/styles_main' into development
+[33m73b2c14[m Merge branch 'fix/styles_main' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into fix/styles_main
+[33medec0f4[m Corrigiendo errores de estilos en app privada
+[33m9a75228[m Corrigiendo errores de estilos en app privada
+[33m13856fc[m[33m ([m[1;31morigin/feature/busqueda-listado-sitios[m[33m)[m Elimino api.js con funciones repetidas
+[33m46d5037[m Agrego para que al cerrar sesion cambie el estado de sesion iniciada a false i viceversa
+[33m9793436[m Elimino una llamada a una funcion que no existe
+[33mdd2dff2[m Agrego token en header para getSites cuando search_favorites es verdadero
+[33m69a7386[m Modifico importacion de api y agrego boton de favoritos con sesion activa
+[33mb8f6d33[m Le paso el orden al listado de sitios desde el home
+[33m613bcfe[m Agrego getMReviews al archivo donde se consume la api en front
+[33m4267472[m Merge branch 'fix/mi_perfil' into development
+[33m93e46e4[m[33m ([m[1;31morigin/fix/mi_perfil[m[33m)[m agrego url a cors para ver si asi llama correctamente a iniciar sesion en prod
+[33m45e1cd5[m[33m ([m[1;31morigin/feature/css_portal[m[33m)[m Modificacion de estilos
+[33m5be991c[m Agrego ordenamiento por fecha a favoritos y resenias
+[33m16ecd88[m Modifico logica y schemas de favoritos
+[33mc73417b[m[33m ([m[1;31morigin/fix/api[m[33m)[m Modifico logica y schemas de favoritos
+[33m26df349[m Correccion atributos tabla
+[33m41fd73f[m Correccion atributos tabla
+[33m6fbd83a[m Merge branch 'development' into 'main'
+[33mfce0506[m Reparacion de estilos
+[33mfb32688[m Merge branch 'development' into 'main'
+[33ma40933c[m Correccion de estilos
+[33mfe7db79[m Merge branch 'development' into 'main'
+[33m82e145f[m Reparacion de estilos
+[33me5e10f8[m Merge branch 'development' into 'main'
+[33m5ceaa9b[m Reparacion de estilos
+[33m91b5140[m Muestro en mi_pefil las reseñas hechas por el usuario
+[33m85b5cc7[m Merge branch 'development' into 'main'
+[33mb9f13f9[m Corrigiendo errores varios
+[33m27b32cd[m Corrigiendo estilos
+[33me1b22fd[m Merge branch 'development' into 'main'
+[33mcc4e34c[m CORS ORIGIN actualizado y estilos
+[33m1dc683b[m Merge branch 'development' into 'main'
+[33m8900c50[m Modificacion de imports
+[33m79e1c71[m Merge branch 'development' into 'main'
+[33mff36a23[m Correccion errores de import
+[33m1d119cb[m Merge branch 'development' into 'main'
+[33mf22e641[m Correccion errores de import
+[33m25e2902[m Merge branch 'development' into 'main'
+[33m2a7612c[m Correccion errores de import
+[33m386442d[m Merge branch 'development' into 'main'
+[33ma73a568[m[33m ([m[1;31morigin/fix/permisos_reviews[m[33m)[m Correccion permisos
+[33m9bee2e4[m Merge branch 'fix/mi_perfil' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m390cfb7[m Agrego pasaje del token
+[33m870658f[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33mccab385[m Agrego funcionalidad a la parte de sitios para poder acceder a detalle de sitio historico
+[33m5448220[m Merge branch 'fix/mi_perfil' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m48a4097[m Agrego como obtener el token
+[33m65f51f5[m Valido que el nombre de la etiqueta tanga almenos 3 caracteres al editar
+[33m1b7bc5e[m Merge branch 'feature/busqueda-listado-sitios' into development
+[33me983b34[m Arreglo orden de filtrado
+[33md751eb2[m Arreglo busqueda para que sea por palabra contenida
+[33m4df8c7d[m Merge branch 'feature/busqueda-listado-sitios' into development
+[33m5f6ddf4[m Agrego busqueda por nombre en el home
+[33m7038cd1[m Merge branch 'test/get_token' into development
+[33m51db90a[m[33m ([m[1;31morigin/test/get_token[m[33m)[m Correccion error credenciales
+[33m304e757[m Merge branch 'test/get_token' into development
+[33mb66ae10[m Quito debug
+[33m7ccd40f[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into fix/mi_perfil
+[33m5f2a91e[m Borro pagination(innecesario) y modifico algunas cosas del perfil
+[33mfa3ad70[m Merge branch 'test/get_token' into development
+[33m25d03eb[m Comentarios para debug
+[33m3dd510e[m Resuelvo conflictos
+[33m9184de0[m Agrego mapa a los filtros de busqueda
+[33md092a99[m Agrego leaflet y axios
+[33m624b903[m Merge branch 'test/api' into development
+[33m7e6ce7b[m[33m ([m[1;31morigin/test/api[m[33m)[m Test API
+[33m809eae3[m[33m ([m[1;31morigin/detalle_sitio_historico[m[33m)[m Resuelvo problema de imaegn en detalle sitio historico
+[33mcf41e55[m Arreglo boton de historial de modificaciones
+[33m798289b[m Realizo merge
+[33m3d625ea[m Agrego orden por mas visitados
+[33mbdfadae[m Modifico redireccion a ruta de mas visitados
+[33me69d8ac[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33mff324e7[m Agrego boton en header para que se encuentre en toda la pagina y un temporal dropdown
+[33mee42c71[m[33m ([m[1;31morigin/fix/mod_listar_sitios[m[33m)[m Añadido ordenar busqueda por favoritos
+[33me742b7a[m Merge branch 'feature/mi_perfil' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m5ba8521[m Añadido el buscar en los favoritos del usuario
+[33mc82fc0d[m Instalo axios
+[33m64b8386[m[33m ([m[1;31morigin/feature/mi_perfil[m[33m)[m Agrego reutilizacion del boton de google mas sencillamente ademas de estilo
+[33m764982e[m Recibo parametros de orden
+[33mc44a932[m Agrego para que redirija al listado de sitios
+[33m7dd9797[m Modifico nombre duplicados de rutas
+[33m4495bbb[m Agrego filtros
+[33me2f65e6[m Agrego estilos base
+[33m8b0866d[m Agrego imagenes de portada
+[33mdd8c509[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into feature/mi_perfil
+[33m725301e[m Merge branch 'development' into feature/busqueda-listado-sitios
+[33mc562e9b[m[33m ([m[1;31morigin/fix/api_sites_images[m[33m)[m Fix de api, respuesa de sitios con campo portada e imagenes
+[33m3676d7c[m Agrego seccion de mi_perfil
+[33m0027253[m Resuelvo conflictos
+[33md9072e3[m Correccion texto botones
+[33m8d52240[m Servicio con endpoint de la api
+[33m02720e3[m Vista de listado y busqueda de sitios
+[33mea6c484[m Correccion de hojas de estilo
+[33mc2d830f[m Agrego paths en el router
+[33mbdcfbbe[m Elimino algunos estilos que vienen por defecto con el portal de vue
+[33m72b80fc[m Agrego endpoints de la api para que no necesite auntenticacion en app privada
+[33mb73294e[m Correcion bp duplicado
+[33m17189ac[m Reparacion de estilos
+[33m5d343c1[m Merge branch 'feature/feature_flag_portal' into development
+[33ma599fe7[m[33m ([m[1;31morigin/feature/feature_flag_portal[m[33m)[m Solucionado portal en mantenimiento tanto en back como en front
+[33md7fba9d[m Resolviendo conflictos
+[33m123e536[m Agregando endpoints excluidos
+[33m9966960[m Modificacion aviso de portal en mantenimiento
+[33m27e8264[m Agregado de variables de produ y develop
+[33me9f327f[m Conflictos resueltos
+[33mbba134e[m[33m ([m[1;31morigin/fix/vault[m[33m)[m Añadido server de la api
+[33m0479c8a[m Implementacion de feature flag de portal
+[33m4ae6c8a[m Agrego el detalle de sitio historico a la app publica
+[33mfe2ebf0[m[33m ([m[1;31morigin/remove/api[m[33m)[m Eliminacion de api ubicada en proyecto
+[33m5802d18[m Merge branch 'fix/vault' into development
+[33md04839a[m Subo correcciones de permisos y problemas al cargar imagenes
+[33mb671531[m Merge branch 'feature/portal-publico-home' into development
+[33m89bbef0[m[33m ([m[1;31morigin/feature/portal-publico-home[m[33m)[m Portal público: Home, List, Detail, componentes y estructura completa
+[33mbcd4375[m Merge branch 'feature/portal-publico-home' into development
+[33mbdf89b1[m Agrego estructura inicial del portal público y diseño del home
+[33m49fd3b6[m Cambio config para que se tome bien desde vault y modifico rutas para que en produccion lleve a la pagina del servidor
+[33m829456c[m[33m ([m[1;31morigin/feature/google[m[33m)[m borro admin
+[33mad27b75[m Borro codigo comentado
+[33m1d51193[m Agrego configuracion para que segun desde donde se este ejecutando vuelva a la pagina del servidor y no a la del back
+[33mce63194[m Quitando variables hardcodeadas
+[33m98ec0b7[m[33m ([m[1;31morigin/feature/api[m[33m)[m Documentacion de api endpoints
+[33m487e82a[m API Endpoint para listar las reviews de usuario
+[33m5735d31[m Resuelto los conflictos, agrego endpoint de metadatos
+[33m8b33477[m Resuelto los conflictos, agrego endpoint de metadatos
+[33m73da2d9[m Endpoint de metadatos
+[33mfe2ca53[m Merge branch 'development' into 'main'
+[33m0a250d9[m acomodo feature flag
+[33mac65c87[m Merge branch 'development' into 'main'
+[33ma763919[m Correccion test
+[33m38f612d[m Fix imports
+[33m5aa9298[m Merge branch 'development' into 'main'
+[33m8a10411[m Borro prints
+[33m422428c[m borro import admin desde auth_google
+[33m365e238[m Merge branch 'development' into 'main'
+[33mc05dd78[m Merge branch 'fix/api' into development
+[33md6645ca[m Fix source path api
+[33m40ce30c[m Merge branch 'development' into 'main'
+[33md298021[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m21708ce[m saco admin
+[33mfccd56f[m Merge branch 'development' into 'main'
+[33m53b8a22[m Actualizacion de dependencias
+[33m6390f1b[m Merge de rama feature/api
+[33maaf4a1f[m Mosificacion import para obtener usuario
+[33md69b68b[m Hago merge con feature/google
+[33m81f9c95[m cambio config para que se pueda acceder al vault en produccion
+[33mb339f07[m Agrego las moficiaciones de vue
+[33mea5e166[m Modifico forma de acceder al session ahora dict. Ademas si la sesion esta activa cambia el boton para cerrar sesion en vue
+[33m03ca2d5[m Token Bearer funcionando
+[33md5fafe0[m Token config para endpoints con permisos
+[33m223be4c[m Merge remote-tracking branch 'origin/feature/google' into feature/api
+[33m9c81f88[m Autenticacion para consumir la api
+[33m50338ac[m[33m ([m[1;31morigin/feature/Moderacion-Reseñas[m[33m)[m Agrego place holder
+[33md857a5b[m Modifico que acciones se pueden realizar dependiendo el estado de la resena
+[33ma639bdd[m Arreglo provisoriamente el error para luego moverlo al servicio
+[33meffccc6[m Modifico variable de imagenes
+[33mc43dcf6[m Modifico variable de imagenes
+[33m5b1c976[m Resuelvo conflictos
+[33md957153[m Creo archivo .env con los valores del client_id y client_secret para poder probar el iniciar y registrarse
+[33mca30c32[m Agrego boton con funcionamiento para registrarse/ingresar con google
+[33m2ea39c2[m Funcionalidades de favoritos
+[33mf104e0d[m API endpoint de favoritos. Agregar/Quitar de favoritos y listar favoritos de usuario
+[33m8ced4e9[m Merge branch 'feature/api' into development
+[33m7b7fd0d[m API Endpoints para resenias y modificacion del seed par tener reseñas de prueba
+[33m8079913[m Merge branch 'feature/api' into development
+[33m5f77207[m Api endpoint para detalle de sitio, con devolucion de data completa, reviews y registro de visita
+[33m0447b5d[m Merge branch 'feature/api' into development
+[33m9cbf987[m Correccion de error con Marshmallow
+[33mf36a680[m Agregado de schemas como solicita la documentacion de la api
+[33medd44c7[m Merge branch 'feature/api' into development
+[33m6bb9aaf[m Corrección de listados de sitios respetando lo pedido en el trabajo integrador y en la api
+[33m5742394[m Agrego controlador para resenas con sus endpoints
+[33m3eb0b20[m Agrego servicio para la moderacion de resenas
+[33mcb39375[m Agrego html para la moderacion de resenas
+[33m5588aee[m Agrego srvicio para la moderacion de resenas
+[33m654d2e4[m Agrego resenas al seed y modifico permisos de usuarios
+[33m41edbae[m Agrego html para el detalle de la resena
+[33m530a3b5[m Actualizo package
+[33m889839a[m Restringiendo origins
+[33m86ebed9[m Desacoplando configuracion de CORS
+[33m1f8967c[m Habilitando CORS
+[33mba0c97c[m Cambio de nombre para no utilizar la ñ
+[33mae4b63a[m Agrego funcion para  rear resenas y usuarios publicos
+[33ma5244da[m Agrego al seed resenas y usuarios publicos de prueba
+[33mb8e52b4[m Agrego la funcion para crear resenas
+[33mcfb9ff6[m Modifico el seed para que existan resenas
+[33m6284296[m resuelvo conflicto
+[33m91e5c84[m Modifico redirecciones de barra principal
+[33ma9e077d[m Registro el blueprint de gestion de resenas
+[33m2b33992[m Elimino template de gestion de sitios historicos viejo
+[33m942606c[m Elimino endpoints innecesarios
+[33mee86db0[m Elimino el viejo template de moderacion de resenas
+[33mef5d35c[m Busqueda por cercania, por filtros y autocompletado de ciudades
+[33mf0d66a9[m Correccion de indentacion
+[33mf500a6b[m Listar sitios con filtros
+[33m1411498[m Merge sin conflictos
+[33m5043d0e[m Resuelvo conflicto: conservo package-lock.json
+[33mcef0f3c[m Agrego directorios y archivos a gitignore
+[33m4a1dc29[m[33m ([m[1;31morigin/feature/portal[m[33m)[m Agrego el portal con vue
+[33meeb97fd[m Merge branch 'fix/seeder' into development
+[33m8397694[m Quito usuario publico
+[33ma2eb59a[m[33m ([m[1;31morigin/fix/permisos_tags[m[33m)[m Merge branch 'development' into fix/permisos_tags
+[33ma2bf186[m Fix redireccionamiento
+[33m221c5a4[m Arreglo mal render
+[33m24615c3[m Modifico los parametros para cada funcion de los permisos del crud de tags
+[33m27e8b0a[m Modifico seeder
+[33m4dc87e6[m Merge branch 'feature/modify_db' into development
+[33m0198ec3[m[33m ([m[1;31morigin/feature/modify_db[m[33m)[m Campo boolean para eliminacion logica de sitios
+[33mc8590f9[m Valido que el nombre de la etiqueta tenga al menos 3 caracteres
+[33mfac8f7c[m Desarrollo de la api: listar sitios
+[33m64c642c[m Creacion de tablas, modificacion de relaciones, creacion de metodos count y fav
+[33m7fd7f44[m[33m ([m[1;31morigin/fix/check_permissions[m[33m)[m Modificación de Abort a Flash Warning
+[33m6442bb3[m Agrego lógica para las restricciones de la carga de imagenes sobre sitios
+[33m8aaf47e[m Merge branch 'fix/gestion_usuarios' into development
+[33mfa835b1[m[33m ([m[1;31morigin/fix/gestion_usuarios[m[33m)[m Corrijo el tema de los permisos, ahora si solo puede ingresar a gestion_usuarios y realizar acciones el rol admi
+[33m1cb02b9[m Hago refactoring para gestionar los permisos
+[33m58449c4[m[33m ([m[1;31morigin/gestion_imagenes[m[33m)[m Agrego un boton para gestionar imagenes en gestion de sitios historicos y agrego la logica para eliminar imagenes
+[33me81fb93[m ahora si acomodo import usercalidator
+[33mac764dc[m import uservalidator
+[33m02d97bb[m Acomodo y utilizo las funciones que tengo en user_serv, muevo el validator a esa carpeta tambien
+[33m04368dd[m Acomodo que se vuelvan a ver los roles para editar
+[33m8ff872e[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into fix/gestion_usuarios
+[33m251fb0d[m Acomodo formulario para editar usuario
+[33m5bd3be2[m Agrego logica inicial para imagenes de sitios historicos y modifico la parte de permisos del historial de modificaciones
+[33m68de445[m  modificacion en feature_imagenes
+[33m1cd6ce2[m[33m ([m[1;31morigin/feature_imagenes[m[33m)[m Conecto MiniO con el proyecto
+[33mefbf375[m Modifico seeder
+[33m590f487[m Modificando seeder
+[33m93a93c3[m Merge branch 'development' into fix/seeder
+[33m1bb5ffa[m Agrego el repetir contraseñaa que se habia borrado
+[33m87b45b9[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m59cb91b[m Acomodo importaciones y tempalte gestion_usuarios
+[33m11676b6[m Merge branch 'fix/gestion_usuarios' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m7364c1f[m Arreglo busqueda de usuario sin necesidad de poner un arroba
+[33m7238beb[m[33m ([m[1;31morigin/fix/authenticated[m[33m)[m Reparacion de funcion 'is_authenticated'
+[33mb3b8f0c[m Modificado de DB para agregar la gestion de imagenes a la base
+[33mc69a61f[m[33m ([m[1;31morigin/fix/menu_layout[m[33m)[m Muevo funcion a modelo para respetar el patron mvc
+[33mc483f8c[m Modificacion de permisos de menu en layout
+[33m49ca5cf[m[33m ([m[1;31morigin/feature/handler_error_db[m[33m)[m Agregado de handler para manejor de errores de conexion a la db
+[33m01e6f15[m[33m ([m[1;31morigin/fix/editar-sitios[m[33m)[m Delego consultas a la db al servicio
+[33m93ac100[m Agrego consultas a la db en el servicio y comparo estados anteriores con actuales de sitios
+[33mc5e6629[m Agrego js para desplegar historial de modificaciones
+[33ma6ae8ba[m Coordino base de dats con roles y filtros mixtos de usuarios
+[33mde02643[m Agregado de flask_session_data al ignore
+[33m160d6af[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m2a01197[m Acomodo import userValidator
+[33mc3d2a13[m Fix estilo boton de paginacion
+[33m1b52475[m Resolve merge conflict in sites/index.html
+[33m446df74[m Corregido botones de paginacion de sitios
+[33mcf2dfc0[m[33m ([m[1;31morigin/fix/handlers[m[33m)[m Agregado manejo de errores 403
+[33mc09441a[m Manejo de errores corregido y panel de usuario movido a controlador nuevo
+[33m3cdda57[m Merge branch 'fix/feature_flags' into development
+[33m9c91e73[m[33m ([m[1;31morigin/fix/feature_flags[m[33m)[m Fix feature flags
+[33m3c9fab8[m Corregido seed y extension de mensaje de feature flags
+[33m826914c[m Restaurar seed correcto
+[33m30ea0a8[m[33m ([m[1;31morigin/feature/PerfilUsuario[m[33m)[m Creacion pagina perfil de usuario y modificacion del home
+[33m26863c9[m Merge branch 'fix/LoginBoton' into development
+[33mbe739e7[m[33m ([m[1;31morigin/fix/LoginBoton[m[33m)[m Corrigiendo errores de Login Boton
+[33m22a1e6c[m[33m ([m[1;31morigin/feature/permisos-etiquetas[m[33m)[m Añadi @wraps para mantener nombre y docstring de las funciones
+[33mee21ce6[m Utilizo los decoradores para los permisos de CRUD de tags
+[33m0bfa469[m Agrego boton para volver al home
+[33m376522b[m Agrego para limpiar filtros en cada accion del CRUD
+[33ma9d3828[m Agrego los permisos para CRUD de tags y los asigno a los roles
+[33mb280a88[m Resuelvo conflictos
+[33ma4ce8bd[m[33m ([m[1;31morigin/fix/busqueda-sitios[m[33m)[m Agrego estilos al template
+[33m62dbfb4[m Modifio el template de sitios para mostrar la busqueda de los mismos
+[33mc93885c[m Elimino el estilo de sitios para que se use el style original
+[33mea1f6e2[m Elimino el template de busqueda que ya no se utilizara
+[33m2fe04bb[m Modifico el archivo para realizar la busqueda avanzada
+[33mc610de0[m Elimino el controlador de busqueda avanzada porque ya no es necesario
+[33m0dbd9ac[m Elimino el registro del blueprint de busqueda avanzada
+[33md2e69e3[m Modifico el archivo para que no devuelva la query directamente al buscar sitios
+[33m3bcda25[m Elimino el creador de la db
+[33mf1d676b[m[33m ([m[1;31morigin/documentation/docstrings[m[33m)[m Documentacion con docstrings de modulos y funciones
+[33md4dbe0e[m Documentacion con docstrings de modulos y funciones
+[33mfe82f77[m Arreglo de merge fallido
+[33m83cb263[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development Agrego configuracion de minio y la inicializacion del storage en el init de la app
+[33ma5fe9f5[m Configuracion inicial MiniO
+[33mb4e6e05[m Agregado de confirmacion al guardar cambios
+[33m6e87b07[m Correccion de estilos para armonia
+[33m0d7bb67[m Modificacion string connection DB
+[33m5fbc8ad[m Modificacion length mensaje de mantenimiento
+[33m0178fd1[m[33m ([m[1;31morigin/fix/refactoring[m[33m)[m Refactoring
+[33m6435818[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33mb8d9e3e[m Arreglo de mensaje de exito
+[33m1c12e22[m Refactoring de mvc
+[33m5da6296[m Refactoring de mvc
+[33m6946cee[m Refactoring de mvc
+[33m2891b4b[m Refactoring de mvc
+[33m747392f[m Refactoring de mvc
+[33m2bea854[m Correccion doble if
+[33m141e70b[m[33m ([m[1;31morigin/feature/user_permissions[m[33m)[m Funcion para chequear permisos
+[33m195a9ac[m Moviendo archivos a auth para verficar permisos ahi
+[33m541157d[m Borro la repeticion del mensaje de flash
+[33m8dd475e[m Agrego archivo validador y se cierran las sesiones cuando se da de baja la app
+[33ma8c8061[m Arreglos de estilo
+[33mc06d30f[m Modifico la forma en la que se muestra el historial
+[33mdfefe1e[m Acomodo los imports
+[33m2005545[m Merge branch 'fix/mvc-tags-busquedaAvanzada' into development
+[33m723e8da[m[33m ([m[1;31morigin/fix/mvc-tags-busquedaAvanzada[m[33m)[m Creo una carpeta y muevo a ella las consultas a la db sobre tags
+[33m6c0eed7[m Creo una carpeta y muevo a ella las consultas a la db sobre busqueda avanzada
+[33m215ee71[m Le saco al controlador de tags la responsabilidad de consultar a la db
+[33m7915747[m Le saco al controlador de busqueda avanzada la responsabilidad de consultar a la db
+[33m904a0fd[m Agrego normalize.css y lo extiendo al layout para el frontend
+[33m157d4d1[m Merge branch 'historial_modificaciones' into development hago merge entre historial_modificaciones y development
+[33m7e266e6[m[33m ([m[1;31morigin/historial_modificaciones[m[33m)[m Separo logica del servidor en site_history_serv.py
+[33m7a3a7a2[m Resolucion conflctos Merge
+[33m9509c52[m[33m ([m[1;31morigin/feature/feature_flags[m[33m)[m Fix feature flags
+[33m8369658[m Avance: registro de historial de modificaciones usando email de sesión
+[33m1aafe95[m NUevo seeder con mas registros
+[33m6647c33[m[33m ([m[1;31morigin/fix/busqueda-avanzada-sitios-historicos[m[33m)[m Agrego al index datos faltantes para que al cambiar de pagina no se borren los filtros y se mantengan
+[33mca5f476[m Modifico la query de tags para que no se contabilice un sitio mas de una vez al filtrar por mas de un tag y este sitio tenga mas de uno asociado
+[33mda102d2[m Agrego sitios al crear la base de datos
+[33mc605508[m modifico la query de provinicia agregando un join reemplazando referencia incorrecta a Site.province por Site.state_rel
+[33mf27989d[m Reacomodo el label de provincia para que este dentro del primer form y tenga los estilos que corresponden
+[33m0cc8c92[m Correccion de feature flags de usuario
+[33m2313969[m Correccion de permisos en feature_flags
+[33m41c1a0e[m Boorado de flask sessions y agregado de gitignore en directorio code
+[33mdcf54b3[m Agregado de pytest_cache a gitignore
+[33m4937a80[m Merge branch 'fix/arreglo' into development
+[33ma847e74[m[33m ([m[1;31morigin/fix/arreglo[m[33m)[m eliminamos archivos json porque adapte a base de datos
+[33m56b8853[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m7dde981[m[33m ([m[1;31morigin/fix/modif[m[33m)[m eliminamos test que no usamos y un archivo que esta en las mismas condiciones
+[33m0dfdbec[m Merge branch 'feature/usuarios' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m5c46c24[m[33m ([m[1;31morigin/feature/usuarios[m[33m)[m Acomodo paginacion, editar superusuario y estilo de la lista
+[33m02c1746[m Agregando datos a la db
+[33m9b1012a[m Merge development en el fix del seeder
+[33mff0c89e[m Modificacion de la db para usar neon
+[33m1e5c4fc[m eliminamos test
+[33mb0bed1b[m[33m ([m[1;31morigin/feature/modification[m[33m)[m coreccion
+[33m841a23e[m modifico funcionalidades
+[33m9981562[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m799c6c4[m[33m ([m[1;33mtag: [m[1;33mv1.0.0[m[33m)[m Merge branch 'development' into 'main'
+[33mb9cdc7e[m Correccion string conexion db
+[33m40a4bd3[m Merge branch 'development' into 'main'
+[33m9a22624[m Merge branch 'fix/create_app' into development
+[33m7c08123[m[33m ([m[1;31morigin/fix/create_app[m[33m)[m Correccion error create_app()
+[33m35b69ab[m Merge branch 'development' into 'main'
+[33mc7e1e55[m Correción en debug
+[33mbb9e2ca[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m21be34e[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into feature/usuarios
+[33m59f40a5[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m73613d8[m Agrego validadores al users en su plantilla y cambio que aparezca el feature flags por mas que no estes en sesion
+[33m99ec751[m Arreglo de future flags
+[33m1da08a3[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into feature/usuarios
+[33m05bca92[m Vuevlo atras cambio en index de gestion sitios
+[33mf710921[m Correcciones varias de feature flags
+[33m439da31[m Agrego que solo el administrador puede acceder a la gestion de usaurios
+[33m541c02d[m Corrección mvc de feature flags
+[33m0fca1dc[m Nueva corrección de controllers
+[33m1108ec4[m Corrección de controlador feature flag
+[33m9aef0f1[m Corregido errores varios y la implementacion de feature flags
+[33m9cacd25[m Merge branch 'development' into feature/feature_flags
+[33m2a61ba9[m Merge branch 'development' into 'main'
+[33m57cef4e[m[33m ([m[1;31morigin/feature/tags[m[33m)[m resolucion de conflictos
+[33m085791d[m Agrego boton para volver al home
+[33m676b00a[m Agrego redireccion a la gestion de sitios historicos
+[33mdd76bf4[m resuelvo conflictos
+[33m900ae01[m[33m ([m[1;31morigin/feature/busqueda-avanzada-sitios-historicos[m[33m)[m Modifico archivos para que funcionen con db y no con engine
+[33m5ab8c63[m Me traigo las provincias y tags de todos los sitios
+[33m53931d3[m Agrego al resultado para que muestre las provincias de cada sitio
+[33m800ed0c[m elimino stilos dentro del html y lo separo
+[33m81a5b80[m Agreo styles para los html de sitios y busqueda avanzada
+[33m9da9ce2[m Agrego paginacion y actualizacion de usuarios
+[33me56dcf9[m implementacion de Feature Flags
+[33m3d999c1[m Resuelvo conflictos
+[33mebb2dbb[m Agrego los filtros y debe estar autenticado para ver las acciones de gestion de usuarios
+[33m5337818[m Actualizo el template index.html para que se muestre la fecha de creacion del sitio
+[33me32bf02[m Dejo de utilizar datos mock para la busqueda y utilizo la base de datos
+[33m3921063[m Resolucion de conflictos
+[33m632092b[m adaptado a una base de datos
+[33mf39e58e[m Resolucion de conflictos
+[33m82ef5db[m Se elimina el pasaje del segundo parametro al crear un tag ya que se crea a partir del nombre automaticamente
+[33me43cbb5[m Se elimino parametro lambda innecesario
+[33m3faf61e[m Comit para hacer merge con develop
+[33m7b075ec[m Agrego sección para mostrar mensajes flash en layout.html
+[33mf272503[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into feature/usuarios
+[33m96d6a73[m CRUD de etiquetas: endpoints para crear, listar, editar y eliminar
+[33m9f408f3[m Agrego delete de usuario y commiteo para trearme lo ultimo de la db
+[33m0aa29cd[m Agrego relación de sitios con tags, genero slug y valido nombre del tag
+[33m702c676[m Creo templates para CRUD de tags
+[33m32f9d91[m Registro el blueprint de tags
+[33mf56341f[m resuelvo conflicto
+[33m5226188[m modifico rutas
+[33mfc4fd41[m modulo de sitios historicos
+[33m934aa1d[m Correccion de errores
+[33m4e57065[m Agregado de modelo de feature_flags
+[33ma4c1749[m Acomodo la pagina de gestion de usuarios
+[33m397830f[m Acomodo Users y agrego logout
+[33med523dc[m Agrego login y muestro usuarios en la lista, debo terminar de acomodarlos
+[33m3ee829a[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into feature/usuarios
+[33mf858080[m Agrego formulario de autenticacion
+[33m30341c7[m Merge feature/models: Seed de la DB
+[33m4366d58[m[33m ([m[1;31morigin/feature/models[m[33m)[m Solucionado problema de relacions y seed
+[33maba62b5[m Solucionando errores de relaciones
+[33m67f254d[m Descomento servicios de board
+[33m9332628[m Subo seeds.py
+[33mc382391[m Agrego formulario para autenticarse junto a controlador de usuario y auth
+[33m31f0516[m Borro carpetas duplicadas y termino de mergear otras funciones
+[33m5f3c607[m Hago merge con delevopment
+[33m902c5ea[m Agrego CRU de usuarios
+[33md21b7b8[m Merge feature/models: Tablas pruncipales de la db
+[33m73b4fc7[m Correccion de imports erroneos
+[33ma7fde76[m Merge feature/models: Tablas pruncipales de la db
+[33mc32a1cf[m Creacion de tabla de tags y servicios
+[33mb6386fb[m Creacion de tabla y servicios del historico de sitios
+[33mdd2f86a[m Merge feature/models: Tablas pruncipales de la db
+[33m2443bc4[m Creacion de tabla permisos, modificacion de role, categroy y users. Agregado de servicios
+[33m4fb154f[m Modificacion de clases entity y agregado de rol de usuario
+[33m7b7142f[m Agregado de mas modelos y modificaciones a existentes
+[33m3df191b[m Correccion rutas de import y creacion carpeta auth
+[33m3207071[m Configuracion de DB y creacion de modelos usuario y sitios
+[33m3c36059[m Configuracion de DB y creacion de modelos usuario y sitios
+[33m7b5b12e[m aplico formateo con Black
+[33me7f88f3[m Creo plantilla de clase Usuario
+[33m7e8eb65[m Arreglado config.py
+[33m89c021e[m resuelvo conflictos
+[33maa4c2b5[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m375ee70[m[33m ([m[1;31morigin/feature/top_bar[m[33m)[m ajustes
+[33m45db4e9[m ajustes en config.py
+[33mc7cd2d6[m modifico contenido
+[33m413b18c[m modifico contenido
+[33m9c00286[m modifico contenido
+[33m17053d7[m modifico contenido
+[33m1184a3d[m Merge remote-tracking branch 'origin/development' into feature/models
+[33m04f47eb[m Agrego estilos de la barra superior, logo y dropdown de usuario
+[33mc1e8f03[m Agrego barra superior con logo y estructura del dropdown de usuario
+[33mc063c5e[m Merge branch 'feature/config.py' into development
+[33m38afd64[m[33m ([m[1;31morigin/feature/config.py[m[33m)[m Correccion config.py
+[33mf99d8a8[m Merge branch 'feature/config.py' into development
+[33m8f78d3d[m Correccion config.py
+[33mffa1752[m Merge branch 'feature/adaptar_resolucion_multiples' into development
+[33m5b39828[m[33m ([m[1;31morigin/feature/adaptar_resolucion_multiples[m[33m)[m agrego javascript al codigo
+[33mc8d4d1f[m Creo template inicial index.html para el blueprint busqueda avanzada
+[33mf7f1bc6[m Agrego endpoint de busqueda avanzada de sitios historicos. Soporta filtros, ordenamiento, busqueda por textto y paginacion
+[33ma54d37a[m Registro el blueprint de la busqueda avanzada
+[33m0b4fe76[m Merge remote-tracking branch 'origin/development' into feature/models
+[33m4d600a9[m Merge de feature/config.py resuelto con conflicto en config.py
+[33mf404164[m Configuracion de inicializacion de la base de datos
+[33m60b5fc0[m[33m ([m[1;31morigin/feature/menudenavegacionenLayout[m[33m)[m defino estilos para normal, hover y activo
+[33mffc8357[m creo modulo validacion de propuesta
+[33m4a49934[m creo modulo moderacion de resenias
+[33mb1359fa[m creo modulo gestion sitios historicos
+[33m9172f09[m creo modulo gestion_usuarios
+[33m168e46c[m creo enlaces
+[33m6a8dc2f[m corrijo home
+[33m11a3fc5[m Agrego rutas
+[33m287557b[m Merge branch 'feature/layout' into development
+[33mb22fdfd[m Merge branch 'feature/instalacionDependencias', remote-tracking branch 'origin' into development
+[33m2c03e80[m[33m ([m[1;31morigin/feature/layout[m[33m)[m Agrego estilos en styles.css
+[33m617adc6[m Agrego contenido al layout.html
+[33mbee94d3[m Agrego contenido al home.html
+[33m988f118[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development Dejo carpetas y archivos como estaban hasta la explicacion practica 3
+[33m26a03f8[m Eliminar archivos pyc del repo y aplicar .gitignore
+[33mde162f8[m Dejo el archivos y carpetas organizados hasta como estaban en la explicación pactica 3
+[33m08f30b4[m Archivo configuracion de la app
+[33m964973a[m Agrego el logo
+[33m6fe1f1d[m Agregue archivo layout
+[33m6732072[m Elimina archivos compilados del seguimiento (.pyc y __pycache__)
+[33mf3ec6ab[m Agrego carpetas models y controllers para continuar con el MVC y dentro de cada una un __init__.py vacio
+[33me8c89a1[m[33m ([m[1;33mtag: [m[1;33mv0.2.0[m[33m)[m actualice poetry.lock
+[33m3657cdb[m Merge con rama feature/errores
+[33mf6edee2[m[33m ([m[1;31morigin/feature/errores[m[33m)[m Arreglo error 401
+[33mf9fc8a6[m Se agrega contenido al .gitignore
+[33m2c97f76[m Agrego los metodos de los manejo de errores al init
+[33m0420e56[m Muevo los archivos y carpetas a su lugar
+[33m2fe4095[m Hago merge de development con mi rama feature/errores
+[33m2f3ac17[m Agrego html de la pagina de los errores
+[33m7c5373c[m[33m ([m[1;31morigin/feature/hojas-de-estilos[m[33m)[m Actualice la funcion create_app para que se detecte la carpeta static
+[33m9a28e42[m Vincule layout.html con styles.css
+[33mcb8f573[m Agregue la carpeta static con el archivo styles.css
+[33m71aa046[m Merge branch 'nicolas' into development hago merge local
+[33mae510d5[m[33m ([m[1;31morigin/feature/controlador_inicial[m[33m)[m Creacion controlador y script para ejecucion en develop
+[33ma4a25c1[m Merge branch 'feature/instalacionDependencias' into development
+[33mc68c752[m[33m ([m[1;31morigin/feature/instalacionDependencias[m[33m)[m Agregue carpeta src e inclui la carpeta web dentro de la carpeta creada
+[33mf9c0266[m Ignorar entorno virtual
+[33m0f7bb67[m Merge remote-tracking branch 'origin/development' into nicolas Agrego los ultimos cambios de rama nicolas para mantener development actualizada
+[33mdd77531[m[33m ([m[1;31morigin/nicolas[m[33m)[m Edito carpetas y archivo __init__.py como en la explicacion practica
+[33me9ed0cd[m Merge branch 'feature/instalacionDependencias' into development
+[33m23c3ca1[m version de python >=3.12
+[33mbf7c985[m carpeta .venv en admin
+[33m7857616[m Creo carpeta con los errores personlizados
+[33md7e9faf[m Agrego templates y app.py
+[33mc5656c5[m Merge branch 'feature/instalacionDependencias', remote-tracking branch 'origin' into development
+[33med11b2b[m Actualizar pyproject.toml y agregar archivos de Poetry
+[33m0247005[m[33m ([m[1;31morigin/feature/instalacionPoetry[m[33m)[m cambio version de python de 3.8 a 3.13
+[33mf78e1b5[m instalo poetry
+[33mc8f28b7[m Agrego calculadora a una carpeta nueva
+[33m1fcddb5[m reseteo
+[33m360ea59[m Agrego archivos del proyecto instalacion de poetry
+[33m3716a7a[m Creo carpeta para calculadora
+[33mf55bdf5[m Merge branch 'development' of gitlab.catedras.linti.unlp.edu.ar:proyecto-2025/proyectos/grupo10/code into development
+[33m6abc267[m Elimino carpeta para calculadora que habia creado
+[33m9ed0050[m Creo carpeta para calculadora
+[33maea83af[m[33m ([m[1;33mtag: [m[1;33mv0.1.1[m[33m)[m Merge branch 'development' into 'main'
+[33m34bc383[m Agrego nombre a readme.md
+[33mb37c2ee[m[33m ([m[1;33mtag: [m[1;33mv0.1.0[m[33m)[m Merge branch 'development' into 'main'
+[33m1558879[m Se acomoda el from para que funcione en development
+[33m8093971[m[33m ([m[1;31morigin/fix/merge[m[33m)[m nuevas modificaciones
+[33m69f1342[m subida carpeta extraviada
+[33m5483b2d[m subida init y gitignore faltante
+[33m7656d2f[m Merge branch 'development' into 'main'
+[33m1050668[m Pull de main
+[33m7d3bcf9[m Arreglo en el orden de las sentencias
+[33md1a551f[m Formateo de README
+[33m7c7aa70[m[33m ([m[1;31morigin/feature/programa-inicial[m[33m)[m Programa principal realizado
+[33m9d0baf2[m[33m ([m[1;31morigin/feature/calculator[m[33m)[m modifico el import
+[33mf60c7f2[m se agrega calculadora
+[33m5896063[m[33m ([m[1;31morigin/feature/resta[m[33m)[m Vuelvo a agregar operacion de resta
+[33m3e8e0c5[m Revert "Merge branch 'development' into 'main'"
+[33m441d1b6[m Trataendo de volver atras el commit
+[33m80b5abe[m Vuevlo atras el merge hecho
+[33m0590310[m Vuevlo atras el merge
+[33ma467ea0[m Volviendo atras el merge
+[33m198ca96[m Revert "Vuelvo atras el merge"
+[33mba15e4e[m Merge branch 'development' into 'main'
+[33m22e0a60[m Resuelvo conflicto de readme
+[33m182b754[m Agrego operacion de resta y agrego mi nombre al readme
+[33m3ebbd04[m Integracion de funcion multiplicar y conflicto resuelto
+[33mdd0b766[m Resolucion de conflictos en merge
+[33mffe1dfb[m[33m ([m[1;31morigin/feature/division[m[33m)[m Agrego funcionalidad: division
+[33mca92c32[m[33m ([m[1;31morigin/feature/multiplicacion[m[33m)[m Agregue funcionalidad de multiplicacion
+[33mcd16277[m[33m ([m[1;31morigin/feature/suma[m[33m)[m se crea la carpeta y dentro de el el archivo que contiene la op suma
+[33m30cd783[m Ignoro archivos
+[33ma11f686[m Agregue mi nombre al README
+[33m1bcbf1e[m Agrego mi nombre
+[33m5376411[m Creacion del README

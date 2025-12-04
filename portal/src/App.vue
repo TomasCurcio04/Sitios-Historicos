@@ -103,7 +103,7 @@ const router = useRouter()
 const handleSearch = (query) => {
   router.push({
     name: 'sites-list',
-    query: { q: query }
+    query: { ...router.currentRoute.value.query, search: query }
   })
 }
 

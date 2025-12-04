@@ -1,28 +1,32 @@
 /* Reset y tipografía */
 body {
-     font-family: 'Montserrat', Arial, sans-serif;
-     background: #f4f6f8;
-     margin: 0; 
-     padding: 0; 
-     color: #222;  
-     box-sizing: border-box;
-     }
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    color: #222;
+    box-sizing: border-box;
+}
 
-/* Wrapper */     
-.wrapper { 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 100vh; /* altura completa de la pantalla */ 
+/* Wrapper */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* altura completa de la pantalla */
     box-shadow: none;
 }
 
 /* Header / Topbar */
-header, .topbar {
-    background-color: #1a237e; /* azul oscuro */
+header,
+.topbar {
+    background-color: #1a237e;
+    /* azul oscuro */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px; /* MÁS espacio lateral */
+    padding: 0 32px;
+    /* MÁS espacio lateral */
     height: 60px;
     color: #fff;
     position: fixed;
@@ -32,45 +36,56 @@ header, .topbar {
     z-index: 1000;
     border-bottom: none;
     box-shadow: none;
-    flex-wrap: wrap; /* permite que los elementos se muevan a otra línea si hace falta */
+    flex-wrap: wrap;
+    /* permite que los elementos se muevan a otra línea si hace falta */
 }
 
 /* Logo + título */
 .topbar-left {
     display: flex;
-    align-items: center;       /* Centrado vertical */
+    align-items: center;
+    /* Centrado vertical */
     gap: 12px;
 }
- 
+
 /* Header y menú */
 header {
-    border-bottom: none;   /* quita cualquier línea inferior */
-    box-shadow: none;      /* elimina sombras */
-    padding: 10px 20px;    /* espacio interno */
+    border-bottom: none;
+    /* quita cualquier línea inferior */
+    box-shadow: none;
+    /* elimina sombras */
+    padding: 10px 20px;
+    /* espacio interno */
     display: flex;
     align-items: center;
-    justify-content: space-between; /* logo a la izquierda, usuario a la derecha */
+    justify-content: space-between;
+    /* logo a la izquierda, usuario a la derecha */
 }
 
 /* Logo */
 header .logo {
     display: flex;
     align-items: center;
-    gap: 10px; /* separación entre logo y nombre */
+    gap: 10px;
+    /* separación entre logo y nombre */
 }
 
 /* Contenedor del logo + texto */
 .logo-container {
-    display: flex;             /* logo y texto en línea */
-    align-items: center;       /* centrado vertical */
-    gap: 12px;                 /* espacio entre logo y texto */
+    display: flex;
+    /* logo y texto en línea */
+    align-items: center;
+    /* centrado vertical */
+    gap: 12px;
+    /* espacio entre logo y texto */
 }
 
 /* Imagen del logo */
 .logo-img {
-    max-height: clamp(40px, 8vw, 80px);         /* tamaño máximo del logo */
+    max-height: clamp(40px, 8vw, 80px);
+    /* tamaño máximo del logo */
     width: auto;
-    transition: all 0.3s ease;              
+    transition: all 0.3s ease;
 }
 
 /* Texto del título */
@@ -82,98 +97,115 @@ header .logo {
 }
 
 /* Dropdown usuario */
-.user-dropdown { 
-    background: rgba(255,255,255,0.15);
-    border-radius: 6px; 
-    padding: 6px 10px; 
-    transition: background 0.3s ease; 
+.user-dropdown {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: background 0.3s ease;
     position: relative;
-    margin-right: 40px; /* separa del borde derecho */
+    margin-right: 40px;
+    /* separa del borde derecho */
 }
-.user-dropdown:hover { 
-    background: rgba(255,255,255,0.3); 
-} 
-.user-dropdown span { 
-    color: #fff; 
+
+.user-dropdown:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.user-dropdown span {
+    color: #fff;
     cursor: pointer;
 }
-.user-dropdown-content { 
+
+.user-dropdown-content {
     display: none;
     position: absolute;
     right: 0;
     top: 100%;
-    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
     color: #333;
     min-width: 140px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     z-index: 10;
     border-radius: 6px;
-} 
-.user-dropdown:hover .user-dropdown-content { 
-    display: block; 
-} 
-.user-dropdown-content a { 
-    color: #333; 
-    padding: 8px 12px; 
-    text-decoration: none; 
-    display: block; 
-} 
-.user-dropdown-content a:hover { 
-    background: hsl(273, 85%, 32%); 
+}
+
+.user-dropdown:hover .user-dropdown-content {
+    display: block;
+}
+
+.user-dropdown-content a {
+    color: #333;
+    padding: 8px 12px;
+    text-decoration: none;
+    display: block;
+}
+
+.user-dropdown-content a:hover {
+    background: hsl(273, 85%, 32%);
     color: #fff;
 }
 
 /* Contenedor principal */
-.container { 
-    display: flex; 
-    flex: 1; 
-    margin-top: 60px; 
-    width: 100%; 
+.container {
+    display: flex;
+    flex: 1;
+    margin-top: 60px;
+    width: 100%;
     min-height: calc(100vh - 60px);
-} 
+}
 
 /* Menú lateral */
-nav.sidenav { 
-    width: 220px; 
-    background: #2c3e50; 
-    color: #fff; 
-    padding: 24px 16px; /* MÁS padding interior */ 
-    box-sizing: border-box; 
+nav.sidenav {
+    width: 220px;
+    background: #2c3e50;
+    color: #fff;
+    padding: 24px 16px;
+    /* MÁS padding interior */
+    box-sizing: border-box;
     transition: transform 0.3s ease;
-} 
-nav.sidenav a { 
-    display: block; 
-    color: #fff; 
-    padding: 10px 14px; 
-    text-decoration: none; 
-    border-radius: 6px; 
-    transition: background 0.3s ease, color 0.3s ease; 
-} 
-nav.sidenav a:hover { 
-    background: #1e90ff; /* azul eléctrico, mismo que header */ 
-    color: #fff; 
-    font-weight: bold; 
 }
+
+nav.sidenav a {
+    display: block;
+    color: #fff;
+    padding: 10px 14px;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+nav.sidenav a:hover {
+    background: #1e90ff;
+    /* azul eléctrico, mismo que header */
+    color: #fff;
+    font-weight: bold;
+}
+
 /* Estado activo */
 nav.sidenav a.active {
-    background: #0d47a1; /* azul más oscuro para diferenciar */
+    background: #0d47a1;
+    /* azul más oscuro para diferenciar */
     font-weight: bold;
 }
 
 /* Contenido principal */
-main { 
-    flex: 1; 
-    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0f8ff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(173, 216, 230, 0.1) 10px, rgba(173, 216, 230, 0.1) 20px);
-    border-radius: 12px; 
-    box-shadow: 0 8px 12px rgba(44, 62, 80, 0.12); 
-    padding: 2rem; 
-    margin: 1.5rem; /* más separación del sidebar */
-    max-width: 100%; /* ancho más equilibrado */
-    min-height: 400px; /* altura más compacta */ 
-    overflow: auto; /* permite scroll interno si es necesario */
-} 
+main {
+    flex: 1;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0f8ff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(173, 216, 230, 0.1) 10px, rgba(173, 216, 230, 0.1) 20px);
+    border-radius: 12px;
+    box-shadow: 0 8px 12px rgba(44, 62, 80, 0.12);
+    padding: 2rem;
+    margin: 1.5rem;
+    /* más separación del sidebar */
+    max-width: 100%;
+    /* ancho más equilibrado */
+    min-height: 400px;
+    /* altura más compacta */
+    overflow: auto;
+    /* permite scroll interno si es necesario */
+}
 
 /* Scrollbar personalizada */
 ::-webkit-scrollbar {
@@ -201,41 +233,49 @@ main {
 }
 
 /* Footer */
-footer { 
-    background: #1e90ff; 
-    color: #fff; 
-    padding: 20px 0; 
-    text-align: center; 
-} 
-footer hr { 
-    border: none; 
-    border-top: 2px solid #e0e0e0; 
-    margin: 16px 0; 
-} 
-footer p { 
+footer {
+    background: #1e90ff;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+footer hr {
+    border: none;
+    border-top: 2px solid #e0e0e0;
+    margin: 16px 0;
+}
+
+footer p {
     margin: 0;
     font-size: 1em;
     letter-spacing: 1px;
 }
 
 /* Encabezados */
-h1, h2, h3 { 
-    font-weight: 600; /* usa el peso 600 que pediste en Google Fonts */ 
-} 
-h2 { 
-    color: #b71cc8; 
-    margin-top: 0; 
-} 
+h1,
+h2,
+h3 {
+    font-weight: 600;
+    /* usa el peso 600 que pediste en Google Fonts */
+}
+
+h2 {
+    color: #b71cc8;
+    margin-top: 0;
+}
+
 hr {
     display: none;
 }
 
 /* Botón menú móvil */
-.menu-toggle { 
-    display: none; 
-    cursor: pointer; 
-    font-size: 1.5rem; 
-    color: #fff; }
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #fff;
+}
 
 /* Desktop normal: 1025px+ */
 @media (min-width: 1025px) {
@@ -252,9 +292,11 @@ hr {
     .container {
         flex-direction: column;
     }
+
     .menu-toggle {
         display: inline-block;
     }
+
     nav.sidenav {
         position: fixed;
         top: 60px;
@@ -266,6 +308,7 @@ hr {
         transition: transform 0.3s ease;
         z-index: 999;
     }
+
     nav.sidenav.open {
         transform: translateX(0);
     }
@@ -278,21 +321,27 @@ hr {
         align-items: flex-start;
         padding: 0.5rem 1rem;
     }
-    .logo-container { 
+
+    .logo-container {
         gap: 8px;
-     }
+    }
+
     .logo-img {
         max-height: 40px;
     }
+
     .logo-text {
         font-size: 1.2rem;
     }
+
     .menu-toggle {
         display: inline-block;
     }
-    .container { 
+
+    .container {
         flex-direction: column;
     }
+
     /* Menú colapsable */
     nav.sidenav {
         position: fixed;
@@ -305,7 +354,8 @@ hr {
         z-index: 999;
         padding: 1rem;
     }
-     nav.sidenav.open {
+
+    nav.sidenav.open {
         transform: translateX(0);
     }
 
@@ -322,27 +372,34 @@ hr {
         align-items: flex-start;
         padding: 0.5rem 1rem;
     }
+
     .topbar-left {
         gap: 8px;
     }
+
     .logo-container {
         gap: 8px;
     }
 
     .logo-img {
-        max-height: 40px;      /* logo más pequeño en móvil */
+        max-height: 40px;
+        /* logo más pequeño en móvil */
     }
 
     .logo-text {
-        font-size: 1.2rem;     /* título más pequeño en móvil */
+        font-size: 1.2rem;
+        /* título más pequeño en móvil */
     }
-    .container { 
-        flex-direction: column; 
-    } 
+
+    .container {
+        flex-direction: column;
+    }
+
     #menu-toggle {
         display: inline-block;
     }
-    nav.sidenav { 
+
+    nav.sidenav {
         position: fixed;
         top: 60px;
         left: 0;
@@ -351,55 +408,60 @@ hr {
         width: 200px;
         padding: 1rem;
         z-index: 999;
-    } 
-    nav.sidenav a { 
-        flex: 1; 
-        text-align: center; 
-        padding: 10px 0; 
-    } 
+    }
+
+    nav.sidenav a {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+    }
+
     nav.sidenav.open {
         transform: translateX(0);
     }
-    main { 
-        padding: 1rem; 
-        margin-top: 50px; 
-    } 
+
+    main {
+        padding: 1rem;
+        margin-top: 50px;
+    }
+
     /* Dropdown usuario con click */
     .user-dropdown-content {
         position: absolute;
         right: 0;
         top: 100%;
-        display: none; /* se mostrará con JS */
+        display: none;
+        /* se mostrará con JS */
     }
 
-/* Botón de login con el mismo estilo que user-dropdown */
-.login-button {
-    background: rgba(255,255,255,0.15);
-    border-radius: 6px; 
-    padding: 6px 10px; 
-    transition: background 0.3s ease; 
-    position: relative;
-    margin-right: 40px;
-}
+    /* Botón de login con el mismo estilo que user-dropdown */
+    .login-button {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 6px 10px;
+        transition: background 0.3s ease;
+        position: relative;
+        margin-right: 40px;
+    }
 
-.login-button:hover {
-    background: rgba(255,255,255,0.3); 
-}
+    .login-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
 
-.login-button a {
-    color: #fff !important;
-    text-decoration: none !important;
-    font-size: 1em;
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-}
+    .login-button a {
+        color: #fff !important;
+        text-decoration: none !important;
+        font-size: 1em;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
 
     /* --- Ajuste para el botón de usuario actual --- */
 
     /* Es importante ajustar el estilo del botón original para que el texto sea blanco */
     .user-dropdown button {
-        color: #fff; 
+        color: #fff;
         background: none;
         border: none;
         cursor: pointer;
@@ -426,6 +488,7 @@ hr {
 .btn-google:hover {
     background-color: #f7f7f7;
 }
+
 .google-icon {
     width: 20px;
     height: 20px;
@@ -436,25 +499,33 @@ hr {
 
 .table-responsive {
     margin-top: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Sombra suave */
-    border-radius: 8px; /* Esquinas redondeadas al contenedor */
-    overflow: hidden; /* Importante para que las esquinas redondeadas funcionen */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    /* Sombra suave */
+    border-radius: 8px;
+    /* Esquinas redondeadas al contenedor */
+    overflow: hidden;
+    /* Importante para que las esquinas redondeadas funcionen */
 }
 
-.table th, .table td {
-    padding: 12px 15px; /* Más padding vertical y horizontal */
-    vertical-align: middle; /* Centra verticalmente el contenido */
+.table th,
+.table td {
+    padding: 12px 15px;
+    /* Más padding vertical y horizontal */
+    vertical-align: middle;
+    /* Centra verticalmente el contenido */
 }
 
 /* 3. Resaltar la fila al pasar el mouse (Mejora la interactividad) */
 .table-hover tbody tr:hover {
-    background-color: #f1f8ff; /* Un azul muy suave al hacer hover */
-    transition: background-color 0.3s ease; /* Transición suave */
+    background-color: #f1f8ff;
+    /* Un azul muy suave al hacer hover */
+    transition: background-color 0.3s ease;
+    /* Transición suave */
 }
 
 /* 4. Estilo de los encabezados de columna (Clickeables) */
 .table-dark th a {
-    text-decoration: none; 
+    text-decoration: none;
     color: white !important;
     display: block;
 }
@@ -467,14 +538,15 @@ hr {
     background: #f8f9fa;
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.form-container form > div {
+.form-container form>div {
     margin-bottom: 1.2rem;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     width: 100%;
     min-width: 200px;
     max-width: 100%;
@@ -484,16 +556,17 @@ hr {
 /* --- ESTILOS FLASH MESSAGES (MOVIDOS DEL MEDIA QUERY) --- */
 
 .flashes {
-    list-style: none; 
+    list-style: none;
     /* The padding is what creates the margin between the text and the border/color */
-    padding: 15px 25px; 
-    margin: 20px 0; 
+    padding: 15px 25px;
+    margin: 20px 0;
     border-radius: 6px;
     font-size: 1.1em;
     font-weight: 500;
-    border: 1px solid; /* Solid border */
-    line-height: 1.4; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    border: 1px solid;
+    /* Solid border */
+    line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     /* Set a neutral default to prevent issues if a color class is missing */
     background-color: #f8f8f8;
     color: #333;
@@ -507,45 +580,61 @@ hr {
 
 /* 🟢 SUCCESS: Combine .flashes and .success */
 .flashes.success {
-    background-color: #d4edda; /* Light Green background */
-    color: #155724; /* Dark Green text */
-    border-color: #c3e6cb; /* Medium Green border */
+    background-color: #d4edda;
+    /* Light Green background */
+    color: #155724;
+    /* Dark Green text */
+    border-color: #c3e6cb;
+    /* Medium Green border */
 }
 
 /* 🔴 ERROR: Combine .flashes and .error */
 .flashes.error {
-    background-color: #f8d7da; /* Light Red background */
-    color: #721c24; /* Dark Red text */
-    border-color: #f5c6cb; /* Medium Red border */
+    background-color: #f8d7da;
+    /* Light Red background */
+    color: #721c24;
+    /* Dark Red text */
+    border-color: #f5c6cb;
+    /* Medium Red border */
 }
 
 /* 🔵 INFO: Combine .flashes and .info */
 .flashes.info {
-    background-color: #d1ecf1; /* Light Blue background */
-    color: #0c5460; /* Dark Blue text */
-    border-color: #bee5eb; /* Medium Blue border */
+    background-color: #d1ecf1;
+    /* Light Blue background */
+    color: #0c5460;
+    /* Dark Blue text */
+    border-color: #bee5eb;
+    /* Medium Blue border */
 }
 
 /* 🟡 WARNING: Combine .flashes and .warning */
 .flashes.warning {
-    background-color: #fff3cd; /* Light Yellow background */
-    color: #856404; /* Dark Yellow text */
-    border-color: #ffeeba; /* Medium Yellow border */
+    background-color: #fff3cd;
+    /* Light Yellow background */
+    color: #856404;
+    /* Dark Yellow text */
+    border-color: #ffeeba;
+    /* Medium Yellow border */
 }
 
 .badge {
-    font-size: 0.85em; /* Un poco más grandes */
+    font-size: 0.85em;
+    /* Un poco más grandes */
     padding: 0.4em 0.8em;
     /* min-width: 70px; <--- RETIRA ESTA LÍNEA */
     text-align: center;
     font-weight: 600;
-    border-radius: 4px; /* Esquinas ligeramente redondeadas */
+    border-radius: 4px;
+    /* Esquinas ligeramente redondeadas */
 }
 
 /* Ajuste específico si usas bg-info para el rol */
 .badge.bg-info {
-    background-color: #31d2f2 !important; /* Color de fondo más visible */
-    color: #055160 !important; /* Texto oscuro para contraste */
+    background-color: #31d2f2 !important;
+    /* Color de fondo más visible */
+    color: #055160 !important;
+    /* Texto oscuro para contraste */
 }
 
 /* --- ESTILO DE BOTONES UNIFICADO --- */
@@ -553,10 +642,10 @@ hr {
 /* Clase base para botones unificados */
 .btn-unified {
     /* Colores primarios basados en tu tema */
-    background-color: #1a237e; 
+    background-color: #1a237e;
     border-color: #1a237e;
     color: #fff;
-    
+
     /* Apariencia */
     font-weight: 600;
     padding: 0.5rem 1.25rem;
@@ -567,25 +656,29 @@ hr {
 
 /* Efecto Hover (al pasar el ratón) */
 .btn-unified:hover {
-    background-color: #0d47a1; /* Un azul ligeramente más oscuro */
+    background-color: #0d47a1;
+    /* Un azul ligeramente más oscuro */
     border-color: #0d47a1;
     color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* Importante para sobrescribir el estilo de hover de Bootstrap */
-    opacity: 1; 
+    opacity: 1;
 }
 
 /* Estado Focus (al hacer clic o navegar con teclado) */
 .btn-unified:focus {
     background-color: #0d47a1;
     border-color: #0d47a1;
-    box-shadow: 0 0 0 0.25rem rgba(26, 35, 126, 0.5); /* Sombra de enfoque azul suave */
+    box-shadow: 0 0 0 0.25rem rgba(26, 35, 126, 0.5);
+    /* Sombra de enfoque azul suave */
 }
 
 /* Asegurar que los enlaces también tengan el mismo estilo */
 .btn-unified:not(button) {
-    text-decoration: none; /* Quitar subrayado en enlaces <a> */
-    display: inline-block; /* Asegura el padding correcto */
+    text-decoration: none;
+    /* Quitar subrayado en enlaces <a> */
+    display: inline-block;
+    /* Asegura el padding correcto */
 }
 
 /* --- ESTILOS PARA TABLAS DE FEATURE FLAGS --- */
@@ -717,8 +810,8 @@ hr {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
-    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -736,8 +829,8 @@ hr {
     border: 1px solid #ddd;
     font-weight: 600;
     color: #333;
-    background: linear-gradient(135deg, #d9ecff 0%, #cce6ff 50%, #d9ecff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.2) 8px, rgba(173, 216, 230, 0.2) 16px);
+    background: linear-gradient(135deg, #d9ecff 0%, #cce6ff 50%, #d9ecff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.2) 8px, rgba(173, 216, 230, 0.2) 16px);
 }
 
 /* Celdas de tabla */
@@ -745,8 +838,8 @@ hr {
     padding: 12px 8px;
     border: 1px solid #ddd;
     vertical-align: middle;
-    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px);
 }
 
 .admin-table tbody tr {
@@ -771,8 +864,8 @@ hr {
     border-radius: 4px;
     font-size: 13px;
     transition: border-color 0.2s ease;
-    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px) !important;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px) !important;
 }
 
 .admin-table input[type="text"]:focus {
@@ -834,7 +927,10 @@ hr {
 /* --- SOBRESCRIBIR BOOTSTRAP GLOBALMENTE --- */
 
 /* Todos los botones EXCEPTO el de login */
-.btn:not(.btn-login), button:not(.btn-login), input[type="submit"]:not(.btn-login), input[type="button"]:not(.btn-login) {
+.btn:not(.btn-login),
+button:not(.btn-login),
+input[type="submit"]:not(.btn-login),
+input[type="button"]:not(.btn-login) {
     background-color: #2d47a1 !important;
     border-color: #2d47a1 !important;
     color: white !important;
@@ -848,41 +944,54 @@ hr {
     cursor: pointer !important;
 }
 
-.btn:hover, button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+.btn:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
     background-color: #1a237e !important;
     color: white !important;
 }
 
 /* Botones secundarios */
-.btn-secondary, .btn-outline-secondary {
+.btn-secondary,
+.btn-outline-secondary {
     background-color: #6c757d !important;
     border-color: #6c757d !important;
 }
 
-.btn-secondary:hover, .btn-outline-secondary:hover {
+.btn-secondary:hover,
+.btn-outline-secondary:hover {
     background-color: #5a6268 !important;
     border-color: #5a6268 !important;
 }
 
 /* Botones de eliminar - rojos */
-button[onclick*="eliminar"], button[onclick*="Eliminar"], .btn-danger {
+button[onclick*="eliminar"],
+button[onclick*="Eliminar"],
+.btn-danger {
     background-color: #dc3545 !important;
     border-color: #dc3545 !important;
 }
 
-button[onclick*="eliminar"]:hover, button[onclick*="Eliminar"]:hover, .btn-danger:hover {
+button[onclick*="eliminar"]:hover,
+button[onclick*="Eliminar"]:hover,
+.btn-danger:hover {
     background-color: #c82333 !important;
     border-color: #c82333 !important;
 }
 
 /* Botón de usuario - azul unos tonos más claro que header */
-header .user-dropdown button, header #user-btn, .topbar .user-dropdown button {
+header .user-dropdown button,
+header #user-btn,
+.topbar .user-dropdown button {
     background-color: #2d47a1 !important;
     border-color: #2d47a1 !important;
     color: white !important;
 }
 
-header .user-dropdown button:hover, header #user-btn:hover, .topbar .user-dropdown button:hover {
+header .user-dropdown button:hover,
+header #user-btn:hover,
+.topbar .user-dropdown button:hover {
     background-color: #1a237e !important;
     border-color: #1a237e !important;
 }
@@ -899,7 +1008,8 @@ button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hove
 }
 
 /* Todas las tablas */
-.table, table {
+.table,
+table {
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 14px !important;
@@ -909,12 +1019,14 @@ button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hove
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-.table thead tr, table thead tr {
+.table thead tr,
+table thead tr {
     background-color: #d9ecff !important;
     border-bottom: 2px solid #ddd !important;
 }
 
-.table th, table th {
+.table th,
+table th {
     padding: 12px 8px !important;
     text-align: left !important;
     border: 1px solid #ddd !important;
@@ -923,18 +1035,21 @@ button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hove
     background-color: #d9ecff !important;
 }
 
-.table td, table td {
+.table td,
+table td {
     padding: 12px 8px !important;
     border: 1px solid #ddd !important;
     vertical-align: middle !important;
 }
 
-.table tbody tr, table tbody tr {
+.table tbody tr,
+table tbody tr {
     border-bottom: 1px solid #ddd !important;
     transition: background-color 0.2s ease !important;
 }
 
-.table tbody tr:hover, table tbody tr:hover {
+.table tbody tr:hover,
+table tbody tr:hover {
     background-color: #f8f9fa !important;
 }
 
@@ -946,7 +1061,13 @@ button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hove
 }
 
 /* Inputs de texto */
-.form-control, input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], select {
+.form-control,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select {
     padding: 8px 12px !important;
     border: 1px solid #ccc !important;
     border-radius: 4px !important;
@@ -954,11 +1075,17 @@ button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hove
     transition: border-color 0.2s ease !important;
     width: auto !important;
     max-width: 300px !important;
-    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%), 
-                repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px) !important;
+    background: linear-gradient(135deg, #e6f3ff 0%, #d9ecff 50%, #e6f3ff 100%),
+        repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(173, 216, 230, 0.15) 8px, rgba(173, 216, 230, 0.15) 16px) !important;
 }
 
-.form-control:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus {
+.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus {
     outline: none !important;
     border-color: #1a237e !important;
     box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1) !important;
@@ -972,20 +1099,23 @@ button[type="submit"]:not([onclick*="eliminar"]):not([onclick*="Eliminar"]):hove
     flex-wrap: wrap !important;
 }
 
-.d-flex .form-control, .d-flex input {
+.d-flex .form-control,
+.d-flex input {
     flex: 0 0 auto !important;
     min-width: 200px !important;
     max-width: 300px !important;
 }
 
 /* Botón quitar filtros - rojo cuando hay filtros */
-a[href$="user_index"], a[href$="issues"] {
+a[href$="user_index"],
+a[href$="issues"] {
     background-color: #dc3545 !important;
     border-color: #dc3545 !important;
     color: white !important;
 }
 
-a[href$="user_index"]:hover, a[href$="issues"]:hover {
+a[href$="user_index"]:hover,
+a[href$="issues"]:hover {
     background-color: #c82333 !important;
     border-color: #c82333 !important;
 }
@@ -1007,7 +1137,8 @@ a[href$="user_index"]:hover, a[href$="issues"]:hover {
     padding: 0 !important;
 }
 
-.pagination .page-link, .page-link {
+.pagination .page-link,
+.page-link {
     background-color: #2d47a1 !important;
     border-color: #2d47a1 !important;
     color: white !important;
@@ -1017,26 +1148,30 @@ a[href$="user_index"]:hover, a[href$="issues"]:hover {
     display: inline-block !important;
 }
 
-.pagination .page-link:hover, .page-link:hover {
+.pagination .page-link:hover,
+.page-link:hover {
     background-color: #1a237e !important;
     border-color: #1a237e !important;
     color: white !important;
 }
 
-.pagination .page-item.active .page-link, .page-item.active .page-link {
+.pagination .page-item.active .page-link,
+.page-item.active .page-link {
     background-color: #17a2b8 !important;
     border-color: #17a2b8 !important;
     color: white !important;
 }
 
-.pagination .page-item.disabled .page-link, .page-item.disabled .page-link {
+.pagination .page-item.disabled .page-link,
+.page-item.disabled .page-link {
     background-color: #6c757d !important;
     border-color: #6c757d !important;
     color: white !important;
 }
 
 /* Ocultar puntos de paginación */
-.pagination .page-item.disabled, .pagination li:contains("…") {
+.pagination .page-item.disabled,
+.pagination li:contains("…") {
     display: none !important;
 }
 
@@ -1045,31 +1180,43 @@ a[href$="user_index"]:hover, a[href$="issues"]:hover {
 /* --- RESPONSIVE PARA TABLAS ADMINISTRATIVAS --- */
 
 @media (max-width: 768px) {
-    .admin-table, .table, table {
+
+    .admin-table,
+    .table,
+    table {
         font-size: 12px !important;
     }
-    
-    .admin-table th, .admin-table td, .table th, .table td, table th, table td {
+
+    .admin-table th,
+    .admin-table td,
+    .table th,
+    .table td,
+    table th,
+    table td {
         padding: 8px 4px !important;
     }
-    
-    .btn, button, input[type="submit"], input[type="button"] {
+
+    .btn,
+    button,
+    input[type="submit"],
+    input[type="button"] {
         padding: 6px 12px !important;
         font-size: 12px !important;
         margin-bottom: 5px !important;
     }
-    
+
     .d-flex:not(.pagination) {
         flex-direction: column !important;
         align-items: stretch !important;
     }
-    
-    .d-flex:not(.pagination) .form-control, .d-flex:not(.pagination) input {
+
+    .d-flex:not(.pagination) .form-control,
+    .d-flex:not(.pagination) input {
         min-width: 100% !important;
         max-width: 100% !important;
         margin-bottom: 10px !important;
     }
-    
+
     /* Mantener paginación horizontal */
     .pagination {
         display: flex !important;

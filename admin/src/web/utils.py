@@ -1,7 +1,7 @@
 """Utilidades para la aplicación web."""
 
 from flask import flash, session as current_user, abort, redirect, url_for
-from src.core.services.auth.user_serv import buscar_usuario, obtener_usuario_por_id
+from src.core.services.auth.user_serv import buscar_usuario
 from src.core.services.auth.feature_flag_serv import get_feature_flag
 
 
@@ -29,17 +29,3 @@ def admin_maintenance_required(view):
         return view(*args, **kwargs)
 
     return wrapped_view
-
-
-def usuario_actual():
-    """Obtiene el usuario actual desde la sesión.
-
-    Returns:
-        Usuario actual o None si no hay sesión
-    """
-    if not current_user.get("usuario_id"):
-        return None
-    usuario_id = current_user.get("usuario_id")
-    if usuario_id:
-        return obtener_usuario_por_id(usuario_id)
-    return None

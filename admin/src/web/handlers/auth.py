@@ -2,7 +2,6 @@
 
 from functools import wraps
 from flask import session, redirect, url_for, flash
-from src.core.services.auth.user_serv import buscar_usuario
 
 
 def login_required(f):

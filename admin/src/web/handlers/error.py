@@ -1,9 +1,8 @@
 """Manejadores de errores HTTP para la aplicación."""
 
 from dataclasses import dataclass
-from flask import Flask, request, redirect
+from flask import request, redirect
 from flask import render_template
-from sqlalchemy.exc import OperationalError
 
 
 @dataclass
@@ -58,8 +57,10 @@ def forbidden(error):
 def database_connection_error(error):
     """Manejador para errores de conexión de base de datos."""
     error_str = str(error)
-    if ("SSL connection has been closed" in error_str or 
-        "server closed the connection unexpectedly" in error_str):
+    if (
+        "SSL connection has been closed" in error_str
+        or "server closed the connection unexpectedly" in error_str
+    ):
         # Redirigir a la misma página para reconectar
         return redirect(request.url)
 

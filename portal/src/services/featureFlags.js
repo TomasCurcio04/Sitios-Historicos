@@ -11,22 +11,20 @@ export async function getPortalStatus() {
       method: 'GET',
       mode: 'cors'
     })
-    console.log('Test endpoint status:', testResponse.status)
-    
+
+
     const response = await fetch(`${API_BASE}/portal-status`, {
       method: 'GET',
       mode: 'cors'
     })
-    
-    console.log('Portal status response:', response.status, response.headers.get('content-type'))
-    
+
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     const text = await response.text()
-    console.log('Response text:', text)
-    
+
     return JSON.parse(text)
   } catch (error) {
     console.error('getPortalStatus error:', error)

@@ -160,7 +160,7 @@ def get_site_review(site_id, review_id):
         response_schema = ReviewResponseSchema()
         return jsonify(response_schema.dump(review_data))
 
-    except Exception as e:
+    except Exception:
         print(f"ERROR en get_site_review: {str(e)}")
         import traceback
 

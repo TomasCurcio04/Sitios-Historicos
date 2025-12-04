@@ -1,7 +1,8 @@
 """Utilidades de autenticación y autorización."""
 
-from flask import flash, session as current_user, abort, redirect, url_for
+from flask import flash, abort, redirect, url_for
 from src.core import auth
+from src.core.services.auth.user_serv import buscar_usuario, usuario_actual
 
 
 # Middleware para modo mantenimiento de administración
@@ -17,7 +18,7 @@ def admin_maintenance_required(view):
 
     def wrapped_view(*args, **kwargs):
         flag = auth.get_feature_flag("admin_maintenance_mode")
-        usuario = auth.buscar_usuario(current_user.get("user"))
+        usuario = buscar_usuario(usuario_actual())
         # SI no es usuario, no puede entrar.
         if not usuario:
             return redirect(url_for("auth.login"))
@@ -28,17 +29,3 @@ def admin_maintenance_required(view):
         return view(*args, **kwargs)
 
     return wrapped_view
-
-
-def usuario_actual():
-    """Obtiene el usuario actual desde la sesión.
-
-    Returns:
-        Usuario actual o None si no hay sesión
-    """
-    if not current_user.get("usuario_id"):
-        return None
-    usuario_id = current_user.get("usuario_id")
-    if usuario_id:
-        return auth.obtener_usuario_por_id(usuario_id)
-    return None

@@ -16,29 +16,32 @@ def toggle_site_favorite_endpoint(site_id):
         user, auth_error = require_auth()
         if auth_error:
             return auth_error
-        
-        public_user_id = user['public_user_id']
-        
+
+        public_user_id = user["public_user_id"]
+
         # Verificar que el sitio existe
         site_data = get_site_by_id(site_id)
         if not site_data:
-            return jsonify({
-                "error": {
-                    "code": "not_found",
-                    "message": "Site not found"
-                }
-            }), 404
-        
+            return (
+                jsonify({"error": {"code": "not_found", "message": "Site not found"}}),
+                404,
+            )
+
         # Llamar a la función que maneja todo
         toggle_site_favorite(site_id, public_user_id)
-        
+
         # Respuesta 204 No Content (éxito sin contenido)
-        return '', 204
-        
-    except Exception as e:
-        return jsonify({
-            "error": {
-                "code": "server_error",
-                "message": "An unexpected error occurred"
-            }
-        }), 500
+        return "", 204
+
+    except Exception:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "server_error",
+                        "message": "An unexpected error occurred",
+                    }
+                }
+            ),
+            500,
+        )

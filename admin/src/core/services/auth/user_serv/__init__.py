@@ -2,14 +2,13 @@
 
 import math
 from datetime import datetime, timezone
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy import desc
 from src.core.entity.public_user import PublicUser
 from src.core.entity.users import Users
 from src.core.database import db
 from src.core.entity.role import Role
 from src.core.services.auth.bcrypt import bcrypt
-from sqlalchemy import desc
-from src.core.database import db
-from src.core.entity.public_user import PublicUser
 
 
 def listar_usuarios(
@@ -105,6 +104,7 @@ def verificar_usuario(email, password):
 
     return user, None
 
+
 def activar_usuario(user_id):
     """Reactiva un usuario eliminado lógicamente."""
     user = obtener_usuario_por_id(user_id)
@@ -113,6 +113,7 @@ def activar_usuario(user_id):
         db.session.commit()
         return user
     return None
+
 
 def create_user(**kwargs):
     """Crea un nuevo usuario con contraseña hasheada.
@@ -156,13 +157,24 @@ def create_user(**kwargs):
     try:
         db.session.commit()
         return new_user
-    except:
+    except IntegrityError as e:
         db.session.rollback()
-        return "Error al crear el usuario"
+        return f"Error de integridad al crear el usuario público: {str(e)}"
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return f"Error de base de datos: {str(e)}"
 
 
 def crear_user_public(**kwargs):
-    """Crea un nuevo usuario público."""
+    """
+    Crea un nuevo usuario público (PublicUser).
+
+    Args:
+        **kwargs: Datos del usuario (google_id, email, name, picture)
+
+    Returns:
+        PublicUser creado o mensaje de error
+    """
 
     new_user = PublicUser(
         google_id=kwargs["google_id"],
@@ -175,53 +187,12 @@ def crear_user_public(**kwargs):
     try:
         db.session.commit()
         return new_user
-    except:
+    except IntegrityError as e:
         db.session.rollback()
-        return "Error al crear el usuario público"
-
-
-def create_user_public(**kwargs):
-    """
-    Crea un nuevo usuario público (PublicUser).
-
-    Args:
-        **kwargs: Datos del usuario (google_id, email, name, picture)
-
-    Returns:
-        PublicUser creado o mensaje de error
-    """
-
-    # Validaciones básicas
-    if "google_id" not in kwargs or not kwargs["google_id"]:
-        return "Debe proporcionar un google_id"
-    if "email" not in kwargs or not kwargs["email"]:
-        return "Debe proporcionar un email"
-    if "name" not in kwargs or not kwargs["name"]:
-        return "Debe proporcionar un nombre"
-
-    # Evitar duplicados por google_id
-    existing_user = (
-        db.session.query(PublicUser).filter_by(google_id=kwargs["google_id"]).first()
-    )
-    if existing_user:
-        return "El google_id ya está registrado"
-
-    # Crear el usuario público
-    new_user = PublicUser(
-        google_id=kwargs["google_id"],
-        email=kwargs["email"],
-        name=kwargs["name"],
-        picture=kwargs.get("picture"),
-    )
-
-    db.session.add(new_user)
-
-    try:
-        db.session.commit()
-        return new_user
-    except Exception as e:
+        return f"Error de integridad al crear el usuario público: {str(e)}"
+    except SQLAlchemyError as e:
         db.session.rollback()
-        return f"Error al crear el usuario público: {str(e)}"
+        return f"Error de base de datos: {str(e)}"
 
 
 def eliminar_usuario(user_id):

@@ -17,7 +17,7 @@ def perfil():
     if not user_data:
         flash("Debes iniciar sesión para ver tu perfil", "error")
         return redirect(url_for("auth.login"))
-    
+
     email = user_data["email"]
 
     user = buscar_usuario(email)

@@ -42,7 +42,7 @@ def modify_feature_flag(name, enabled, updated_by, maintenance_message=None):
     Raises:
         ValueError: Si el mensaje supera los 50 caracteres
     """
-    flag = FeatureFlag.get_flag(name)
+    flag = get_feature_flag(name)
     if flag:
         flag.enabled = enabled
         flag.updated_by = updated_by
@@ -93,7 +93,8 @@ def update_feature_flags(flags_data, updated_by):
 
             if new_message and len(new_message) > 100:
                 raise ValueError(
-                    f"El mensaje de mantenimiento para '{flag.name}' no puede superar los 100 caracteres"
+                    f"El mensaje de mantenimiento para '{flag.name}' "
+                    f"no puede superar los 100 caracteres"
                 )
 
             if flag.enabled != new_enabled or flag.maintenance_message != new_message:

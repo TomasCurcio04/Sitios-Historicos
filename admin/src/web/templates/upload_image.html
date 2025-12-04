@@ -3,23 +3,23 @@
 {% block content %}
 <div class="container">
     <h2>Subir Nueva Imagen para Sitio Histórico</h2>
-    
+
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
 
     <form method="POST" action="{{ url_for('mantenimiento_admin.upload_image') }}" enctype="multipart/form-data">
-        
+
         <div class="form-group">
             <label for="sitio_id">Sitio Histórico</label>
             <select name="sitio_id" id="sitio_id" class="form-control" required>
                 <option value="">Selecciona un sitio...</option>
                 {% for site in sites %}
-                    <option value="{{ site.id }}">{{ site.nombre }}</option> 
+                <option value="{{ site.id }}">{{ site.nombre }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -48,7 +48,7 @@
             <input type="checkbox" name="es_portada" id="es_portada" class="form-check-input" value="true">
             <label class="form-check-label" for="es_portada">Marcar como portada</label>
         </div>
-        
+
         <br>
         <button type="submit" class="btn btn-primary">Subir Imagen</button>
     </form>

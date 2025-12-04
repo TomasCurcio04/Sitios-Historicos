@@ -74,7 +74,7 @@ def get_my_reviews():
 
         return jsonify(response_data)
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
@@ -144,7 +144,7 @@ def get_my_favorites():
         response_schema = SitesListResponseSchema()
         return jsonify(response_schema.dump(response_data))
 
-    except Exception as e:
+    except Exception:
         return (
             jsonify(
                 {
