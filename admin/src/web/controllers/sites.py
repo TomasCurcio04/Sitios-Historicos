@@ -3,7 +3,6 @@
 import csv
 import io
 from datetime import datetime
-from sqlalchemy import or_
 from flask import (
     Blueprint,
     request,

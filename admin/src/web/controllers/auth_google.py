@@ -1,6 +1,6 @@
 """Google OAuth2 Authentication Controller"""
 
-from flask import Blueprint, redirect, url_for, session, render_template, request
+from flask import Blueprint, redirect, url_for, session, request
 from src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
 from src.web.oauth import oauth
 

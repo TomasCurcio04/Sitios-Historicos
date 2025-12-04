@@ -2,7 +2,6 @@
 
 from flask_sqlalchemy_lite import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text
 
 db = SQLAlchemy()
 """Inicializa la base de datos SQLAlchemy."""
