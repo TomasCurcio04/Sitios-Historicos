@@ -26,9 +26,6 @@ from src.core.services.board.tag_serv import obtener_todas_las_tags
 from src.core.services.board import site_history_serv as SiteHistoryService
 from src.core.services.auth.user_serv import usuario_actual
 from src.web.handlers.utils import permissions_required
-
-from sqlalchemy import or_
-
 from src.core.services.board.sites import (
     obtener_todos_las_provincias,
     obtener_todas_las_categorias,
@@ -38,7 +35,7 @@ from src.core.services.board.sites import (
     crear_sitio,
     obtener_nuevas_etiquetas,
 )
-
+from src.core.services.board.site_history_serv import obtener_historial_sitios
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
@@ -351,17 +348,23 @@ def historial(site_id):
     Returns:
         Renderiza la plantilla parcial con el historial de cambios.
     """
-    from src.core.services.board.site_history_serv import obtener_historial_sitios
-
-    sitio = db.session.get(Site, site_id)
+    sitio = obtener_sitio_id(site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
 
-    cambios = obtener_historial_sitios(site_id)
+    # Parámetros de ordenamiento
+    sort_by = request.args.get('sort', 'date')
+    order = request.args.get('order', 'desc')
+
+    cambios = obtener_historial_sitios(site_id, sort_by, order)
 
     return render_template(
-        "sites/_historial_partial.html", sitio=sitio, cambios=cambios
+        "sites/_historial_partial.html", 
+        sitio=sitio, 
+        cambios=cambios,
+        current_sort=sort_by,
+        current_order=order
     )
 
 

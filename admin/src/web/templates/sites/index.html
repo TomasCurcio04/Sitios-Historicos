@@ -261,17 +261,12 @@
     const closeButton = document.querySelector('#historyModal .close-button');
 
     function showHistoryModal(siteId) {
-        // 1. Obtenemos los permisos del usuario (inyectados de forma segura desde Flask)
+        // Guardar siteId globalmente para el ordenamiento
+        window.currentSiteId = siteId;
 
-
-        // 2. Verificamos el permiso necesario
-
-
-        // 3. Si tiene permiso → abrir modal y cargar contenido
         modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
         modal.style.display = 'block';
 
-        // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
         fetch(`/sitios/${siteId}/historial`)
             .then(response => {
                 if (!response.ok) {
@@ -306,6 +301,84 @@
             closeModal();
         }
     });
+
+    // Funciones para ordenamiento del historial
+    function reloadHistory() {
+        const sortSelect = document.getElementById('sortSelect');
+        if (!sortSelect) {
+            console.error('sortSelect no encontrado');
+            return;
+        }
+
+        const sortValue = sortSelect.value;
+
+        // Intentar ordenamiento directo en DOM
+        if (sortHistoryDOM()) {
+            return;
+        }
+
+        // Fallback: recargar desde servidor
+        const [sortBy, order] = sortValue.split('-');
+        const siteId = window.currentSiteId;
+
+        if (!siteId) {
+            console.error('No se pudo obtener el ID del sitio');
+            return;
+        }
+
+        const url = `/sitios/${siteId}/historial?sort=${sortBy}&order=${order}`;
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('historyContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error recargando historial:', error);
+            });
+    }
+
+    function sortHistoryDOM() {
+        const timeline = document.getElementById('historyTimeline');
+        const sortSelect = document.getElementById('sortSelect');
+
+        if (!timeline || !sortSelect) {
+            return false;
+        }
+
+        const items = Array.from(timeline.children);
+        const sortValue = sortSelect.value;
+
+
+        items.sort((a, b) => {
+            switch (sortValue) {
+                case 'date-desc':
+                    const dateA = a.getAttribute('data-date') || '';
+                    const dateB = b.getAttribute('data-date') || '';
+                    return new Date(dateB).getTime() - new Date(dateA).getTime();
+                case 'date-asc':
+                    const dateA2 = a.getAttribute('data-date') || '';
+                    const dateB2 = b.getAttribute('data-date') || '';
+                    return new Date(dateA2).getTime() - new Date(dateB2).getTime();
+                case 'action-asc':
+                    return (a.getAttribute('data-action') || '').localeCompare(b.getAttribute('data-action') || '');
+                case 'user-asc':
+                    return (a.getAttribute('data-user') || '').localeCompare(b.getAttribute('data-user') || '');
+                default:
+                    return 0;
+            }
+        });
+
+        // Reordenar elementos
+        timeline.innerHTML = '';
+        items.forEach(item => timeline.appendChild(item));
+
+        return true;
+    }
+
+    // Hacer funciones globales
+    window.reloadHistory = reloadHistory;
+    window.sortHistoryDOM = sortHistoryDOM;
 </script>
 
 

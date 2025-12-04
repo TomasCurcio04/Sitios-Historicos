@@ -2,13 +2,12 @@
 <div class="history-controls">
     <div class="sort-controls">
         <label>Ordenar por:</label>
-        <select id="sortSelect" onchange="sortHistory()">
-            <option value="date-desc">Fecha (más reciente)</option>
-            <option value="date-asc">Fecha (más antigua)</option>
-            <option value="action-asc">Acción (A-Z)</option>
-            <option value="user-asc">Usuario (A-Z)</option>
+        <select id="sortSelect" onchange="reloadHistory()">
+            <option value="date-desc" {% if current_sort == 'date' and current_order == 'desc' %}selected{% endif %}>Fecha (más reciente)</option>
+            <option value="date-asc" {% if current_sort == 'date' and current_order == 'asc' %}selected{% endif %}>Fecha (más antigua)</option>
+            <option value="action-asc" {% if current_sort == 'action' and current_order == 'asc' %}selected{% endif %}>Acción (A-Z)</option>
+            <option value="user-asc" {% if current_sort == 'user' and current_order == 'asc' %}selected{% endif %}>Usuario (A-Z)</option>
         </select>
-        <button type="button" onclick="sortHistory()" style="margin-left: 0.5rem; padding: 0.25rem 0.5rem;">Ordenar</button>
     </div>
     <div class="history-stats">
         <span>Total: <strong id="totalCount">{{ cambios|length }}</strong> cambios</span>
@@ -79,38 +78,7 @@
 </div>
 
 <script>
-    function sortHistory() {
-        const timeline = document.getElementById('historyTimeline');
-        if (!timeline) return;
-        
-        const items = Array.from(timeline.children);
-        const sortValue = document.getElementById('sortSelect').value;
 
-        items.sort((a, b) => {
-            switch (sortValue) {
-                case 'date-desc':
-                    const dateA = a.dataset.date || '';
-                    const dateB = b.dataset.date || '';
-                    return new Date(dateB).getTime() - new Date(dateA).getTime();
-                case 'date-asc':
-                    const dateA2 = a.dataset.date || '';
-                    const dateB2 = b.dataset.date || '';
-                    return new Date(dateA2).getTime() - new Date(dateB2).getTime();
-                case 'action-asc':
-                    return (a.dataset.action || '').localeCompare(b.dataset.action || '');
-                case 'user-asc':
-                    return (a.dataset.user || '').localeCompare(b.dataset.user || '');
-                default:
-                    return 0;
-            }
-        });
-
-        while (timeline.firstChild) {
-            timeline.removeChild(timeline.firstChild);
-        }
-        
-        items.forEach(item => timeline.appendChild(item));
-    }
 </script>
 
 {% else %}
