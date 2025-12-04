@@ -278,7 +278,7 @@ def actualizar(site_id):
 
     if isinstance(data, str):
         flash(data, "error")
-        return redirect(url_for("sites.editar", site_id))
+        return redirect(url_for("sites.editar", site_id=site_id))
 
     # Recuperar etiquetas seleccionadas del formulario
     tags_ids = request.form.getlist("tags")
@@ -320,7 +320,7 @@ def actualizar(site_id):
 
     except Exception as e:
         flash(f"Error al actualizar el sitio: {str(e)}", "error")
-        return redirect(url_for("sites.editar", site_id))
+        return redirect(url_for("sites.editar", site_id=site_id))
 
 
 # =====================================================
