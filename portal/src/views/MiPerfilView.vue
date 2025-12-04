@@ -254,7 +254,7 @@ const sortedFavorites = computed(() => {
 watch(loggedIn, async (isLoggedIn) => {
   if (isLoggedIn) {
     // Si el usuario acaba de iniciar sesión, cargamos los datos
-    await Api.getToken();
+    // await Api.getToken();
     await loadReviews()
     await loadFavorites()
   } else {

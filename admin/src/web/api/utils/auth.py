@@ -36,9 +36,12 @@ def get_authenticated_user():
             "user_id": user.id_public_user,
             "email": user.email,
         }
+
+    except jwt.ExpiredSignatureError:
+        return None, "Token expired"
     except jwt.InvalidTokenError:
         return None
-    except Exception:
+    except Exception as e:
         print(f"Error en get_authenticated_user: {str(e)}")
         return None
 

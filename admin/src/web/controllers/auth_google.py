@@ -1,8 +1,20 @@
 """Google OAuth2 Authentication Controller"""
 
-from flask import Blueprint, redirect, url_for, session, render_template, request
+import base64
+from flask import (
+    Blueprint,
+    json,
+    make_response,
+    redirect,
+    url_for,
+    session,
+    render_template,
+    request,
+    current_app,
+)
 from src.core.services.auth.user_serv import buscar_usuario_public, crear_user_public
 from src.web.oauth import oauth
+import jwt
 
 
 bp = Blueprint("google_auth", __name__, url_prefix="/google")
@@ -17,11 +29,14 @@ def login():
     Returns:
         Redirige al usuario a la página de autorización de Google OAuth2.
     """
-    session["next"] = request.args.get("next") or request.referrer
-    redirect_uri = url_for("google_auth.auth", _external=True)
 
+    next_url = request.args.get("next") or request.referrer or "/"
+
+    redirect_uri = url_for("google_auth.auth", _external=True)
     print("Redirect URI:", url_for("google_auth.auth", _external=True))
-    return oauth.google.authorize_redirect(redirect_uri, prompt="select_account")
+    return oauth.google.authorize_redirect(
+        redirect_uri, prompt="select_account", state=next_url
+    )
 
 
 @bp.route("/login/callback")
@@ -45,15 +60,26 @@ def auth():
             picture=userinfo.get("picture"),
         )
 
-    session["user"] = {
+    user_cookie = {
         "id": userinfo.get("sub"),
         "email": userinfo.get("email"),
         "name": userinfo.get("name"),
         "picture": userinfo.get("picture"),
-        "type": "google",
     }
-    next_url = session.get("next") or "/"
-    return redirect(next_url)
+
+    next_url = request.args.get("state") or "/"
+    res = make_response(redirect(next_url))
+
+    res.set_cookie(
+        "user_info",
+        value=base64.b64encode(json.dumps(user_cookie).encode()).decode(),
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+        max_age=60 * 30,
+    )
+
+    return res
 
 
 @bp.route("/logout")
@@ -64,18 +90,7 @@ def logout():
     Returns:
         Redirige al usuario a la página de inicio después de cerrar sesión.
     """
-    session.pop("user", None)
     next_url = request.args.get("next", "/")
-    return redirect(next_url)
-
-
-@bp.route("/status")
-def status():
-    """Verificar el estado de autenticación del usuario.
-    Args:
-        None
-    Returns:
-        Un diccionario que indica si el usuario está autenticado y su información.
-    """
-    user = session.get("user")
-    return {"logged_in": bool(user), "user": user}
+    resp = make_response(redirect(next_url))
+    resp.delete_cookie("user_info")
+    return resp
