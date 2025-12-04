@@ -249,7 +249,6 @@ def user_update(user_id):
     if success:
         flash(f"Usuario {data['user_name']} actualizado exitosamente.", "success")
         return redirect(url_for("users.user_index"))
-    else:
         # Esto captura errores como problemas de DB o lógica del Core
-        flash(f"Error al actualizar el usuario: {message}", "error")
-        return redirect(url_for("users.user_edit", user_id=user_id))
+    flash(f"Error al actualizar el usuario: {message}", "error")
+    return redirect(url_for("users.user_edit", user_id=user_id))

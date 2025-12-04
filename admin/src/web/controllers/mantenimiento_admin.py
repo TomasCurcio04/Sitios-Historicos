@@ -22,6 +22,7 @@ from src.core.services.auth.feature_flag_serv import get_feature_flag
 mantenimiento_admin_bp = Blueprint(
     "mantenimiento_admin", __name__, url_prefix="/mantenimiento_admin"
 )
+MAX_FILE_SIZE = 5 * 1024 * 1024
 
 
 @mantenimiento_admin_bp.route("/", methods=["GET"])
@@ -29,7 +30,8 @@ def mantenimiento_admin():
     """Muestra la página de mantenimiento administrativo si la feature flag está activada.
 
     Returns:
-        Response: Plantilla renderizada de mantenimiento o abort(404) si la flag no existe o está desactivada.
+        Response: Plantilla renderizada de mantenimiento o abort(404)
+         si la flag no existe o está desactivada.
     """
 
     flag = get_feature_flag("admin_maintenance_mode")
@@ -70,7 +72,7 @@ def upload_image():
             base_url = current_app.config["MINIO_SERVER"]
             bucket_name = current_app.config["MINIO_BUCKET"]
 
-        except Exception:
+        except Exception as e:
             flash(f"Error al cargar los sitios: {e}", "danger")
             sites = []
             base_url = ""
@@ -127,7 +129,6 @@ def upload_image():
         # 4. Tamaño (Máx 5MB)
         file_data = file.read()
         file_size = len(file_data)
-        MAX_FILE_SIZE = 5 * 1024 * 1024
 
         if file_size > MAX_FILE_SIZE:
             flash("Error: El archivo es demasiado grande (Máximo 5 MB).", "danger")
@@ -176,7 +177,7 @@ def upload_image():
         flash("¡Imagen subida y registrada con éxito!", "success")
         return redirect(url_for("mantenimiento_admin.upload_image"))
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         flash(f"Error grave al subir la imagen: {str(e)}", "danger")
         return redirect(request.url)
@@ -217,7 +218,7 @@ def delete_image(image_id):
 
         flash("Imagen eliminada correctamente.", "success")
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         flash(f"Error al eliminar la imagen: {str(e)}", "danger")
 
@@ -266,7 +267,7 @@ def make_cover(image_id):
 
         flash("Nueva imagen de portada establecida con éxito.", "success")
 
-    except Exception:
+    except Exception as e:
         db.session.rollback()
         flash(f"Error al cambiar la portada: {str(e)}", "danger")
 

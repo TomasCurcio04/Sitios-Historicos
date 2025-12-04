@@ -27,4 +27,8 @@ class SiteHistory(Base):
     )
 
     def __repr__(self):
-        return f"<SiteHistory(id_site_history={self.id_site_history}, id_site={self.id_site}, id_user={self.id_user}, action_type='{self.action_type}', date_action='{self.date_action}')>"
+        return (
+            f"<SiteHistory(id_site_history={self.id_site_history}, "
+            f"id_site={self.id_site}, id_user={self.id_user}, action_type="
+            f"'{self.action_type}', date_action='{self.date_action}')>"
+        )

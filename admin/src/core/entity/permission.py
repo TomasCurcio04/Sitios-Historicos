@@ -19,4 +19,7 @@ class Permission(Base):
     permission_description: Mapped[str] = mapped_column(String(255))
 
     def __repr__(self):
-        return f"<Permission(id_permission={self.id_permission}, permission_name='{self.permission_name}')>"
+        return (
+            f"<Permission(id_permission={self.id_permission}, "
+            f"permission_name='{self.permission_name}')>"
+        )

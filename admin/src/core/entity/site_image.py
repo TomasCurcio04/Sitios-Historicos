@@ -33,4 +33,7 @@ class SiteImage(Base):
     )
 
     def __repr__(self):
-        return f"<SiteImage(title='{self.title}', image_path='{self.image_path}', is_thumbnail={self.is_thumbnail})>"
+        return (
+            f"<SiteImage(title='{self.title}', image_path="
+            f"'{self.image_path}', is_thumbnail={self.is_thumbnail})>"
+        )

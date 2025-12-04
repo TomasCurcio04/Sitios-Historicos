@@ -34,6 +34,7 @@ from src.web.controllers.feature_flags import feature_flags_bp
 from src.web.controllers.mantenimiento_admin import mantenimiento_admin_bp
 from src.web.controllers.mi_perfil import mi_perfil_bp
 from src.web.controllers.resenias import bp as gestion_resenas_bp
+from src.web.controllers.auth_google import bp as google_auth_bp
 from src.web.config import config
 from src.web.storage import storage
 from src.core.services.auth.bcrypt import bcrypt
@@ -49,7 +50,6 @@ from src.web.api.controllers.auth import bp as api_auth_bp
 from src.web.api.controllers.metadata import bp as api_metadata_bp
 from src.web.api.controllers.feature_flags import bp as api_feature_flags_bp
 from flask_cors import CORS
-from src.web.controllers.auth_google import bp as google_auth_bp
 
 
 server_session = Session()
@@ -60,7 +60,8 @@ def create_app(env="development", static_folder=None):
 
     Args:
         env (str): Entorno de ejecución (ej: "development", "production").
-        static_folder (str | None): Ruta al folder de archivos estáticos. Si None se calcula por defecto.
+        static_folder (str | None): Ruta al folder de archivos estáticos.
+        Si None se calcula por defecto.
 
     Returns:
         Flask: Instancia de la aplicación Flask inicializada.
@@ -140,7 +141,8 @@ def create_app(env="development", static_folder=None):
         """Verifica si el panel administrativo está en modo mantenimiento y redirige cuando aplica.
 
         Returns:
-            Response | None: Puede devolver una redirección (cuando bloquea acceso) o None para permitir continuar.
+            Response | None: Puede devolver una redirección (cuando bloquea acceso)
+            o None para permitir continuar.
         """
         user_dict = flask_session.get("user")
         usuario = None

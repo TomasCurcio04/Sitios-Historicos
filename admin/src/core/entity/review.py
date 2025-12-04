@@ -71,4 +71,7 @@ class Review(Base):
     )
 
     def __repr__(self):
-        return f"<Review(site={self.id_site}, user={self.id_public_user}, rating={self.rating}, status={self.status.value})>"
+        return (
+            f"<Review(site={self.id_site}, user={self.id_public_user}, "
+            f"rating={self.rating}, status={self.status.value})>"
+        )

@@ -292,7 +292,8 @@ def actualizar(site_id):
 
         if cambios_detectados:
             flash(
-                f"Sitio actualizado correctamente. {len(cambios_detectados)} cambio(s) registrado(s).",
+                f"Sitio actualizado correctamente. {len(cambios_detectados)} "
+                f"cambio(s) registrado(s).",
                 "success",
             )
         else:
