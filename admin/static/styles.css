@@ -1733,16 +1733,6 @@ a[href$="issues"]:hover {
 }
 
 /* Indicador de sitio eliminado */
-.site-deleted {
-    opacity: 0.6;
-    background-color: #fef2f2 !important;
-}
-
-.site-deleted .btn {
-    opacity: 0.5;
-    pointer-events: none;
-    cursor: not-allowed;
-}
 
 .deleted-badge {
     background-color: #dc2626;
@@ -1754,8 +1744,7 @@ a[href$="issues"]:hover {
     margin-left: 0.5rem;
 }
 
-/* Indicador de sitio eliminado corregido */
-.site-deleted {
+.site-deleted td:not(:last-child) {
     opacity: 0.6;
     background-color: #fef2f2 !important;
 }
@@ -1766,19 +1755,6 @@ a[href$="issues"]:hover {
     cursor: not-allowed;
 }
 
-/* .deleted-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(220, 38, 38, 0.9);
-    color: white;
-    padding: 0.25rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-align: center;
-    border-radius: 4px 4px 0 0;
-} */
 /* Overlay diagonal para sitios eliminados */
 .deleted-overlay {
     position: absolute;
@@ -1792,11 +1768,6 @@ a[href$="issues"]:hover {
     transform: rotate(-45deg);
     z-index: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Corregir estilos para sitios eliminados */
-.site-deleted {
-    background-color: #fef2f2 !important;
 }
 
 .site-deleted .btn-edit,
