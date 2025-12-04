@@ -49,14 +49,10 @@ export default {
 
     onMounted(async () => {
       try {
-        const result = await props.fetchFn(props.queryParams)
-        // Adaptación para la nueva api.js
-        if (result.success) {
-          items.value = result.data.items || []
-        } else {
-          console.error('Error loading section:', result.error)
-          items.value = []
-        }
+        const response = await props.fetchFn(props.queryParams)
+
+        // useApi → Axios
+        items.value = response.data?.data || []
       } catch (err) {
         console.error('Error loading section:', err)
         items.value = []
