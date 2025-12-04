@@ -11,12 +11,10 @@ from flask import (
     redirect,
     url_for,
     Response,
-    session,
     current_app,
 )
 from src.core.database import db
 from src.core.entity.site import Site
-from src.core.entity.site_history import SiteHistory
 from src.core.entity.site_image import SiteImage
 from src.core.services.board.busqueda_avanzada_serv import (
     buscar_sites,
@@ -42,14 +40,6 @@ from src.core.services.board.sites import (
 
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
-
-
-# USUARIO_ES_ADMIN = True  //esto era para pruebas
-
-
-# =====================================================
-# LISTAR SITIOS CON FILTROS Y PAGINACIÓN
-# =====================================================
 
 
 def parse_date(s):
@@ -139,12 +129,6 @@ def index():
     all_tags = obtener_todas_las_tags()
     provincias = obtener_provincias_con_sitios()
 
-    # 1. Obtenemos el rol REAL de la sesión
-    user_role = session.get("role", 0)  # 0 significa "invitado" si no está logueado
-
-    # 2. Determinamos si es admin (rol 1)
-    usuario_es_admin = user_role == 1
-
     return render_template(
         "sites/index.html",
         results=page_items,
@@ -165,8 +149,6 @@ def index():
         order=order,
         total_results=total_results,
         request=request,
-        usuario_es_admin=usuario_es_admin,
-        user_role=user_role,
     )
 
 
@@ -343,7 +325,7 @@ def eliminar(site_id):
 
     try:
 
-        eliminar_sitio(sitio)
+        sitio = eliminar_sitio(sitio)
         action_detail = f"Sitio '{sitio.name}' eliminado."
         SiteHistoryService.register_modify(sitio, user_id, "DELETE", action_detail)
         flash("Sitio eliminado correctamente", "success")

@@ -76,7 +76,6 @@ def get_site(site_id):
     try:
         # Verificar si hay usuario autenticado para mostrar favoritos
         user_id = None
-        from flask import request
 
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
