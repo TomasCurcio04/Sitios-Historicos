@@ -35,16 +35,30 @@ def feature_flags():
             new_enabled = f"enabled_{flag.id}" in request.form
             new_message = request.form.get(f"mensaje_{flag.id}", "")
 
-            # Validar admin_maintenance_mode
-            if flag.name == "admin_maintenance_mode":
-                if flag.enabled and not new_enabled:
-                    admin_maintenance_disabled = True
-                    new_message = ""  # Borrar mensaje al desactivar
-                    # Limpiar mensajes flash existentes
-                    session.pop("_flashes", None)
-                elif not flag.enabled and new_enabled and not new_message.strip():
-                    flash("El modo mantenimiento requiere un mensaje", "error")
-                    return redirect(url_for("feature_flags.feature_flags"))
+            # Validar flags que requieren mensaje
+            if flag.name in ["admin_maintenance_mode", "portal_maintenance_mode", "reviews_enabled"]:
+                if flag.name == "reviews_enabled":
+                    # reviews_enabled trabaja a la inversa
+                    if not flag.enabled and new_enabled:
+                        new_message = ""  # Borrar mensaje al activar
+                        session.pop("_flashes", None)
+                    elif flag.enabled and not new_enabled and not new_message.strip():
+                        flash("La deshabilitación de reviews requiere un mensaje", "error")
+                        return redirect(url_for("feature_flags.feature_flags"))
+                else:
+                    # admin_maintenance_mode y portal_maintenance_mode
+                    if flag.enabled and not new_enabled:
+                        if flag.name == "admin_maintenance_mode":
+                            admin_maintenance_disabled = True
+                        new_message = ""  # Borrar mensaje al desactivar
+                        session.pop("_flashes", None)
+                    elif not flag.enabled and new_enabled and not new_message.strip():
+                        flag_names = {
+                            "admin_maintenance_mode": "El modo mantenimiento de admin",
+                            "portal_maintenance_mode": "El modo mantenimiento del portal"
+                        }
+                        flash(f"{flag_names[flag.name]} requiere un mensaje", "error")
+                        return redirect(url_for("feature_flags.feature_flags"))
 
             flags_data[str(flag.id)] = {
                 "enabled": new_enabled,

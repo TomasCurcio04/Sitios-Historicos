@@ -31,7 +31,26 @@ def get_portal_status():
 
         response = jsonify(response_data)
         return response
+    except KeyError:
+        return (
+            jsonify(
+                {"error": {"code": "flag_not_found", "message": "Flag no encontrada"}}
+            ),
+            404,
+        )
 
+    except (ConnectionError, TimeoutError):
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "Servicio de flags no disponible",
+                    }
+                }
+            ),
+            503,
+        )
     except Exception:
         error_response = jsonify(
             {
@@ -54,7 +73,33 @@ def get_reviews_status():
         if not reviews_flag:
             return jsonify({"enabled": True})
 
-        return jsonify({"enabled": reviews_flag.enabled})
+        response_data = {
+            "enabled": reviews_flag.enabled,
+            "message": reviews_flag.maintenance_message if not reviews_flag.enabled else None
+        }
+
+        return jsonify(response_data)
+
+    except KeyError:
+        return (
+            jsonify(
+                {"error": {"code": "flag_not_found", "message": "Flag no encontrada"}}
+            ),
+            404,
+        )
+
+    except (ConnectionError, TimeoutError):
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "service_unavailable",
+                        "message": "Servicio de flags no disponible",
+                    }
+                }
+            ),
+            503,
+        )
 
     except Exception:
         return (
