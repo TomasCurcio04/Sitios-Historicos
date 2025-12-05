@@ -158,14 +158,21 @@ def delete_my_review(review_id):
         public_user_id = user["public_user_id"]
 
         # Eliminar reseña (con validación de usuario)
-        success = delete_review(review_id, None, public_user_id)
-
-        if not success:
+        try:
+            success = delete_review(review_id, None, public_user_id)
+            if not success:
+                return (
+                    jsonify(
+                        {"error": {"code": "not_found", "message": "Review not found or you don't have permission to delete it"}}
+                    ),
+                    404,
+                )
+        except ValueError as e:
             return (
                 jsonify(
-                    {"error": {"code": "not_found", "message": "Review not found or you don't have permission to delete it"}}
+                    {"error": {"code": "forbidden", "message": str(e)}}
                 ),
-                404,
+                403,
             )
 
         return "", 204

@@ -45,6 +45,9 @@
           <span class="value">
             <template v-if="site.average_rating || site.rating">
               ⭐ {{ formatRating(site.average_rating || site.rating) }}/5
+              <span v-if="site.review_count > 0" class="reviews-count">
+                ({{ site.review_count }} reseña{{ site.review_count !== 1 ? 's' : '' }})
+              </span>
             </template>
             <template v-else>
               ⭐ -/5
@@ -92,3 +95,10 @@ const statusClass = computed(() => {
   return 'bg-red-500';
 });
 </script>
+<style scoped>
+.reviews-count {
+  font-size: 0.8em;
+  color: #6b7280;
+  margin-left: 0.25rem;
+}
+</style>

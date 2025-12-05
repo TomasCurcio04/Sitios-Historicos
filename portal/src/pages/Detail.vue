@@ -79,11 +79,13 @@
 
       <aside class="reviews-sidebar">
         <div class="rating-card">
-          <div class="rating-big">{{ site.average_rating || '0.0' }}</div>
+          <div class="rating-big">{{ formattedRating }}</div>
           <div class="stars">
             <span v-for="n in 5" :key="n" :class="{ filled: n <= Math.round(site.average_rating || 0) }">★</span>
           </div>
-          <div class="review-count">{{ site.reviews_count }} opiniones</div>
+          <div class="review-count" v-if="site.review_count && site.review_count > 0">
+            {{ site.review_count }} reseña{{ site.review_count !== 1 ? 's' : '' }}
+          </div>
           <button @click="handleFavoriteClick" class="btn-fav" :class="{ active: site.is_favorite }">
             {{ site.is_favorite ? '❤️ Guardado en Favoritos' : '🤍 Marcar como Favorito' }}
           </button>
@@ -169,6 +171,12 @@ const statusClass = computed(() => {
   return 'status-bad'
 })
 
+const formattedRating = computed(() => {
+  if (!site.value?.average_rating) return '0.0'
+  const rating = parseFloat(site.value.average_rating)
+  return rating.toFixed(1)
+})
+
 // --- NUEVA FUNCIÓN PARA RESOLVER URLS ---
 // --- FUNCIÓN CORREGIDA PARA RESOLVER URLS ---
 const resolveUrl = (url) => {
@@ -242,7 +250,8 @@ const checkUserReview = async () => {
       const siteReview = response.data.data.find(review => review.site_id === site.value.id)
       if (siteReview) {
         userReview.value = siteReview
-        hasUserReview.value = true
+        // Solo mostrar como "tiene review" si no está rechazada
+        hasUserReview.value = siteReview.status !== 'Rechazada'
       } else {
         hasUserReview.value = false
         userReview.value = null
@@ -262,7 +271,7 @@ const fetchSiteReviews = async (page = 1) => {
 
   reviewsLoading.value = true
   try {
-    const response = await getSiteReviews(site.value.id, { page, per_page: 10 })
+    const response = await getSiteReviews(site.value.id, { page, per_page: 25 })
     if (response.data && response.data.data) {
       siteReviews.value = response.data.data
       reviewsMeta.value = response.data.meta
@@ -372,7 +381,12 @@ const onReviewSubmitted = (reviewData) => {
   fetchSite()
   fetchSiteReviews()
   checkUserReview() // Verificar el estado de la review del usuario
-  alert('¡Reseña enviada exitosamente!')
+  
+  if (hasUserReview.value) {
+    alert('Reseña actualizada exitosamente. Pasará a moderación para su posterior publicación.')
+  } else {
+    alert('Reseña enviada exitosamente. Pasará a moderación para su posterior publicación.')
+  }
 }
 
 const handleImageError = (e) => {

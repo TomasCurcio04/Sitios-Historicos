@@ -42,11 +42,14 @@
             id="comment"
             v-model="comment"
             placeholder="Comparte tu experiencia visitando este sitio histórico..."
-            :maxlength="500"
+            :maxlength="1000"
             rows="4"
           ></textarea>
-          <div class="char-counter">
-            {{ comment.length }}/500 caracteres
+          <div class="char-counter" :class="{ 'char-counter-invalid': comment.trim().length < 20 && comment.trim().length > 0 }">
+            {{ comment.length }}/1000 caracteres
+            <span v-if="comment.trim().length < 20 && comment.trim().length > 0" class="min-chars-warning">
+              (mínimo 20 caracteres)
+            </span>
           </div>
         </div>
 
@@ -108,7 +111,7 @@ const disabledMessage = ref('')
 
 const isFormValid = computed(() => {
   const commentLength = comment.value.trim().length
-  return rating.value >= 1 && rating.value <= 5 && commentLength >= 30 && commentLength <= 500
+  return rating.value >= 1 && rating.value <= 5 && commentLength >= 20 && commentLength <= 1000
 })
 
 const setRating = (newRating) => {
@@ -322,6 +325,15 @@ textarea:focus {
   font-size: 0.75rem;
   color: #6b7280;
   margin-top: 0.25rem;
+}
+
+.char-counter-invalid {
+  color: #dc2626;
+}
+
+.min-chars-warning {
+  color: #dc2626;
+  font-weight: 500;
 }
 
 .error-message {

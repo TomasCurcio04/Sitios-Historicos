@@ -59,6 +59,7 @@
               Editar
             </button>
             <button 
+              v-if="!isRejected(r.state || r.status)"
               @click="deleteReview(r.id)"
               class="action-btn delete-btn"
               :disabled="loading"

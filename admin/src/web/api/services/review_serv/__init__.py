@@ -41,13 +41,12 @@ def listar_reviews_by_site(site_id, page=1, per_page=10):
 
 
 def get_user_review_for_site(site_id, public_user_id):
-    """Obtiene la reseña de un usuario para un sitio específico (aprobada o pendiente)"""
+    """Obtiene la reseña de un usuario para un sitio específico (cualquier estado)"""
     return (
         db.session.query(Review)
         .filter(
             Review.id_site == site_id,
-            Review.id_public_user == public_user_id,
-            Review.status.in_([ReviewStatus.APROBADA, ReviewStatus.PENDIENTE])
+            Review.id_public_user == public_user_id
         )
         .first()
     )
@@ -60,7 +59,19 @@ def create_review_service(site_id, review_data, public_user_id):
     # Verificar si el usuario ya tiene una reseña para este sitio
     existing_review = get_user_review_for_site(site_id, public_user_id)
     if existing_review:
-        raise ValueError("Ya tienes una reseña para este sitio. Puedes editarla en tu perfil.")
+        if existing_review.status == ReviewStatus.RECHAZADA:
+            # Si tiene una rechazada, editarla en lugar de crear nueva
+            existing_review.rating = review_data["rating"]
+            existing_review.content = review_data["comment"]
+            existing_review.status = ReviewStatus.PENDIENTE
+            existing_review.updated_at = datetime.now(timezone.utc)
+            existing_review.date_moderated = None
+            existing_review.moderated_by = None
+            existing_review.rejection_reason = None
+            db.session.commit()
+            return existing_review
+        else:
+            raise ValueError("Ya tienes una reseña para este sitio. Puedes editarla en tu perfil.")
 
     # Crear reseña (estado pendiente por defecto)
     now = datetime.now(timezone.utc)
@@ -141,6 +152,10 @@ def delete_review_service(review_id, site_id, public_user_id=None):
     review = query.first()
 
     if review:
+        # No permitir eliminar reseñas rechazadas
+        if review.status == ReviewStatus.RECHAZADA:
+            raise ValueError("No se pueden eliminar reseñas rechazadas")
+        
         db.session.delete(review)
         db.session.commit()
         return True
