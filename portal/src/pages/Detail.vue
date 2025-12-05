@@ -184,7 +184,6 @@ const fetchSite = async () => {
 
     if (response.success) {
       site.value = response.data
-      console.log(response.data.city)
       // CORRECCIÓN: Ocultamos el loading AHORA para que el HTML del mapa se renderice
       loading.value = false
 

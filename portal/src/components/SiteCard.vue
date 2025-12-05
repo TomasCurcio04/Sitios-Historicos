@@ -8,13 +8,13 @@
   class="site-card"
   >
 
-    <div class="card-image">
-      <div v-if="!site.cover_images && (!site.images && site.images.lenght)" class="no-image-placeholder">
+  <div class="card-image">
+      <div v-if="!site.cover_image && !site.image" class="no-image-placeholder">
         Sin<br>Portada
       </div>
       <img
         v-else
-        :src="resolveUrl(site.cover_image || site.images?.[0]?.image_path)"
+        :src="resolveUrl(site.cover_image || site.image)"
         alt="Imagen del sitio"
         class="cover-image"
         @error="handleImageError"
