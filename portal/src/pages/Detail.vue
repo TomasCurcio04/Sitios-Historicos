@@ -72,6 +72,7 @@
             :meta="reviewsMeta"
             :loading="reviewsLoading"
             @page-change="handleReviewsPageChange"
+            @goBack="goBack"
           />
         </section>
       </div>
@@ -353,6 +354,7 @@ onBeforeUnmount(() => {
         map.value.remove()
     }
 })
+
 </script>
 
 <style scoped src="../assets/detail.css"></style>
