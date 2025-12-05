@@ -104,6 +104,7 @@ def listar_sitios(
             db.session.query(
                 Review.id_site, func.avg(Review.rating).label("avg_rating")
             )
+            .filter(Review.status == "APROBADA")
             .group_by(Review.id_site)
             .subquery()
         )
