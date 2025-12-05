@@ -100,15 +100,29 @@
         </form>
 
         <form action="{{ url_for('sites.exportar') }}" method="get">
-            {% for key in [
-            'nombre','short_description','full_description','city','state',
-            'conservation_state','inauguration_year','latitude','longitude',
-            'created_by','date_registered','is_visible'
-            ] %}
-            <input type="hidden" name="{{ key }}" value="{{ request.args.get(key, '') }}">
+
+           
+            <input type="hidden" name="provincia" value="{{ provincia }}">
+            <input type="hidden" name="ciudad" value="{{ ciudad }}">
+            <input type="hidden" name="estado" value="{{ estado }}">
+            <input type="hidden" name="busqueda_texto" value="{{ busqueda_texto }}">
+            <input type="hidden" name="fecha_desde" value="{{ fecha_desde }}">
+            <input type="hidden" name="fecha_hasta" value="{{ fecha_hasta }}">
+            <input type="hidden" name="visibilidad" value="{{ visibilidad }}">
+
+            {% for t in selected_tags %}
+                <input type="hidden" name="tags" value="{{ t }}">
             {% endfor %}
-            <button type="submit" class="btn-primary-action js-requires-permission"
-                data-permission="site_export_CSV">Exportar CSV</button>
+
+            <input type="hidden" name="sort" value="{{ sort }}">
+            <input type="hidden" name="order" value="{{ order }}">
+
+            <button type="submit"
+                    class="btn-primary-action js-requires-permission"
+                    data-permission="site_export_CSV">
+                Exportar CSV
+            </button>
+
         </form>
     </div>
 </div>
@@ -135,13 +149,19 @@
         </thead>
         <tbody>
             {% for r in results %}
-            <tr>
-                <td>
+            <tr {% if r.deleted %}class="site-deleted" {% endif %}>
+                <td style="position: relative;">
                     {% if r.portada_url %}
                     <img src="{{ r.portada_url }}" alt="Portada de {{ r.name }}"
                         style="width: 100px; height: auto; border-radius: 4px;">
+                    {% if r.deleted %}
+                    <div class="deleted-overlay">ELIMINADO</div>
+                    {% endif %}
                     {% else %}
                     <span style="font-size: 0.8rem; color: #888;">Sin imagen</span>
+                    {% if r.deleted %}
+                    <div class="deleted-overlay">ELIMINADO</div>
+                    {% endif %}
                     {% endif %}
                 </td>
                 <td>{{ r.name }}</td>
@@ -154,26 +174,22 @@
                     <div class="acciones">
                         <form action="{{ url_for('sites.editar', site_id=r.id) }}" method="get">
                             <button type="submit" class="btn btn-edit js-requires-permission"
-                                data-permission="site_edit">Editar</button>
+                                data-permission="site_edit" {% if r.deleted %}disabled{% endif %}>Editar</button>
                         </form>
-
 
                         <button onclick="showHistoryModal({{ r.id }})" class="btn btn-sm btn-outline-info">
                             <i class="fas fa-history"></i> Historial
                         </button>
 
-
-
                         <form action="{{ url_for('sites.eliminar', site_id=r.id) }}" method="post">
                             <input type="hidden" name="user_id"
                                 value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
                             <button type="submit" class="btn btn-delete js-requires-permission"
-                                data-permission="site_delete"
-                                onclick="return confirm('¿Seguro que querés ar este sitio?')">
+                                data-permission="site_delete" {% if r.deleted %}disabled{% endif %}
+                                onclick="return confirm('¿Seguro que querés eliminar este sitio?')">
                                 Eliminar
                             </button>
                         </form>
-
                     </div>
                 </td>
             </tr>
@@ -259,38 +275,29 @@
     const closeButton = document.querySelector('#historyModal .close-button');
 
     function showHistoryModal(siteId) {
-        // 1. Obtenemos los permisos del usuario (inyectados de forma segura desde Flask)
-        const userPermissions = {{ session.get("permissions", []) | tojson
-    }};
+        // Guardar siteId globalmente para el ordenamiento
+        window.currentSiteId = siteId;
 
-    // 2. Verificamos el permiso necesario
-    if (!userPermissions.includes("site_history_view")) {
-        alert('No tiene permiso para ver el historial de modificaciones');
-        return;
-    }
+        modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
+        modal.style.display = 'block';
 
-    // 3. Si tiene permiso → abrir modal y cargar contenido
-    modalContent.innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando historial...</p>';
-    modal.style.display = 'block';
-
-    // 4. Fetch al endpoint del historial (que ya debe validar permiso en el backend también)
-    fetch(`/sitios/${siteId}/historial`)
-        .then(response => {
-            if (!response.ok) {
-                if (response.status === 403) {
-                    throw new Error('Acceso denegado (403)');
+        fetch(`/sitios/${siteId}/historial`)
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error('Acceso denegado (403)');
+                    }
+                    throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
                 }
-                throw new Error(`Error ${response.status}: No se pudo cargar el historial`);
-            }
-            return response.text();
-        })
-        .then(html => {
-            modalContent.innerHTML = html;
-        })
-        .catch(error => {
-            modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
-            console.error('Error cargando historial:', error);
-        });
+                return response.text();
+            })
+            .then(html => {
+                modalContent.innerHTML = html;
+            })
+            .catch(error => {
+                modalContent.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
+                console.error('Error cargando historial:', error);
+            });
     }
 
     function closeModal() {
@@ -308,6 +315,84 @@
             closeModal();
         }
     });
+
+    // Funciones para ordenamiento del historial
+    function reloadHistory() {
+        const sortSelect = document.getElementById('sortSelect');
+        if (!sortSelect) {
+            console.error('sortSelect no encontrado');
+            return;
+        }
+
+        const sortValue = sortSelect.value;
+
+        // Intentar ordenamiento directo en DOM
+        if (sortHistoryDOM()) {
+            return;
+        }
+
+        // Fallback: recargar desde servidor
+        const [sortBy, order] = sortValue.split('-');
+        const siteId = window.currentSiteId;
+
+        if (!siteId) {
+            console.error('No se pudo obtener el ID del sitio');
+            return;
+        }
+
+        const url = `/sitios/${siteId}/historial?sort=${sortBy}&order=${order}`;
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('historyContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error recargando historial:', error);
+            });
+    }
+
+    function sortHistoryDOM() {
+        const timeline = document.getElementById('historyTimeline');
+        const sortSelect = document.getElementById('sortSelect');
+
+        if (!timeline || !sortSelect) {
+            return false;
+        }
+
+        const items = Array.from(timeline.children);
+        const sortValue = sortSelect.value;
+
+
+        items.sort((a, b) => {
+            switch (sortValue) {
+                case 'date-desc':
+                    const dateA = a.getAttribute('data-date') || '';
+                    const dateB = b.getAttribute('data-date') || '';
+                    return new Date(dateB).getTime() - new Date(dateA).getTime();
+                case 'date-asc':
+                    const dateA2 = a.getAttribute('data-date') || '';
+                    const dateB2 = b.getAttribute('data-date') || '';
+                    return new Date(dateA2).getTime() - new Date(dateB2).getTime();
+                case 'action-asc':
+                    return (a.getAttribute('data-action') || '').localeCompare(b.getAttribute('data-action') || '');
+                case 'user-asc':
+                    return (a.getAttribute('data-user') || '').localeCompare(b.getAttribute('data-user') || '');
+                default:
+                    return 0;
+            }
+        });
+
+        // Reordenar elementos
+        timeline.innerHTML = '';
+        items.forEach(item => timeline.appendChild(item));
+
+        return true;
+    }
+
+    // Hacer funciones globales
+    window.reloadHistory = reloadHistory;
+    window.sortHistoryDOM = sortHistoryDOM;
 </script>
 
 

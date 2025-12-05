@@ -81,7 +81,7 @@ def eliminar_sitio(sitio):
     Returns:
         Sitio histórico eliminado
     """
-    sitio.is_visible = False
+    sitio.deleted = True
     db.session.commit()
     return sitio
 

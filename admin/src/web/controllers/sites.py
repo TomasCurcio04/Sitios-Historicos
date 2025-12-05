@@ -13,6 +13,7 @@ from flask import (
     Response,
     current_app,
 )
+from src.core.services.board.site_export import exportar_sites_csv
 from src.core.database import db
 from src.core.entity.site import Site
 from src.core.entity.site_image import SiteImage
@@ -24,10 +25,8 @@ from src.core.services.board.busqueda_avanzada_serv import (
 )
 from src.core.services.board.tag_serv import obtener_todas_las_tags
 from src.core.services.board import site_history_serv as SiteHistoryService
+from src.core.services.auth.user_serv import usuario_actual
 from src.web.handlers.utils import permissions_required
-
-from src.core.services.board.site_history_serv import obtener_historial_sitios
-
 from src.core.services.board.sites import (
     obtener_todos_las_provincias,
     obtener_todas_las_categorias,
@@ -37,7 +36,7 @@ from src.core.services.board.sites import (
     crear_sitio,
     obtener_nuevas_etiquetas,
 )
-
+from src.core.services.board.site_history_serv import obtener_historial_sitios
 
 bp = Blueprint("sites", __name__, url_prefix="/sitios")
 
@@ -184,7 +183,8 @@ def crear():
     Returns:
         Redirige a la lista de sitios con un mensaje de éxito o error.
     """
-    user_id = int(request.form.get("user_id", 1))
+
+    user_id = usuario_actual().id_user
     data = _extraer_y_validar_form()
 
     if isinstance(data, str):
@@ -266,7 +266,7 @@ def actualizar(site_id):
     tags_ids = request.form.getlist("tags")
     nuevas_etiquetas = obtener_nuevas_etiquetas(tags_ids)
 
-    user_id = int(request.form.get("user_id", 1))
+    user_id = usuario_actual().id_user
 
     try:
         # ✅ Primero: detectar los cambios (comparar el estado actual con los nuevos valores)
@@ -318,7 +318,7 @@ def eliminar(site_id):
     Returns:
         Redirige a la lista de sitios con un mensaje de éxito o error.
     """
-    user_id = int(request.form.get("user_id", 1))
+    user_id = usuario_actual().id_user
     sitio = obtener_sitio_id(site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
@@ -349,16 +349,23 @@ def historial(site_id):
     Returns:
         Renderiza la plantilla parcial con el historial de cambios.
     """
-    sitio = db.session.get(Site, site_id)
+    sitio = obtener_sitio_id(site_id)
     if not sitio:
         flash("Sitio no encontrado.", "error")
         return redirect(url_for("sites.index"))
 
-    cambios = obtener_historial_sitios(site_id)
+    # Parámetros de ordenamiento
+    sort_by = request.args.get("sort", "date")
+    order = request.args.get("order", "desc")
 
-    # Aquí está el cambio clave:
+    cambios = obtener_historial_sitios(site_id, sort_by, order)
+
     return render_template(
-        "sites/_historial_partial.html", sitio=sitio, cambios=cambios
+        "sites/_historial_partial.html",
+        sitio=sitio,
+        cambios=cambios,
+        current_sort=sort_by,
+        current_order=order,
     )
 
 
@@ -373,26 +380,28 @@ def exportar():
     Returns:
         Respuesta con el archivo CSV para descargar.
     """
-    sitios = db.session.query(Site).all()
-    output = io.StringIO()
-    output.write("\ufeff")  # BOM para Excel
-    writer = csv.writer(output, quoting=csv.QUOTE_ALL)
+    filtros = {
+        "ciudad": request.args.get("ciudad"),
+        "provincia": request.args.get("provincia"),
+        "estado": request.args.get("estado"),
+        "visibilidad": request.args.get("visibilidad"),
+        "fecha_desde": request.args.get("fecha_desde"),
+        "fecha_hasta": request.args.get("fecha_hasta"),
+        "busqueda_texto": request.args.get("busqueda_texto"),
+        "tags": request.args.getlist("tags"),
+    }
 
-    campos = [col.name for col in Site.__table__.columns]
-    campos.append("tags")  # Exportar etiquetas como texto
+    filtros = {k: v for k, v in filtros.items() if v not in (None, "", "None", [])}
 
-    writer.writerow(campos)
+    sort = request.args.get("sort")
+    order = request.args.get("order", "asc")
 
-    for sitio in sitios:
-        fila = [getattr(sitio, campo.name, "") for campo in Site.__table__.columns]
-        fila.append(", ".join([tag.name for tag in sitio.tag]))
-        writer.writerow(fila)
+    csv_data, nombre_archivo = exportar_sites_csv(filtros, sort, order)
 
-    output.seek(0)
     return Response(
-        output,
+        csv_data,
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=sitios_historicos.csv"},
+        headers={"Content-Disposition": f"attachment; filename={nombre_archivo}"},
     )
 
 

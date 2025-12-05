@@ -37,11 +37,11 @@
         <img
           v-for="img in site.images"
           :key="img.id"
-          :src="resolveUrl(img.url)"
+          :src="resolveUrl(img.image_path)"
           :alt="img.title"
           class="thumb"
-          :class="{ active: currentImage === img.url }"
-          @click="currentImage = img.url"
+          :class="{ active: currentImage === img.image_path }"
+          @click="currentImage = img.image_path"
           @error="handleThumbError"
         >
       </div>
@@ -184,7 +184,7 @@ const fetchSite = async () => {
 
     if (response.success) {
       site.value = response.data
-
+      console.log(response.data.city)
       // CORRECCIÓN: Ocultamos el loading AHORA para que el HTML del mapa se renderice
       loading.value = false
 

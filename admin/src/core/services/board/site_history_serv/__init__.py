@@ -152,16 +152,31 @@ def is_visible(booleano):
     return "Visible" if booleano else "Oculto"
 
 
-def obtener_historial_sitios(site_id):
+def obtener_historial_sitios(site_id, sort_by='date', order='desc'):
     """Obtiene el historial de modificaciones de un sitio específico.
     Args:
         site_id (int): ID del sitio.
+        sort_by (str): Campo por el cual ordenar ('date', 'action', 'user').
+        order (str): Orden ('asc' o 'desc').
     Returns:
-        list[SiteHistory]: Lista de objetos SiteHistory ordenados por fecha descendente.
+        list[SiteHistory]: Lista de objetos SiteHistory ordenados.
     """
-    return (
-        db.session.query(SiteHistory)
-        .filter_by(id_site=site_id)
-        .order_by(SiteHistory.date_action.desc())
-        .all()
-    )
+    from src.core.entity.users import Users
+    
+    query = db.session.query(SiteHistory).filter_by(id_site=site_id)
+    
+    # Aplicar ordenamiento
+    if sort_by == 'action':
+        order_field = SiteHistory.action_type
+    elif sort_by == 'user':
+        query = query.join(Users)
+        order_field = Users.email
+    else:  # default: date
+        order_field = SiteHistory.date_action
+    
+    if order == 'asc':
+        query = query.order_by(order_field.asc())
+    else:
+        query = query.order_by(order_field.desc())
+    
+    return query.all()

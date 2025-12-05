@@ -105,8 +105,12 @@
         <p class="map-note">Haz clic en el mapa para seleccionar la ubicación del sitio histórico.</p>
 
         <label for="conservation_state">Estado de conservación</label>
-        <input type="text" id="conservation_state" name="conservation_state"
-            value="{{ sitio.conservation_state if sitio else '' }}">
+        <select id="conservation_state" name="conservation_state">
+            <option value="" {% if estado=="" %}selected{% endif %}>--Cualquiera--</option>
+                <option value="Bueno" {% if estado=="Bueno" %}selected{% endif %}>Bueno</option>
+                <option value="Regular" {% if estado=="Regular" %}selected{% endif %}>Regular</option>
+                <option value="Malo" {% if estado=="Malo" %}selected{% endif %}>Malo</option>
+        </select>
 
         <label for="inauguration_year">Año de inauguración</label>
         <input type="number" id="inauguration_year" name="inauguration_year"

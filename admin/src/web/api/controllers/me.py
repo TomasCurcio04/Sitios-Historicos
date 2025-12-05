@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from src.web.schemas.sites import SiteQuerySchema, SitesListResponseSchema
 from src.core.services.board.site_favorites import get_user_favorites
 from src.web.api.services.site_serv.utils_site import site_to_dict
+from src.web.api.services.me_serv import obtener_reviews_de_usuario
 from src.web.api.utils.auth import require_auth
 
 bp = Blueprint("api_me", __name__, url_prefix="/api/me")
@@ -39,37 +40,23 @@ def get_my_reviews():
                 400,
             )
 
-        # Obtener reseñas del usuario
-        from src.core.entity.review import Review
-        from src.core.database import db
-
-        query = (
-            db.session.query(Review)
-            .filter(Review.id_public_user == public_user_id)
-            .order_by(Review.date_created.desc())
+        # Obtener reseñas del usuario usando el servicio
+        reviews_result = obtener_reviews_de_usuario(
+            public_user_id,
+            page=params.get("page", 1),
+            per_page=params.get("per_page", 20)
         )
-
-        # Paginación
-        page = params.get("page", 1)
-        per_page = params.get("per_page", 20)
-        total = query.count()
-        reviews = query.offset((page - 1) * per_page).limit(per_page).all()
-
-        # Convertir a formato API
-        from src.web.api.services.review_serv.utils_review import review_to_dict
-
-        reviews_data = [review_to_dict(review, None) for review in reviews]
-
-        # Agregar información del sitio y estado
-        for i, review in enumerate(reviews):
-            reviews_data[i]["status"] = review.status.value
-            reviews_data[i]["site_name"] = (
-                review.site_rel.name if review.site_rel else None
-            )
+        
+        reviews_data = reviews_result["items"]
+        total = reviews_result["total"]
 
         response_data = {
             "data": reviews_data,
-            "meta": {"page": page, "per_page": per_page, "total": total},
+            "meta": {
+                "page": params.get("page", 1), 
+                "per_page": params.get("per_page", 20), 
+                "total": total
+            },
         }
 
         return jsonify(response_data)

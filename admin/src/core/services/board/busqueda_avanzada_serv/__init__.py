@@ -46,6 +46,7 @@ def buscar_sites(filtros):
                 "state": site.state_rel.name if site.state_rel else None,
                 "conservation_state": site.conservation_state,
                 "is_visible": site.is_visible,
+                "deleted": site.deleted if hasattr(site, 'deleted') else False,
                 "date_registered": (
                     site.date_registered.isoformat() if site.date_registered else None
                 ),

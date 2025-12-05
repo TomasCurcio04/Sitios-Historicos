@@ -1225,3 +1225,554 @@ a[href$="issues"]:hover {
         justify-content: center !important;
     }
 }
+
+/* --- ESTILOS PARA HISTORIAL DE SITIOS --- */
+
+/* Sección de filtros */
+.filters-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.filters-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-filter {
+    padding: 0.5rem 1rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-filter:hover {
+    background: #2563eb;
+}
+
+.btn-clear {
+    padding: 0.5rem 1rem;
+    background: #6b7280;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-clear:hover {
+    background: #4b5563;
+    color: white;
+}
+
+/* Timeline del historial */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 1rem 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.timeline-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 1rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background: white;
+    border: 3px solid #667eea;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+/* Badges de acción */
+.action-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.action-CREATE {
+    background: #10b981;
+    color: white;
+}
+
+.action-UPDATE {
+    background: #3b82f6;
+    color: white;
+}
+
+.action-DELETE {
+    background: #ef4444;
+    color: white;
+}
+
+.action-VISIBILITY {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Información del cambio */
+.cambio-info {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.cambio-info-item {
+    display: flex;
+    align-items: flex-start;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.cambio-info-item strong {
+    color: #333;
+    margin-right: 0.5rem;
+    min-width: 80px;
+}
+
+/* Paginación del historial */
+.pagination-section {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.pagination-controls {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-btn {
+    padding: 0.5rem 0.75rem;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #374151;
+    transition: background-color 0.2s;
+}
+
+.pagination-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.pagination-info {
+    padding: 0.5rem 1rem;
+    background: #3b82f6;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+/* Resumen */
+.summary-section {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.summary-section p {
+    color: #666;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state h2 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+    font-size: 1.25rem;
+}
+
+.empty-state p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive para historial */
+@media (max-width: 768px) {
+    .filters-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-filter,
+    .btn-clear {
+        width: 100%;
+        text-align: center;
+    }
+
+    .timeline {
+        padding-left: 1.5rem;
+    }
+
+    .timeline-item {
+        padding: 0.75rem;
+    }
+
+    .timeline-item::before {
+        left: -1.5rem;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .pagination-btn,
+    .pagination-info {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* --- ESTILOS PARA HISTORIAL DE SITIOS --- */
+
+/* Controles del historial */
+.history-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sort-controls label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.sort-controls select {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+}
+
+.history-stats {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Timeline del historial */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 1rem 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+
+.timeline-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -1.75rem;
+    top: 1rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background: white;
+    border: 3px solid #667eea;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.timeline-content {
+    padding: 1.25rem;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.timeline-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.timeline-user {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 4px;
+}
+
+.timeline-details {
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.5;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 4px;
+    border-left: 3px solid #e5e7eb;
+}
+
+/* Badges de acción */
+.action-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.action-CREATE {
+    background: #10b981;
+    color: white;
+}
+
+.action-UPDATE {
+    background: #3b82f6;
+    color: white;
+}
+
+.action-DELETE {
+    background: #ef4444;
+    color: white;
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6b7280;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state h2 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+    font-size: 1.25rem;
+}
+
+.empty-state p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .history-controls {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .timeline {
+        padding-left: 1.5rem;
+    }
+
+    .timeline-marker {
+        left: -1.5rem;
+    }
+
+    .timeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .timeline-content {
+        padding: 1rem;
+    }
+}
+
+.change-item {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.change-field {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.change-old {
+    color: #dc2626;
+    text-decoration: line-through;
+    margin: 0 0.25rem;
+}
+
+.change-arrow {
+    color: #6b7280;
+    margin: 0 0.25rem;
+}
+
+.change-new {
+    color: #059669;
+    font-weight: 500;
+    margin: 0 0.25rem;
+}
+
+/* Indicador de sitio eliminado */
+
+.deleted-badge {
+    background-color: #dc2626;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.site-deleted td:not(:last-child) {
+    opacity: 0.6;
+    background-color: #fef2f2 !important;
+}
+
+.site-deleted .btn:not(.btn-outline-info) {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* Overlay diagonal para sitios eliminados */
+.deleted-overlay {
+    position: absolute;
+    top: 5px;
+    left: -30px;
+    background-color: #dc2626;
+    color: white;
+    padding: 0.5rem 1.7rem;
+    font-size: 0.4rem;
+    font-weight: 700;
+    transform: rotate(-45deg);
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.site-deleted .btn-edit,
+.site-deleted .btn-delete {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
