@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
 )
 
 export function useApi() {
-  return {
+  const api = {
     getSites(params) {
       const config = { params }
 
@@ -74,29 +74,51 @@ export function useApi() {
     //     })
     // },
     getMyReviews(params = {}) {
-      const token = localStorage.getItem('auth_token');
-
+      const token = localStorage.getItem('auth_token')
       return apiClient.get('/me/reviews', {
         params,
         headers: {
           Authorization: `Bearer ${token}`
         }
-      });
+      })
     },
     createReview(siteId, reviewData) {
-
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('auth_token')
       return apiClient.post(`/sites/${siteId}/reviews`, reviewData, {
         headers: {
           Authorization: `Bearer ${token}`
-        },
-      });
+        }
+      })
     },
     getSiteReviews(siteId, params = {}) {
       return apiClient.get(`/sites/${siteId}/reviews`, { params });
     },
     getReviewsStatus() {
       return apiClient.get('/feature-flags/reviews-status');
+    },
+
+    updateReview(siteId, reviewId, reviewData) {
+      const token = localStorage.getItem('auth_token')
+      return apiClient.put(`/sites/${siteId}/reviews/${reviewId}`, reviewData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    },
+    deleteReview(siteId, reviewId) {
+      const token = localStorage.getItem('auth_token')
+      return apiClient.delete(`/sites/${siteId}/reviews/${reviewId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    },
+    deleteMyReview(siteId, reviewId) {
+      return api.deleteReview(siteId, reviewId)
+    },
+    updateMyReview(siteId, reviewId, reviewData) {
+      return api.updateReview(siteId, reviewId, reviewData)
     }
   }
+  return api
 };

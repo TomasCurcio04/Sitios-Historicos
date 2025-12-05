@@ -2,7 +2,7 @@
   <div class="review-modal-overlay" @click="cancel">
     <div class="review-modal" @click.stop>
       <div class="modal-header">
-        <h2>Escribir reseña para {{ siteName }}</h2>
+        <h2>{{ isEditing ? 'Editar reseña' : 'Escribir reseña' }} para {{ siteName }}</h2>
         <button class="close-btn" @click="cancel">×</button>
       </div>
 
@@ -42,11 +42,14 @@
             id="comment"
             v-model="comment"
             placeholder="Comparte tu experiencia visitando este sitio histórico..."
-            :maxlength="500"
+            :maxlength="1000"
             rows="4"
           ></textarea>
-          <div class="char-counter">
-            {{ comment.length }}/500 caracteres
+          <div class="char-counter" :class="{ 'char-counter-invalid': comment.trim().length < 20 && comment.trim().length > 0 }">
+            {{ comment.length }}/1000 caracteres
+            <span v-if="comment.trim().length < 20 && comment.trim().length > 0" class="min-chars-warning">
+              (mínimo 20 caracteres)
+            </span>
           </div>
         </div>
 
@@ -59,7 +62,7 @@
             Cancelar
           </button>
           <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">
-            {{ isSubmitting ? 'Enviando...' : 'Enviar reseña' }}
+            {{ isSubmitting ? (isEditing ? 'Actualizando...' : 'Enviando...') : (isEditing ? 'Actualizar reseña' : 'Enviar reseña') }}
           </button>
         </div>
       </form>
@@ -79,12 +82,24 @@ const props = defineProps({
   siteName: {
     type: String,
     required: true
+  },
+  existingReview: {
+    type: Object,
+    default: null
+  },
+  isEditing: {
+    type: Boolean,
+    default: false
+  },
+  useProfileEndpoint: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['submitted', 'cancel'])
 
-const { createReview, getReviewsStatus } = useApi()
+const { createReview, updateReview, updateMyReview, getReviewsStatus } = useApi()
 
 const rating = ref(0)
 const hoverRating = ref(0)  
@@ -96,7 +111,7 @@ const disabledMessage = ref('')
 
 const isFormValid = computed(() => {
   const commentLength = comment.value.trim().length
-  return rating.value >= 1 && rating.value <= 5 && commentLength >= 30 && commentLength <= 500
+  return rating.value >= 1 && rating.value <= 5 && commentLength >= 20 && commentLength <= 1000
 })
 
 const setRating = (newRating) => {
@@ -125,7 +140,16 @@ const submitReview = async () => {
       comment: comment.value.trim()
     }
 
-    const response = await createReview(props.siteId, reviewData)
+    let response
+    if (props.isEditing && props.existingReview) {
+      if (props.useProfileEndpoint) {
+        response = await updateMyReview(props.siteId, props.existingReview.id, reviewData)
+      } else {
+        response = await updateReview(props.siteId, props.existingReview.id, reviewData)
+      }
+    } else {
+      response = await createReview(props.siteId, reviewData)
+    }
 
     if (response.status === 201 || response.status === 200) {
       emit('submitted', response.data)
@@ -137,10 +161,14 @@ const submitReview = async () => {
       error.value = 'Sesión expirada. Por favor inicia sesión nuevamente.'
     } else if (err.response?.status === 400) {
       error.value = err.response.data?.error?.message || 'Datos inválidos.'
+    } else if (err.response?.status === 409) {
+      error.value = err.response.data?.error?.message || 'Ya tienes una reseña para este sitio.'
+    } else if (err.response?.status === 403) {
+      error.value = err.response.data?.error?.message || 'No tienes permisos para realizar esta acción.'
     } else if (err.response?.status === 500) {
       error.value = 'Error interno del servidor. Inténtalo más tarde.'
     } else {
-      error.value = err.message || 'Error al enviar la reseña.'
+      error.value = err.message || (props.isEditing ? 'Error al actualizar la reseña.' : 'Error al enviar la reseña.')
     }
   } finally {
     isSubmitting.value = false
@@ -165,6 +193,12 @@ const checkReviewsStatus = async () => {
 
 onMounted(() => {
   checkReviewsStatus()
+  
+  // Si estamos editando, cargar los datos existentes
+  if (props.isEditing && props.existingReview) {
+    rating.value = props.existingReview.rating
+    comment.value = props.existingReview.comment
+  }
 })
 </script>
 
@@ -291,6 +325,15 @@ textarea:focus {
   font-size: 0.75rem;
   color: #6b7280;
   margin-top: 0.25rem;
+}
+
+.char-counter-invalid {
+  color: #dc2626;
+}
+
+.min-chars-warning {
+  color: #dc2626;
+  font-weight: 500;
 }
 
 .error-message {

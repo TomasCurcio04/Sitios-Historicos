@@ -72,26 +72,36 @@
             :meta="reviewsMeta"
             :loading="reviewsLoading"
             @page-change="handleReviewsPageChange"
+            @goBack="goBack"
           />
         </section>
       </div>
 
       <aside class="reviews-sidebar">
         <div class="rating-card">
-          <div class="rating-big">{{ site.average_rating || '0.0' }}</div>
+          <div class="rating-big">{{ formattedRating }}</div>
           <div class="stars">
             <span v-for="n in 5" :key="n" :class="{ filled: n <= Math.round(site.average_rating || 0) }">★</span>
           </div>
-          <div class="review-count">{{ site.reviews_count }} opiniones</div>
+          <div class="review-count" v-if="site.review_count && site.review_count > 0">
+            {{ site.review_count }} reseña{{ site.review_count !== 1 ? 's' : '' }}
+          </div>
           <button @click="handleFavoriteClick" class="btn-fav" :class="{ active: site.is_favorite }">
             {{ site.is_favorite ? '❤️ Guardado en Favoritos' : '🤍 Marcar como Favorito' }}
           </button>
           <button 
-            v-if="reviewsEnabled" 
+            v-if="reviewsEnabled && !hasUserReview" 
             @click="handleWriteReview" 
             class="btn-review"
           >
             ✏️ Escribir una reseña
+          </button>
+          <button 
+            v-else-if="reviewsEnabled && hasUserReview"
+            @click="handleEditReview" 
+            class="btn-review edit-mode"
+          >
+            ✏️ Editar mi reseña
           </button>
           <div v-else class="reviews-disabled-notice">
             <div class="disabled-icon">🚫</div>
@@ -106,6 +116,8 @@
       v-if="showReviewForm"
       :site-id="site.id"
       :site-name="site.name"
+      :existing-review="userReview"
+      :is-editing="hasUserReview"
       @submitted="onReviewSubmitted"
       @cancel="showReviewForm = false"
     />
@@ -113,7 +125,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, onBeforeUnmount } from 'vue'
+import { ref, onMounted, computed, nextTick, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { useApi } from '../composables/useApi'
@@ -124,7 +136,7 @@ import ReviewForm from '../components/ReviewForm.vue'
 import SiteReviewsList from '../components/SiteReviewsList.vue'
 
 const { loggedIn, login } = useAuth()
-const { getSiteReviews, getReviewsStatus } = useApi()
+const { getSiteReviews, getReviewsStatus, getMyReviews } = useApi()
 
 const props = defineProps({
   id: { type: [String, Number], required: true }
@@ -147,6 +159,8 @@ const reviewsLoading = ref(false)
 const reviewsMeta = ref(null)
 const reviewsEnabled = ref(true)
 const reviewsDisabledMessage = ref('')
+const userReview = ref(null)
+const hasUserReview = ref(false)
 
 // Computed
 const statusClass = computed(() => {
@@ -155,6 +169,12 @@ const statusClass = computed(() => {
   if (['bueno', 'excelente', 'muy bueno'].includes(status)) return 'status-good'
   if (['regular'].includes(status)) return 'status-regular'
   return 'status-bad'
+})
+
+const formattedRating = computed(() => {
+  if (!site.value?.average_rating) return '0.0'
+  const rating = parseFloat(site.value.average_rating)
+  return rating.toFixed(1)
 })
 
 // --- NUEVA FUNCIÓN PARA RESOLVER URLS ---
@@ -192,6 +212,7 @@ const fetchSite = async () => {
         initMap()
         checkReviewsStatus()
         fetchSiteReviews()
+        checkUserReview()
       })
     } else {
       error.value = response.error || 'No se pudo cargar el sitio.'
@@ -216,12 +237,41 @@ const checkReviewsStatus = async () => {
   }
 }
 
+const checkUserReview = async () => {
+  if (!loggedIn.value || !site.value) {
+    hasUserReview.value = false
+    userReview.value = null
+    return
+  }
+
+  try {
+    const response = await getMyReviews({ per_page: 100 })
+    if (response.data && response.data.data) {
+      const siteReview = response.data.data.find(review => review.site_id === site.value.id)
+      if (siteReview) {
+        userReview.value = siteReview
+        // Solo mostrar como "tiene review" si no está rechazada
+        hasUserReview.value = siteReview.status !== 'Rechazada'
+      } else {
+        hasUserReview.value = false
+        userReview.value = null
+      }
+    } else {
+      hasUserReview.value = false
+      userReview.value = null
+    }
+  } catch (err) {
+    hasUserReview.value = false
+    userReview.value = null
+  }
+}
+
 const fetchSiteReviews = async (page = 1) => {
   if (!site.value) return
 
   reviewsLoading.value = true
   try {
-    const response = await getSiteReviews(site.value.id, { page, per_page: 10 })
+    const response = await getSiteReviews(site.value.id, { page, per_page: 25 })
     if (response.data && response.data.data) {
       siteReviews.value = response.data.data
       reviewsMeta.value = response.data.meta
@@ -315,12 +365,28 @@ const handleWriteReview = () => {
     showReviewForm.value = true
 }
 
+const handleEditReview = () => {
+    if (!loggedIn.value) {
+        if(confirm("Debes iniciar sesión para editar tu reseña. ¿Ir al login?")) {
+            login()
+        }
+        return
+    }
+    showReviewForm.value = true
+}
+
 const onReviewSubmitted = (reviewData) => {
   // Refresh the site data and reviews to show updated ratings
   showReviewForm.value = false
   fetchSite()
   fetchSiteReviews()
-  alert('¡Reseña enviada exitosamente!')
+  checkUserReview() // Verificar el estado de la review del usuario
+  
+  if (hasUserReview.value) {
+    alert('Reseña actualizada exitosamente. Pasará a moderación para su posterior publicación.')
+  } else {
+    alert('Reseña enviada exitosamente. Pasará a moderación para su posterior publicación.')
+  }
 }
 
 const handleImageError = (e) => {
@@ -348,11 +414,19 @@ onMounted(() => {
   fetchSite()
 })
 
+// Watcher para verificar review del usuario cuando cambie el estado de login
+watch(loggedIn, (isLoggedIn) => {
+  if (site.value) {
+    checkUserReview()
+  }
+}, { immediate: false })
+
 onBeforeUnmount(() => {
     if (map.value) {
         map.value.remove()
     }
 })
+
 </script>
 
 <style scoped src="../assets/detail.css"></style>
@@ -381,5 +455,13 @@ onBeforeUnmount(() => {
   color: #6b7280;
   font-size: 0.875rem;
   line-height: 1.4;
+}
+
+.btn-review.edit-mode {
+  background-color: #f59e0b;
+}
+
+.btn-review.edit-mode:hover {
+  background-color: #d97706;
 }
 </style>

@@ -1,5 +1,21 @@
 <template>
-  <div class="site-reviews-section">
+   <!-- <div v-if="!reviewsEnabled" class="reviews-disabled-message">
+        <div class="disabled-icon">🚫</div>
+        <h3>Reseñas no disponibles</h3>
+        <p>{{ disabledMessage || 'Las reseñas están temporalmente deshabilitadas.' }}</p>
+        <button type="button" class="btn-cancel" @click="cancel">
+          Cerrar
+        </button>
+      </div> -->
+  <div v-if="!reviewsEnabled" class="reviews-disabled-message">
+    <div class="disabled-icon">🚫</div>
+      <h3>Reseñas no disponibles</h3>
+        <p>{{ disabledMessage }}</p>
+        <button type="button" class="btn-inicio" @click="goBack">
+          Inicio
+        </button>
+  </div>
+  <div v-else class="site-reviews-section">
     <h3>Reseñas del sitio</h3>
 
     <p v-if="loading">Cargando reseñas...</p>
@@ -15,7 +31,7 @@
         class="review-card"
       >
         <div class="card-header"> 
-          <h4 class="card-title">{{ r.user_name || 'Usuario anónimo' }}</h4>
+          <h4 class="card-title">{{ r.user_name }}</h4>
           <span class="review-date">{{ formatDate(r.inserted_at) }}</span>
         </div>
 
@@ -61,8 +77,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
+import { useApi } from '@/composables/useApi'
 
+const { getReviewsStatus } = useApi()
+
+const reviewsEnabled = ref(true)
+const disabledMessage = ref("")
+
+const emit = defineEmits(['goBack']) 
+
+onMounted(() => {
+  checkReviewsStatus()
+})
 const props = defineProps({
   reviews: Array,
   meta: Object,
@@ -83,7 +110,20 @@ function formatDate(dateStr) {
   return `${day}/${month}/${year}`;
 }
 
-
+const goBack = () => {
+  emit('goBack')
+}
+const checkReviewsStatus = async () => {
+  try {
+    const response = await getReviewsStatus()
+    reviewsEnabled.value = response.data.enabled
+    disabledMessage.value = response.data.message || ''
+  } catch (err) {
+    console.error('Error checking reviews status:', err)
+    // En caso de error, permitir reviews por defecto
+    reviewsEnabled.value = true
+  }
+}
 </script>
 
 <style scoped>

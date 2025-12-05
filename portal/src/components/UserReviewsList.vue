@@ -19,10 +19,9 @@
     </p>
 
     <div v-else class="reviews-grid">
-      <router-link
+      <div
         v-for="r in reviews"
         :key="r.id"
-        :to="`/sites/${r.site_id}`"
         class="review-card"
       >
         <div class="card-header">
@@ -50,8 +49,32 @@
           <p class="review-comment">{{ r.comment }}</p>
           
           <p class="review-date">{{ formatDate(r.inserted_at) }}</p>
+          
+          <div class="review-actions">
+            <button 
+              @click="editReview(r)"
+              class="action-btn edit-btn"
+              :disabled="loading"
+            >
+              Editar
+            </button>
+            <button 
+              v-if="!isRejected(r.state || r.status)"
+              @click="deleteReview(r.id)"
+              class="action-btn delete-btn"
+              :disabled="loading"
+            >
+              Eliminar
+            </button>
+            <router-link 
+              :to="`/sites/${r.site_id}`"
+              class="action-btn view-btn"
+            >
+              Ver sitio
+            </router-link>
+          </div>
         </div>
-      </router-link>
+      </div>
     </div>
 
     <!-- Paginación -->
@@ -94,6 +117,8 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['edit-review', 'delete-review', 'order-change', 'page-change']);
+
 // Inicializamos con la prop "order" o 'desc' por defecto
 const localOrder = ref(props.order || "desc");
 
@@ -126,6 +151,16 @@ function isPending(status) {
 
 function isRejected(status) {
   return status === 'rejected' || status === 'Rechazada';
+}
+
+function editReview(review) {
+  emit('edit-review', review);
+}
+
+function deleteReview(reviewId) {
+  if (confirm('¿Estás seguro de que quieres eliminar esta reseña?')) {
+    emit('delete-review', reviewId);
+  }
 }
 </script>
 
@@ -228,13 +263,73 @@ function isRejected(status) {
 .review-date {
   font-size: 0.75rem;
   color: #9ca3af;
-  margin: 0;
+  margin: 0 0 1rem 0;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.edit-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.edit-btn:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.delete-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.view-btn {
+  background-color: #6b7280;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #4b5563;
+  text-decoration: none;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
   .reviews-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  
+  .review-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
   }
 }
 </style>

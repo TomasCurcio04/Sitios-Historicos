@@ -14,6 +14,7 @@ from src.web.api.services.review_serv.utils_review import (
     create_review,
     get_review_by_id,
     delete_review,
+    update_review,
 )
 from src.web.api.utils.auth import require_auth
 
@@ -110,7 +111,20 @@ def create_site_review(site_id):
             )
 
         # Crear reseña
-        new_review = create_review(site_id, review_data, public_user_id)
+        try:
+            new_review = create_review(site_id, review_data, public_user_id)
+        except ValueError as e:
+            return (
+                jsonify(
+                    {
+                        "error": {
+                            "code": "conflict",
+                            "message": str(e)
+                        }
+                    }
+                ),
+                409,
+            )
 
         # Serializar respuesta
         response_schema = ReviewResponseSchema()
@@ -178,6 +192,69 @@ def get_site_review(site_id, review_id):
         )
 
 
+@bp.route("/<int:site_id>/reviews/<int:review_id>", methods=["PUT"])
+def update_site_review(site_id, review_id):
+    """Actualiza una reseña específica."""
+    try:
+        # Verificar autenticación
+        user, auth_error = require_auth()
+        if auth_error:
+            return auth_error
+
+        public_user_id = user["public_user_id"]
+
+        # Validar datos usando schema
+        schema = ReviewCreateSchema()
+        try:
+            review_data = schema.load(request.get_json())
+        except ValidationError as err:
+            return (
+                jsonify(
+                    {
+                        "error": {
+                            "code": "invalid_data",
+                            "message": "Invalid input data",
+                            "details": err.messages,
+                        }
+                    }
+                ),
+                400,
+            )
+
+        # Actualizar reseña
+        try:
+            updated_review = update_review(review_id, review_data, public_user_id)
+        except ValueError as e:
+            return (
+                jsonify(
+                    {
+                        "error": {
+                            "code": "forbidden",
+                            "message": str(e)
+                        }
+                    }
+                ),
+                403,
+            )
+
+        # Serializar respuesta
+        response_schema = ReviewResponseSchema()
+        return jsonify(response_schema.dump(updated_review))
+
+    except Exception:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "server_error",
+                        "message": "An unexpected error occurred",
+                    }
+                }
+            ),
+            500,
+        )
+
+
 @bp.route("/<int:site_id>/reviews/<int:review_id>", methods=["DELETE"])
 def delete_site_review(site_id, review_id):
     """Elimina una reseña específica por ID."""
@@ -187,30 +264,18 @@ def delete_site_review(site_id, review_id):
         if auth_error:
             return auth_error
 
-        # user_id = user["public_user_id"]
+        public_user_id = user["public_user_id"]
 
-        # Obtener reseña
-        review_data = get_review_by_id(review_id, site_id, include_pending=True)
+        # Eliminar reseña (con validación de usuario)
+        success = delete_review(review_id, site_id, public_user_id)
 
-        if not review_data:
+        if not success:
             return (
                 jsonify(
-                    {"error": {"code": "not_found", "message": "Review not found"}}
+                    {"error": {"code": "not_found", "message": "Review not found or you don't have permission to delete it"}}
                 ),
                 404,
             )
-
-        # TODO: Verificar que el usuario es dueño de la reseña
-        # if review_data['user_id'] != user_id:
-        #     return jsonify({
-        #         "error": {
-        #             "code": "forbidden",
-        #             "message": "You do not have permission to delete this review"
-        #         }
-        #     }), 403
-
-        # Eliminar reseña
-        delete_review(review_id, site_id)
 
         return "", 204
 

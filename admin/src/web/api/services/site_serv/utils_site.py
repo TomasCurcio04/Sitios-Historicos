@@ -62,7 +62,7 @@ def site_to_dict(site, include_full_data=False, user_id=None):
         cover_image = None
         images = []
 
-    # Calcular rating promedio (siempre) y cantidad de reseñas (solo en detalle completo)
+    # Calcular rating promedio y cantidad de reseñas (siempre)
     average_rating = None
     review_count = 0
 
@@ -74,9 +74,7 @@ def site_to_dict(site, include_full_data=False, user_id=None):
             Review.status == ReviewStatus.APROBADA,  # Solo reseñas aprobadas
         )
 
-        if include_full_data:
-            review_count = reviews_query.count()
-
+        review_count = reviews_query.count()
         ratings = [r.rating for r in reviews_query.all()]
         if ratings:
             average_rating = sum(ratings) / len(ratings)
@@ -97,6 +95,7 @@ def site_to_dict(site, include_full_data=False, user_id=None):
         "state_of_conservation": site.conservation_state,
         "cover_image": cover_image,
         "average_rating": float(round(average_rating, 1)) if average_rating else None,
+        "review_count": review_count,
         "inserted_at": (
             site.date_registered.isoformat() + "Z" if site.date_registered else None
         ),
@@ -130,7 +129,6 @@ def site_to_dict(site, include_full_data=False, user_id=None):
         result.update(
             {
                 "images": images,
-                "review_count": review_count,
             }
         )
 
