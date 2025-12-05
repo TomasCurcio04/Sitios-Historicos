@@ -183,6 +183,7 @@ export default {
       markersLayer: null,
       circle: null,
       radius: 100,
+
     };
   },
 
@@ -340,6 +341,8 @@ this.$watch(
       this.buscarSitios(nuevaPagina);
     },
 
+
+
     borrarFiltros() {
       this.searchNameDesc = '';
       this.selectedTags = [];
@@ -348,6 +351,7 @@ this.$watch(
       this.favorites = false;
       this.sortBy = 'fecha';
       this.sortOrder = 'desc';
+
 
       this.$router.push({ query: {} });
       this.buscarSitios(1);
