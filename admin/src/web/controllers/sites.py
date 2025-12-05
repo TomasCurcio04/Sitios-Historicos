@@ -355,17 +355,17 @@ def historial(site_id):
         return redirect(url_for("sites.index"))
 
     # Parámetros de ordenamiento
-    sort_by = request.args.get('sort', 'date')
-    order = request.args.get('order', 'desc')
+    sort_by = request.args.get("sort", "date")
+    order = request.args.get("order", "desc")
 
     cambios = obtener_historial_sitios(site_id, sort_by, order)
 
     return render_template(
-        "sites/_historial_partial.html", 
-        sitio=sitio, 
+        "sites/_historial_partial.html",
+        sitio=sitio,
         cambios=cambios,
         current_sort=sort_by,
-        current_order=order
+        current_order=order,
     )
 
 
