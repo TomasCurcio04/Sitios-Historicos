@@ -39,11 +39,27 @@ def get_reviews_by_site(site_id, **kwargs):
     }
 
 
+def get_user_review_for_site(site_id, public_user_id):
+    """Obtiene la reseña de un usuario para un sitio específico"""
+    from src.web.api.services.review_serv import get_user_review_for_site as get_user_review_service
+    
+    review = get_user_review_service(site_id, public_user_id)
+    return review_to_dict(review, None) if review else None
+
+
 def create_review(site_id, review_data, public_user_id):
     """Crea una nueva reseña"""
     from src.web.api.services.review_serv import create_review_service
 
     review = create_review_service(site_id, review_data, public_user_id)
+    return review_to_dict(review, None)
+
+
+def update_review(review_id, review_data, public_user_id):
+    """Actualiza una reseña existente"""
+    from src.web.api.services.review_serv import update_review_service
+
+    review = update_review_service(review_id, review_data, public_user_id)
     return review_to_dict(review, None)
 
 
@@ -59,8 +75,8 @@ def get_review_by_id(review_id, site_id, include_pending=False):
     return review_to_dict(review, None)
 
 
-def delete_review(review_id, site_id):
+def delete_review(review_id, site_id, public_user_id=None):
     """Elimina una reseña por ID"""
     from src.web.api.services.review_serv import delete_review_service
 
-    return delete_review_service(review_id, site_id)
+    return delete_review_service(review_id, site_id, public_user_id)

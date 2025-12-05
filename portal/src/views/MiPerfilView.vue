@@ -91,6 +91,8 @@
             :loading="reviewsLoading"
             @page-change="loadReviews"
             @order-change="changeReviewsOrder"
+            @edit-review="handleEditReview"
+            @delete-review="handleDeleteReview"
           />
         </div>
 
@@ -133,6 +135,18 @@
       </div>
 
     </div>
+    
+    <!-- Modal de edición -->
+    <ReviewForm
+      v-if="showEditModal && editingReview"
+      :site-id="editingReview.site_id"
+      :site-name="editingReview.site_name"
+      :existing-review="editingReview"
+      :is-editing="true"
+      :use-profile-endpoint="true"
+      @submitted="handleReviewUpdated"
+      @cancel="closeEditModal"
+    />
   </div>
 </template>
 
@@ -141,13 +155,15 @@ import { ref, watch, computed } from 'vue'
 import GoogleLoginButton from '../components/GoogleLoginButton.vue'
 import ReviewsList from '../components/UserReviewsList.vue'
 import SiteCard from '../components/SiteCard.vue'
+import ReviewForm from '../components/ReviewForm.vue'
 import { useAuth } from '../composables/useAuth'
 import { useApi } from '../composables/useApi'
 
-const Api = useApi()
 
 
-const { loggedIn, user, loading, login, logout } = useAuth() 
+
+const { loggedIn, user, loading, login, logout } = useAuth()
+const { getMyReviews, getMyFavorites, deleteMyReview, updateMyReview } = useApi()
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -161,6 +177,8 @@ const favorites = ref([])
 const favoritesMeta = ref({})
 const favoritesLoading = ref(false)
 const favoritesOrder = ref('desc')
+const showEditModal = ref(false)
+const editingReview = ref(null)
 
 
 const loadReviews = async (page = 1) => {
@@ -169,7 +187,7 @@ const loadReviews = async (page = 1) => {
   reviewsLoading.value = true;
 
   try {
-    const res = await Api.getMyReviews({ page });    
+    const res = await getMyReviews({ page });    
     const data = res.data || {}
     reviews.value = (data.data || []).map(r => ({
       ...r,
@@ -201,7 +219,7 @@ const loadFavorites = async (page = 1) => {
   favoritesLoading.value = true;
 
   try {
-    const res = await Api.getMyFavorites({ page });
+    const res = await getMyFavorites({ page });
 
 
     const data = res.data;
@@ -267,6 +285,36 @@ watch(loggedIn, async (isLoggedIn) => {
   // ha determinado el estado inicial de la sesión.
   immediate: true 
 })
+
+const handleEditReview = (review) => {
+  editingReview.value = review
+  showEditModal.value = true
+}
+
+const handleDeleteReview = async (reviewId) => {
+  try {
+    const review = reviews.value.find(r => r.id === reviewId)
+    if (review) {
+      await deleteMyReview(review.site_id, reviewId)
+      // Recargar las reviews después de eliminar
+      await loadReviews(reviewsMeta.value.current_page || 1)
+    }
+  } catch (error) {
+    console.error('Error deleting review:', error)
+    alert('Error al eliminar la reseña. Inténtalo de nuevo.')
+  }
+}
+
+const handleReviewUpdated = async () => {
+  closeEditModal()
+  // Recargar las reviews después de actualizar
+  await loadReviews(reviewsMeta.value.current_page || 1)
+}
+
+const closeEditModal = () => {
+  showEditModal.value = false
+  editingReview.value = null
+}
 </script>
 
 <style scoped>
