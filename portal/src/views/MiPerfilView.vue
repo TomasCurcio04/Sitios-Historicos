@@ -309,6 +309,7 @@ const handleReviewUpdated = async () => {
   closeEditModal()
   // Recargar las reviews después de actualizar
   await loadReviews(reviewsMeta.value.current_page || 1)
+  alert('Reseña actualizada exitosamente. Pasará a moderación para su posterior publicación.')
 }
 
 const closeEditModal = () => {
