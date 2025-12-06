@@ -117,7 +117,12 @@ export function useApi() {
       return api.deleteReview(siteId, reviewId)
     },
     updateMyReview(siteId, reviewId, reviewData) {
-      return api.updateReview(siteId, reviewId, reviewData)
+      const token = localStorage.getItem('auth_token')
+      return apiClient.put(`/sites/${siteId}/reviews/${reviewId}`, reviewData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
     }
   }
   return api

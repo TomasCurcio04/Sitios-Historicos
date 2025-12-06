@@ -63,6 +63,13 @@
           {{ error }}
         </div>
 
+        <div v-if="!isFormValid && (rating > 0 || comment.length > 0)" class="form-validation-message">
+          <div class="validation-title">Para enviar la reseña necesitas:</div>
+          <span v-if="rating === 0">• Seleccionar una calificación (1-5 estrellas)</span>
+         <!-- <span v-if="comment.trim().length < 20">• Escribir al menos 20 caracteres en el comentario</span>-->
+          <span v-if="commentError">• {{ commentError }}</span>
+        </div>
+
         <div class="form-actions">
           <button type="button" class="btn-cancel" @click="cancel" :disabled="isSubmitting">
             Cancelar
@@ -70,12 +77,6 @@
           <button type="submit" class="btn-submit" :disabled="!isFormValid || isSubmitting">
             {{ isSubmitting ? (isEditing ? 'Actualizando...' : 'Enviando...') : (isEditing ? 'Actualizar reseña' : 'Enviar reseña') }}
           </button>
-          <div v-if="!isFormValid && (rating > 0 || comment.length > 0)" class="form-validation-message">
-            <div class="validation-title">Para enviar la reseña necesitas:</div>
-            <span v-if="rating === 0">• Seleccionar una calificación (1-5 estrellas)</span>
-            <span v-if="comment.trim().length < 20">• Escribir al menos 20 caracteres en el comentario</span>
-            <span v-if="commentError">• {{ commentError }}</span>
-          </div>
         </div>
       </form>
     </div>
