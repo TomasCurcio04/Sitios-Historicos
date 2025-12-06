@@ -307,9 +307,12 @@ const initMap = () => {
   // Fix iconos Leaflet
   delete L.Icon.Default.prototype._getIconUrl
   L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconRetinaUrl: resolveUrl('public/map/marker-icon-2x.png'),
+    iconUrl: resolveUrl('public/map/marker-icon.png'),
+    shadowUrl: resolveUrl('public/map/marker-shadow.png'),
+    // iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    // iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    // shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
   })
 
   map.value = L.map('map').setView([site.value.lat, site.value.long], 14)

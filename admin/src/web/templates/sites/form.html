@@ -55,6 +55,22 @@
         margin-top: 0.3rem;
         display: block;
     }
+
+    .error-message {
+        color: #dc2626;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        display: none;
+    }
+
+    .error-message.show {
+        display: block;
+    }
+
+    .input-error {
+        border-color: #dc2626 !important;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+    }
 </style>
 
 <h1>{% if sitio %}Editar Sitio{% else %}Crear Sitio{% endif %}</h1>
@@ -68,26 +84,37 @@
         <input type="hidden" name="user_id"
             value="{{ current_user.id_user if current_user and current_user.is_authenticated else 1 }}">
 
-        <!-- CORRECCIÓN: Este campo se llama "nombre" pero tenía id="short_description" -->
         <label for="nombre">Nombre*</label>
-        <textarea id="name" name="nombre" rows="2">{{ sitio.name if sitio else '' }}</textarea>
-        <!--<input type="text" id="nombre" name="nombre" value="{{ sitio.name if sitio else '' }}" required>-->
+        <textarea id="name" name="nombre" rows="2" required maxlength="150" oninput="validateName()"
+            onblur="validateName()">{{ sitio.name if sitio else '' }}</textarea>
+        <div id="nameError" class="error-message"></div>
+        <small class="form-help">Mínimo 3 caracteres, máximo 150. Solo letras, números, espacios y signos de puntuación
+            básicos.</small>
 
 
-        <label for="short_description">Descripción breve</label>
-        <textarea id="short_description" name="short_description"
-            rows="2">{{ sitio.short_description if sitio else '' }}</textarea>
+        <label for="short_description">Descripción breve*</label>
+        <textarea id="short_description" name="short_description" rows="2" required maxlength="120"
+            oninput="validateShortDesc()"
+            onblur="validateShortDesc()">{{ sitio.short_description if sitio else '' }}</textarea>
+        <div id="shortDescError" class="error-message"></div>
+        <small class="form-help">Mínimo 10 caracteres, máximo 120. Descripción concisa del sitio.</small>
 
-        <label for="full_description">Descripción completa</label>
-        <textarea id="full_description" name="full_description"
-            rows="4">{{ sitio.full_description if sitio else '' }}</textarea>
+        <label for="full_description">Descripción completa*</label>
+        <textarea id="full_description" name="full_description" rows="4" required maxlength="2000"
+            oninput="validateFullDesc()"
+            onblur="validateFullDesc()">{{ sitio.full_description if sitio else '' }}</textarea>
+        <div id="fullDescError" class="error-message"></div>
+        <small class="form-help">Mínimo 50 caracteres, máximo 2000. Descripción detallada e histórica del sitio.</small>
 
         <label for="city">Ciudad*</label>
-        <input type="text" id="city" name="city" value="{{ sitio.city if sitio else '' }}" required>
+        <input type="text" id="city" name="city" value="{{ sitio.city if sitio else '' }}" required maxlength="50"
+            oninput="validateCity()" onblur="validateCity()">
+        <div id="cityError" class="error-message"></div>
+        <small class="form-help">Mínimo 2 caracteres. Solo letras, espacios y guiones.</small>
 
-        <label for="state">Provincia/Estado*</label>
+        <label for="state">Provincia*</label>
         <select id="state" name="state" required>
-            <option value="">Selecciona un estado</option>
+            <option value="">Selecciona una Provincia</option>
             {% for estado in estados %}
             <option value="{{ estado.id_state }}" {% if sitio and sitio.state==estado.id_state %}selected{% endif %}>
                 {{ estado.name }}
@@ -95,11 +122,17 @@
             {% endfor %}
         </select>
 
-        <label for="latitude">Latitud</label>
-        <input type="number" step="any" id="latitude" name="latitude" value="{{ sitio.latitude if sitio else '' }}">
+        <label for="latitude">Latitud*</label>
+        <input type="number" step="any" id="latitude" name="latitude" value="{{ sitio.latitude if sitio else '' }}"
+            required min="-90" max="90" oninput="validateCoordinates()" onblur="validateCoordinates()">
+        <div id="latError" class="error-message"></div>
+        <small class="form-help">Valor entre -90 y 90. Usa el mapa para seleccionar.</small>
 
-        <label for="longitude">Longitud</label>
-        <input type="number" step="any" id="longitude" name="longitude" value="{{ sitio.longitude if sitio else '' }}">
+        <label for="longitude">Longitud*</label>
+        <input type="number" step="any" id="longitude" name="longitude" value="{{ sitio.longitude if sitio else '' }}"
+            required min="-180" max="180" oninput="validateCoordinates()" onblur="validateCoordinates()">
+        <div id="lngError" class="error-message"></div>
+        <small class="form-help">Valor entre -180 y 180. Usa el mapa para seleccionar.</small>
 
         <div id="map"></div>
         <p class="map-note">Haz clic en el mapa para seleccionar la ubicación del sitio histórico.</p>
@@ -107,14 +140,17 @@
         <label for="conservation_state">Estado de conservación</label>
         <select id="conservation_state" name="conservation_state">
             <option value="" {% if estado=="" %}selected{% endif %}>--Cualquiera--</option>
-                <option value="Bueno" {% if estado=="Bueno" %}selected{% endif %}>Bueno</option>
-                <option value="Regular" {% if estado=="Regular" %}selected{% endif %}>Regular</option>
-                <option value="Malo" {% if estado=="Malo" %}selected{% endif %}>Malo</option>
+            <option value="Bueno" {% if estado=="Bueno" %}selected{% endif %}>Bueno</option>
+            <option value="Regular" {% if estado=="Regular" %}selected{% endif %}>Regular</option>
+            <option value="Malo" {% if estado=="Malo" %}selected{% endif %}>Malo</option>
         </select>
 
         <label for="inauguration_year">Año de inauguración</label>
         <input type="number" id="inauguration_year" name="inauguration_year"
-            value="{{ sitio.inauguration_year if sitio else '' }}">
+            value="{{ sitio.inauguration_year if sitio else '' }}" min="1500" max="2024" oninput="validateYear()"
+            onblur="validateYear()">
+        <div id="yearError" class="error-message"></div>
+        <small class="form-help">Año entre 1500 y 2024.</small>
 
         <label for="category">Categoría*</label>
         <select id="category" name="category" required>
@@ -144,7 +180,8 @@
         </br>
         <small class="form-help">Puedes seleccionar múltiples etiquetas con Ctrl (Windows) o Cmd (Mac).</small>
         </br>
-        <button type="submit" class="btn-primary-action">{% if sitio %}Actualizar{% else %}Crear{% endif %}</button>
+        <button type="submit" class="btn-primary-action" onclick="return validateForm()">{% if sitio %}Actualizar{% else
+            %}Crear{% endif %}</button>
     </form>
 </div>
 
@@ -186,7 +223,142 @@
         } else {
             marker = L.marker([lat, lng]).addTo(map);
         }
+
+        // Validar coordenadas después de seleccionar en mapa
+        validateCoordinates();
     });
+
+    // Funciones de validación
+    function showError(elementId, message) {
+        const errorDiv = document.getElementById(elementId);
+        const input = errorDiv.previousElementSibling;
+        errorDiv.textContent = message;
+        errorDiv.classList.add('show');
+        input.classList.add('input-error');
+        return false;
+    }
+
+    function hideError(elementId) {
+        const errorDiv = document.getElementById(elementId);
+        const input = errorDiv.previousElementSibling;
+        errorDiv.classList.remove('show');
+        input.classList.remove('input-error');
+        return true;
+    }
+
+    function validateName() {
+        const name = document.getElementById('name').value.trim();
+        if (name.length === 0) {
+            return showError('nameError', 'El nombre es obligatorio');
+        }
+        if (name.length < 3) {
+            return showError('nameError', 'El nombre debe tener al menos 3 caracteres');
+        }
+        if (name.length > 150) {
+            return showError('nameError', 'El nombre no puede exceder 150 caracteres');
+        }
+        if (!/^[a-zA-ZÀ-ÿ\d\s\.,;:!?¡¿\-()"']+$/.test(name)) {
+            return showError('nameError', 'El nombre contiene caracteres no permitidos');
+        }
+        return hideError('nameError');
+    }
+
+    function validateShortDesc() {
+        const desc = document.getElementById('short_description').value.trim();
+        if (desc.length === 0) {
+            return showError('shortDescError', 'La descripción breve es obligatoria');
+        }
+        if (desc.length < 10) {
+            return showError('shortDescError', 'La descripción breve debe tener al menos 10 caracteres');
+        }
+        if (desc.length > 120) {
+            return showError('shortDescError', 'La descripción breve no puede exceder 120 caracteres');
+        }
+        return hideError('shortDescError');
+    }
+
+    function validateFullDesc() {
+        const desc = document.getElementById('full_description').value.trim();
+        if (desc.length === 0) {
+            return showError('fullDescError', 'La descripción completa es obligatoria');
+        }
+        if (desc.length < 50) {
+            return showError('fullDescError', 'La descripción completa debe tener al menos 50 caracteres');
+        }
+        if (desc.length > 2000) {
+            return showError('fullDescError', 'La descripción completa no puede exceder 2000 caracteres');
+        }
+        const words = desc.split(/\s+/).filter(word => word.length > 0);
+        if (words.length < 10) {
+            return showError('fullDescError', 'La descripción debe contener al menos 10 palabras');
+        }
+        return hideError('fullDescError');
+    }
+
+    function validateCity() {
+        const city = document.getElementById('city').value.trim();
+        if (city.length === 0) {
+            return showError('cityError', 'La ciudad es obligatoria');
+        }
+        if (city.length < 2) {
+            return showError('cityError', 'La ciudad debe tener al menos 2 caracteres');
+        }
+        if (!/^[a-zA-ZÀ-ÿ\s\-\.]+$/.test(city)) {
+            return showError('cityError', 'La ciudad solo puede contener letras, espacios y guiones');
+        }
+        return hideError('cityError');
+    }
+
+    function validateCoordinates() {
+        const lat = parseFloat(document.getElementById('latitude').value);
+        const lng = parseFloat(document.getElementById('longitude').value);
+
+        let valid = true;
+
+        if (isNaN(lat) || lat < -90 || lat > 90) {
+            showError('latError', 'La latitud debe estar entre -90 y 90');
+            valid = false;
+        } else {
+            hideError('latError');
+        }
+
+        if (isNaN(lng) || lng < -180 || lng > 180) {
+            showError('lngError', 'La longitud debe estar entre -180 y 180');
+            valid = false;
+        } else {
+            hideError('lngError');
+        }
+
+        return valid;
+    }
+
+    function validateYear() {
+        const year = document.getElementById('inauguration_year').value;
+        if (year && (year < 1500 || year > 2024)) {
+            return showError('yearError', 'El año debe estar entre 1500 y 2024');
+        }
+        return hideError('yearError');
+    }
+
+    function validateForm() {
+        const validations = [
+            validateName(),
+            validateShortDesc(),
+            validateFullDesc(),
+            validateCity(),
+            validateCoordinates(),
+            validateYear()
+        ];
+
+        const isValid = validations.every(v => v === true);
+
+        if (!isValid) {
+            alert('Por favor corrige los errores en el formulario antes de continuar.');
+            return false;
+        }
+
+        return true;
+    }
 </script>
 
 {% endblock %}

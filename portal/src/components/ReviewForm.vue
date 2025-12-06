@@ -34,6 +34,7 @@
             </button>
           </div>
           <span class="rating-text">{{ rating }}/5</span>
+          <div v-if="ratingError" class="error-text">{{ ratingError }}</div>
         </div>
 
         <div class="form-group">
@@ -44,7 +45,12 @@
             placeholder="Comparte tu experiencia visitando este sitio histórico..."
             :maxlength="1000"
             rows="4"
+            :class="{ 'input-error': commentError }"
+            @input="validateComment"
+            @blur="validateComment"
+            @keypress="preventInvalidCharsComment"
           ></textarea>
+          <div v-if="commentError" class="error-text">{{ commentError }}</div>
           <div class="char-counter" :class="{ 'char-counter-invalid': comment.trim().length < 20 && comment.trim().length > 0 }">
             {{ comment.length }}/1000 caracteres
             <span v-if="comment.trim().length < 20 && comment.trim().length > 0" class="min-chars-warning">
@@ -55,6 +61,13 @@
 
         <div v-if="error" class="error-message">
           {{ error }}
+        </div>
+
+        <div v-if="!isFormValid && (rating > 0 || comment.length > 0)" class="form-validation-message">
+          <div class="validation-title">Para enviar la reseña necesitas:</div>
+          <span v-if="rating === 0">• Seleccionar una calificación (1-5 estrellas)</span>
+         <!-- <span v-if="comment.trim().length < 20">• Escribir al menos 20 caracteres en el comentario</span>-->
+          <span v-if="commentError">• {{ commentError }}</span>
         </div>
 
         <div class="form-actions">
@@ -108,6 +121,8 @@ const isSubmitting = ref(false)
 const error = ref('')
 const reviewsEnabled = ref(true)
 const disabledMessage = ref('')
+const commentError = ref('')
+const ratingError = ref('')
 
 const isFormValid = computed(() => {
   const commentLength = comment.value.trim().length
@@ -116,6 +131,7 @@ const isFormValid = computed(() => {
 
 const setRating = (newRating) => {
   rating.value = newRating
+  ratingError.value = ''
 }
 const setHover = (n) => {
   hoverRating.value = n
@@ -125,9 +141,58 @@ const clearHover = () => {
   hoverRating.value = 0
 }
 
+const validateComment = () => {
+  const trimmed = comment.value.trim()
+  if (trimmed.length === 0) {
+    commentError.value = 'El comentario es obligatorio'
+    return false
+  }
+  if (trimmed.length < 20) {
+    commentError.value = 'El comentario debe tener al menos 20 caracteres'
+    return false
+  }
+  if (trimmed.length > 1000) {
+    commentError.value = 'El comentario no puede exceder 1000 caracteres'
+    return false
+  }
+  // Validar que no sea solo espacios o caracteres repetidos
+  if (/^(.)\1{19,}$/.test(trimmed)) {
+    commentError.value = 'El comentario no puede ser solo caracteres repetidos'
+    return false
+  }
+  // Validar que tenga contenido significativo (al menos 3 palabras)
+  const words = trimmed.split(/\s+/).filter(word => word.length > 0)
+  if (words.length < 3) {
+    commentError.value = 'El comentario debe contener al menos 3 palabras'
+    return false
+  }
+  // Validar caracteres permitidos
+  if (!/^[a-zA-ZÀ-ſ\d\s\.,;:!?¡¿\-()"']+$/.test(trimmed)) {
+    commentError.value = 'El comentario contiene caracteres no permitidos'
+    return false
+  }
+  commentError.value = ''
+  return true
+}
+
+const validateRating = () => {
+  if (rating.value < 1 || rating.value > 5) {
+    ratingError.value = 'Debes seleccionar una calificación del 1 al 5'
+    return false
+  }
+  ratingError.value = ''
+  return true
+}
+
+const validateForm = () => {
+  const isCommentValid = validateComment()
+  const isRatingValid = validateRating()
+  return isCommentValid && isRatingValid
+}
+
 const submitReview = async () => {
-  if (!isFormValid.value) {
-    error.value = 'Por favor verifica los datos del formulario.'
+  if (!validateForm()) {
+    error.value = 'Por favor corrige los errores en el formulario'
     return
   }
 
@@ -172,6 +237,14 @@ const submitReview = async () => {
     }
   } finally {
     isSubmitting.value = false
+  }
+}
+
+const preventInvalidCharsComment = (event) => {
+  const char = event.key
+  // Permitir caracteres válidos para comentarios
+  if (!/[a-zA-ZÀ-ſ\d\s\.,;:!?¡¿\-()"\'\n\r]/.test(char) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Enter'].includes(char)) {
+    event.preventDefault()
   }
 }
 
@@ -334,6 +407,43 @@ textarea:focus {
 .min-chars-warning {
   color: #dc2626;
   font-weight: 500;
+}
+
+.form-validation-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.validation-title {
+  font-weight: 600;
+  color: #dc2626;
+  margin-bottom: 0.5rem;
+}
+
+.form-validation-message span {
+  display: block;
+  color: #dc2626;
+  margin-bottom: 0.25rem;
+  padding-left: 0.5rem;
+}
+
+.form-validation-message span:last-child {
+  margin-bottom: 0;
+}
+
+.input-error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .error-message {

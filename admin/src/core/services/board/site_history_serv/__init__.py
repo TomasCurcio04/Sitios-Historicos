@@ -11,6 +11,7 @@ from src.core.entity.state import State
 from src.core.entity.category import Category
 from src.core.entity.tag import Tag
 from src.core.services.board.category_serv import get_category_by_id
+from src.core.services.board.state_serv import get_state_by_id
 from src.core.services.board.tag_serv import listar_tags_por_id
 
 
@@ -81,10 +82,11 @@ def detect_changes(site, nuevos_datos, nuevas_tags):
         cambios_detectados.append(
             f"Ciudad: '{site.city}' -> '{nuevos_datos.get("city")}'"
         )
-
     if site.state != nuevos_datos.get("state"):
+        state_old = get_state_by_id(site.state)
+        state_new = get_state_by_id(nuevos_datos.get("state"))
         cambios_detectados.append(
-            f"Provincia: '{site.state}' -> '{nuevos_datos.get("state")}'"
+            f"Provincia: '{state_old.name}' -> '{state_new.name}'"
         )
 
     lat_nueva = (
@@ -152,7 +154,7 @@ def is_visible(booleano):
     return "Visible" if booleano else "Oculto"
 
 
-def obtener_historial_sitios(site_id, sort_by='date', order='desc'):
+def obtener_historial_sitios(site_id, sort_by="date", order="desc"):
     """Obtiene el historial de modificaciones de un sitio específico.
     Args:
         site_id (int): ID del sitio.
@@ -162,21 +164,21 @@ def obtener_historial_sitios(site_id, sort_by='date', order='desc'):
         list[SiteHistory]: Lista de objetos SiteHistory ordenados.
     """
     from src.core.entity.users import Users
-    
+
     query = db.session.query(SiteHistory).filter_by(id_site=site_id)
-    
+
     # Aplicar ordenamiento
-    if sort_by == 'action':
+    if sort_by == "action":
         order_field = SiteHistory.action_type
-    elif sort_by == 'user':
+    elif sort_by == "user":
         query = query.join(Users)
         order_field = Users.email
     else:  # default: date
         order_field = SiteHistory.date_action
-    
-    if order == 'asc':
+
+    if order == "asc":
         query = query.order_by(order_field.asc())
     else:
         query = query.order_by(order_field.desc())
-    
+
     return query.all()
