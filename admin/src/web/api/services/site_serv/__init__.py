@@ -86,9 +86,9 @@ def listar_sitios(
     # Filtro geoespacial
     if lat and long and radius:
         distance = func.sqrt(
-            func.pow(69.1 * (Site.latitude - lat), 2)
+            func.pow(111.1 * (Site.latitude - lat), 2)
             + func.pow(
-                69.1 * (Site.longitude - long) * func.cos(Site.latitude / 57.3), 2
+                111.1 * (Site.longitude - long) * func.cos(Site.latitude / 57.3), 2
             )
         )
         query = query.filter(distance <= radius)
